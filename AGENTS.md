@@ -3,6 +3,7 @@
 Instructions for any coding agent working in this repository (Codex, Claude Code, or another). They are the same rules
 as `CLAUDE.md`; where a file below is written "for Claude", read it as written for you.
 
+0. Posture (owner, 2026-10-11): AI-driven self-improvement. The owner gives help and direction; the agent does the analysis, decides within the guardrails, and executes end to end, choosing the next gap itself when not directed.
 1. Read `HANDOFF.md` first. Before you stop, add your own dated section at the end: Done / Open / Next.
 2. Follow `CLAUDE.md` (project rules, engineering standard) and `.claude/skills/iterate/SKILL.md` (the improvement loop:
    research open sources on any problem with a note in `docs/research/`, change one thing, re-measure, keep only if

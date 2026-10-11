@@ -50,6 +50,19 @@ pub fn adjudicate(claim: &Claim, judges: &[&dyn Judge], bars: Bars) -> Finding {
     let mut last = String::from("no judge available");
     for j in judges {
         let (r, c, why) = j.rule(claim);
+        // A local judge may not call a claim stated when one of its names is missing from every quote (layer-1 rule,
+        // ej_evidence::names_in_quotes); the claim escalates instead. The escalation judge checks names itself.
+        let quotes: Vec<&str> = claim.evidence.iter().map(|e| e.quote.as_str()).collect();
+        if r == Ruling::Supports
+            && j.layer() == Layer::LocalJudge
+            && !ej_evidence::names_in_quotes(&claim.text, &quotes)
+        {
+            last = format!(
+                "{:?} said supports but a name in the claim is not in the quotes",
+                j.layer()
+            );
+            continue;
+        }
         if r != Ruling::Unsure && (j.self_gated() || c >= bars.act) {
             let verdict = if r == Ruling::Supports {
                 Verdict::Supported
@@ -386,6 +399,60 @@ mod tests {
                 "{q}"
             );
         }
+    }
+
+    #[test]
+    fn local_supports_needs_every_name_in_the_quotes() {
+        let cal = Calibration {
+            a: 1.0,
+            b: 0.0,
+            yes: 0.7,
+            no: 0.2,
+        };
+        let wrong_name = c(
+            "Then Rush Fischer praised it",
+            "In his review, Russ Fischer praised it",
+        );
+        let f = adjudicate(
+            &wrong_name,
+            &[&Calibrated {
+                inner: Score(0.99),
+                cal,
+            }],
+            Bars::default(),
+        );
+        assert_eq!(f.verdict, Verdict::Unsure);
+        assert!(f.reason.contains("name"));
+        // A local "not stated" is unaffected, and a matching name lets "supports" through.
+        let f = adjudicate(
+            &wrong_name,
+            &[&Calibrated {
+                inner: Score(0.05),
+                cal,
+            }],
+            Bars::default(),
+        );
+        assert_eq!(f.verdict, Verdict::Mismatch);
+        let right_name = c(
+            "Then Russ Fischer praised it",
+            "In his review, Russ Fischer praised it",
+        );
+        let f = adjudicate(
+            &right_name,
+            &[&Calibrated {
+                inner: Score(0.99),
+                cal,
+            }],
+            Bars::default(),
+        );
+        assert_eq!(f.verdict, Verdict::Supported);
+        // The escalation layer is not overridden by the local rule.
+        let f = adjudicate(
+            &wrong_name,
+            &[&Fixed(Ruling::Supports, 0.95)],
+            Bars::default(),
+        );
+        assert_eq!(f.verdict, Verdict::Supported);
     }
 
     #[test]

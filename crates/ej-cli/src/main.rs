@@ -1,6 +1,6 @@
 //! ej check <claims.json> [--today YYYY-MM-DD] [--max-age DAYS] [--nli DIR --policy POLICY.json]
 //!          [--claude [--model ID] [--pairs FILE] [--usage FILE] [--prices FILE]]
-//! Reads an array of claims and runs the cascade: layer 1 (deterministic), then the overlap judge, then the NLI judge
+//! Reads an array of claims and runs the cascade: layer 1 (deterministic), then the NLI judge
 //! under its fitted calibration (only if the policy says it passed the standard; otherwise it is skipped and its
 //! cases escalate), then, with --claude, Claude for what is still unsure, appending each ruling to the teacher-pair
 //! file and each call's token usage to the usage log; with --prices (a sourced, dated price file such as
@@ -11,7 +11,7 @@ mod http;
 use ej_core::Claim;
 use ej_evidence::{check, Policy};
 use ej_judge::claude::ClaudeJudge;
-use ej_judge::{adjudicate, Bars, Calibrated, Calibration, Judge, OverlapJudge};
+use ej_judge::{adjudicate, Bars, Calibrated, Calibration, Judge};
 
 const USAGE: &str = "usage: ej check <claims.json> [--today YYYY-MM-DD] [--max-age DAYS] [--nli DIR --policy POLICY.json] [--claude [--model ID] [--pairs FILE] [--usage FILE] [--prices FILE]]";
 
@@ -117,7 +117,9 @@ fn main() {
     let claims: Vec<Claim> = read_json(&args[2], "claims");
     let claude = claude_judge(&args, &opt);
     let nli = nli_judge(&opt);
-    let mut judges: Vec<&dyn Judge> = vec![&OverlapJudge];
+    // Only judges that passed the standard may decide. The overlap placeholder never did (on VitaminC it let 9 of 82
+    // non-supported claims through), so it is not in the cascade; it remains available to ej-bench for comparison.
+    let mut judges: Vec<&dyn Judge> = Vec::new();
     if let Some(n) = &nli {
         judges.push(n);
     }

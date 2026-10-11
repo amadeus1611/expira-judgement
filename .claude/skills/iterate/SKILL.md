@@ -35,12 +35,22 @@ Models: Claude only, Haiku 5.5 / Sonnet 5.5 / Opus 5.5 (`config/roster.json`, en
    - fitting: target, minimum sample, calibration method;
    - escalation: Claude model (Haiku before Sonnet before Opus where measured accuracy allows), effort, prompt, schema;
    - cost: prompt caching, the Batch API for work nobody waits on, fewer or shorter calls, tier start points;
-   - structure: merge, split or remove crates, layers or steps when the numbers say so.
+   - structure: merge, split or remove crates, layers, files, tools or steps when the numbers say so, or when the
+     structure itself makes improvement annoying, slow, error-prone or harmful (owner, 2026-10-11). That friction is a
+     problem like any other: name it, research how comparable systems solve it, restructure in small tested steps, and
+     record the before/after (time to make a change, CI time, failures caused) in the commit.
 5. **Re-measure on the same splits and the same usage replay.** Never fit on the test split. Never tune against the stress set and then report it as unseen; add a fresh stress class instead.
 6. **Keep or revert.** Keep only if the standard verdict improves, or with the same verdict the coverage at the same risk rises, or cost per settled claim or latency falls with nothing else worse. Otherwise revert and log why.
 7. **Log.** Append a dated run to `docs/bench/` (data, machine, commands, every gate value) and a section to `HANDOFF.md`.
 
 If the standard cannot be met with what is available, say exactly which gate binds and what would move it (usually more held-out labelled cases); do not lower a bar to pass.
+
+## Self-reports and recommendations
+
+When asked to report, self-assess or recommend: build the answer only from adopted habits in `docs/HABITS.md` and from
+measured results in `docs/bench/`, citing the research behind each point. Before sending, check every recommendation
+against the Retired list in `docs/HABITS.md` and drop anything that matches one; never recommend a candidate as if
+proven. When a new bad habit is found, add it to Retired (why, evidence, replacement) in the same change that fixes it.
 
 ## How it runs: alongside the owner, filling the gaps
 
