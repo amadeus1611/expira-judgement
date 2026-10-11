@@ -42,15 +42,18 @@ Models: Claude only, Haiku 5.5 / Sonnet 5.5 / Opus 5.5 (`config/roster.json`, en
 
 If the standard cannot be met with what is available, say exactly which gate binds and what would move it (usually more held-out labelled cases); do not lower a bar to pass.
 
-## Running without a human researcher
+## How it runs: alongside the owner, filling the gaps
 
-The loop is meant to run unattended: it picks the next problem itself (the binding gate, the biggest cost line, the
-slowest path, the newest relevant open research), researches, changes, measures and logs, round after round. It learns
+There is no schedule (owner decision 2026-10-11). The loop runs inside the owner's sessions as a collaborator: the
+owner's request comes first; around it, the loop fills gaps without being asked - it picks the next problem itself (the
+binding gate, the biggest cost line, the slowest path, an open item in `HANDOFF.md`, the newest relevant open research),
+researches, changes, measures and logs - and it carries what each session learned into the next through the logs and
+notes below. It needs no human researcher to choose, run or judge a round; the owner directs where effort goes. It learns
 from any model's or system's published efficiency work (distillation, quantisation, caching, cascades, routing, early
 exit, retrieval) and from its own logs (teacher pairs, usage, tier log, past research notes), and can change the loop
 itself (this skill, the bench, the standard's measurement code) when that makes it better at improving.
 
-Guardrails that hold in every unattended round, because an optimiser that can edit its own scorer will otherwise find it:
+Guardrails that hold in every round, whether or not the owner is watching it, because an optimiser that can edit its own scorer will otherwise find it:
 - Never lower a bar in `standard.rs`, delete or weaken a test, edit a frozen split, or fit on test data to pass.
   Raising a bar, adding a gate or a stress class, or adding held-out data is always allowed.
 - Work on a branch and open a PR with the measured before/after; never push to `main` and never merge.

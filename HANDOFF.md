@@ -73,7 +73,7 @@ no invented figures; one small tested change per commit.
 - `ej check --claude` has never run against the live API (no key in the container).
 - LAYA in the owner's engine: its "stated" bar is not safe on this evidence; changing the engine is the owner's call
   (gssc-opp-engine charter), so it is reported, not changed.
-- No recurring unattended run is scheduled yet; it needs the owner's choice of cadence and budget.
+- No scheduled runs, by the owner's choice: the iterate loop runs inside the owner's sessions, filling gaps around their requests.
 
 ### Next
 - Fit round 2, log it, adopt or reject; then MiniCheck (needs ONNX export) and a Haiku-first escalation cascade measured on teacher pairs.
