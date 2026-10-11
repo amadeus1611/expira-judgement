@@ -25,8 +25,7 @@ pub fn quantities(text: &str) -> Vec<Quantity> {
         if used[i] {
             continue;
         }
-        let t =
-            raw.trim_matches(|c: char| c == '(' || c == ')' || c == ',' || c == ';' || c == ':');
+        let t = raw.trim_matches(|c: char| c == '(' || c == ')' || c == ';' || c == ':');
         let t = t.trim_end_matches('.');
         let (cur, t) = strip_currency_prefix(t);
         let (num, suffix) = split_number(t);
@@ -121,7 +120,7 @@ fn month(t: &str) -> Option<i64> {
     }
     NAMES
         .iter()
-        .position(|n| n.starts_with(&t) || (t == "sept" && *n == "september"))
+        .position(|n| n.starts_with(&t)) // "sept" is a prefix of "september" like any other abbreviation
         .and_then(|i| i64::try_from(i + 1).ok())
 }
 
@@ -132,7 +131,7 @@ fn int(t: &str, digits: std::ops::RangeInclusive<usize>) -> Option<i64> {
         .find_map(|o| t.strip_suffix(o))
         .unwrap_or(t); // "6th"
     let t = t.trim_matches(|c: char| !c.is_ascii_digit());
-    if !digits.contains(&t.len()) || !t.chars().all(|c| c.is_ascii_digit()) {
+    if !digits.contains(&t.len()) {
         return None;
     }
     t.parse().ok()
@@ -148,7 +147,7 @@ fn dates(toks: &[&str]) -> (Vec<(usize, Quantity)>, Vec<bool>) {
         unit: "date".into(),
     };
     let mut i = 0;
-    while i < toks.len() {
+    while toks.get(i).is_some() {
         let t = |k: usize| toks.get(i + k).copied().unwrap_or("");
         let iso: Vec<&str> = t(0)
             .trim_matches(|c: char| !c.is_ascii_digit())
@@ -306,20 +305,24 @@ fn is_unit(s: &str) -> bool {
         )
 }
 
-fn same(a: &Quantity, b: &Quantity) -> bool {
-    // A month in the claim is backed by any date in that month in the quote, and vice versa.
-    // Dates and months are whole numbers (YYYYMMDD, YYYYMM) held in f64, so "equal" means within half a unit.
-    let eq = |x: f64, y: f64| (x - y).abs() < 0.5;
-    match (a.unit.as_str(), b.unit.as_str()) {
-        ("month", "date") => return eq((b.value / 100.0).floor(), a.value),
-        ("date", "month") => return eq((a.value / 100.0).floor(), b.value),
+/// Does quote quantity `have` back claim quantity `want`?
+fn same(want: &Quantity, have: &Quantity) -> bool {
+    // Dates (YYYYMMDD) and months (YYYYMM) are whole numbers held in f64; compare them as integers.
+    #[allow(clippy::cast_possible_truncation)]
+    let whole = |x: f64| x.round() as i64;
+    match (want.unit.as_str(), have.unit.as_str()) {
+        // A claimed month is backed by any date in that month.
+        ("month", "date") => return whole(have.value) / 100 == whole(want.value),
+        // Otherwise dates and months only match their own kind and value; in particular a claimed day is never
+        // backed by a month alone, since the claim would be more precise than its evidence.
         ("date" | "month", _) | (_, "date" | "month") => {
-            return a.unit == b.unit && eq(a.value, b.value)
+            return want.unit == have.unit && whole(want.value) == whole(have.value)
         }
         _ => {}
     }
-    let unit_ok = a.unit == b.unit || a.unit.is_empty() || b.unit.is_empty();
-    unit_ok && (a.value - b.value).abs() <= 1e-9 * a.value.abs().max(1.0)
+    let unit_ok = want.unit == have.unit || want.unit.is_empty() || have.unit.is_empty();
+    // Relative tolerance only absorbs float noise ("1.2M" vs "1,200,000"); 1,000,000,001 is not 1,000,000,000.
+    unit_ok && (want.value - have.value).abs() <= 1e-12 * want.value.abs().max(1.0)
 }
 
 /// Days since 0000-03-01 for a YYYY-MM-DD string (civil calendar), or None.
@@ -783,8 +786,180 @@ mod tests {
     }
 
     #[test]
+    fn trims_brackets_and_clause_marks() {
+        for t in ["(900)", "900;", "900:", "(PHP 900);"] {
+            let q = quantities(t);
+            assert_eq!(q.len(), 1, "{t}");
+            assert!(
+                (q[0].value - 900.0).abs() < 1e-9 && (q[0].unit.is_empty() || q[0].unit == "php"),
+                "{t}: {q:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn multipliers_and_length_context() {
+        let v = |t: &str| {
+            quantities(t)
+                .into_iter()
+                .map(|q| (q.value, q.unit))
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(v("5k"), vec![(5_000.0, String::new())]);
+        assert_eq!(v("2b"), vec![(2e9, String::new())]);
+        assert_eq!(v("3m"), vec![(3e6, String::new())]);
+        assert_eq!(v("3m long"), vec![(3.0, "m".to_string())]);
+        assert_eq!(v("2m wide"), vec![(2.0, "m".to_string())]);
+        assert_eq!(v("3m tall"), vec![(3e6, String::new())]);
+        // The decade rule only applies to "s" after a year-sized number.
+        assert_eq!(v("1500kg"), vec![(1500.0, "kg".to_string())]);
+        assert_eq!(v("10s"), vec![(10.0, "s".to_string())]);
+        assert_eq!(v("1 day"), v("1 days"));
+    }
+
+    #[test]
+    fn only_real_range_words_link_units() {
+        let units = |t: &str| {
+            quantities(t)
+                .into_iter()
+                .map(|q| q.unit)
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(
+            units("10 or 20 days"),
+            vec![String::new(), "days".to_string()]
+        );
+        assert_eq!(
+            units("10 and 20 days"),
+            vec![String::new(), "days".to_string()]
+        );
+        assert_eq!(
+            units("between 10 and 20 days"),
+            vec!["days".to_string(), "days".to_string()]
+        );
+    }
+
+    #[test]
+    fn evidence_needs_both_a_source_and_a_quote() {
+        let mut c = claim("fee is 35%", "fee is 35%", "2026-09-01");
+        c.evidence[0].source = " ".into();
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Unbacked);
+        let mut c = claim("fee is 35%", " ", "2026-09-01");
+        c.evidence[0].source = "https://example.test/p".into();
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Unbacked);
+    }
+
+    #[test]
+    fn invalid_named_dates_are_not_dates() {
+        assert!(quantities("on 2026-02-31").iter().all(|q| q.unit != "date"));
+        assert!(quantities("Feb 30, 2026").iter().all(|q| q.unit != "date"));
+        assert!(quantities("30 Feb 2026").iter().all(|q| q.unit != "date"));
+    }
+
+    #[test]
+    fn date_precision_and_kind_are_respected() {
+        // A claimed day needs the day in the quote; a month in the quote is not enough.
+        let c = claim(
+            "Opened on 1 Sept 2026",
+            "Opened in September 2026.",
+            "2026-09-02",
+        );
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Mismatch);
+        // A claimed month is backed by a dated quote in that month (left to the judge, not a mismatch).
+        let c = claim(
+            "Opened in September 2026",
+            "Opened on 2026-09-01.",
+            "2026-09-02",
+        );
+        assert!(check(&c, &pol()).is_none());
+        // A date is not the same thing as a bare number with the same digits.
+        let c = claim(
+            "Code 2026-09-01 applies",
+            "Code 20260901 applies",
+            "2026-09-02",
+        );
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Mismatch);
+    }
+
+    #[test]
+    fn figures_compare_exactly_but_tolerate_float_noise() {
+        let c = claim(
+            "Budget PHP 1,000,000,001",
+            "budget of PHP 1,000,000,000",
+            "2026-09-01",
+        );
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Mismatch);
+        let c = claim("Budget PHP 1.2M", "budget of PHP 1,200,000", "2026-09-01");
+        assert!(check(&c, &pol()).is_none());
+        // 1.005 x 1000 is 1004.9999999999999 in floating point: still the same figure as 1,005.
+        let c = claim("Fee PHP 1.005k", "fee of PHP 1,005", "2026-09-01");
+        assert!(check(&c, &pol()).is_none());
+        // A unit-less figure in the quote does not contradict the claim's unit.
+        let c = claim("The fee PHP 900", "the fee 900 per order", "2026-09-01");
+        assert!(check(&c, &pol()).is_none());
+    }
+
+    #[test]
+    fn staleness_boundary_is_exact() {
+        // 2026-10-11 minus 365 days is 2025-10-11: exactly max age is still fresh, one day more is stale.
+        let fresh = claim("fee is 35%", "fee is 35%", "2025-10-11");
+        assert_eq!(check(&fresh, &pol()).unwrap().verdict, Verdict::Backed);
+        let stale = claim("fee is 35%", "fee is 35%", "2025-10-10");
+        assert_eq!(check(&stale, &pol()).unwrap().verdict, Verdict::Stale);
+    }
+
+    #[test]
+    fn punctuation_in_the_quote_does_not_block_a_verbatim_match() {
+        // Punctuation around words is ignored when matching, on both sides.
+        for q in [
+            "Note: the owner's fee applies, to orders.",
+            "Note: the owner's fee applies to orders.",
+        ] {
+            let c = claim("the owner's fee applies to orders", q, "2026-09-01");
+            assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Backed, "{q}");
+        }
+    }
+
+    #[test]
+    fn calendar_matches_an_independent_count_every_day_1600_to_2400() {
+        let mut ymd = (1600i64, 1i64, 1i64);
+        let mut expected = day_number("1600-01-01").unwrap();
+        while ymd.0 < 2400 {
+            let s = format!("{:04}-{:02}-{:02}", ymd.0, ymd.1, ymd.2);
+            assert_eq!(day_number(&s), Some(expected), "{s}");
+            let leap = (ymd.0 % 4 == 0 && ymd.0 % 100 != 0) || ymd.0 % 400 == 0;
+            let len = match ymd.1 {
+                2 if leap => 29,
+                2 => 28,
+                4 | 6 | 9 | 11 => 30,
+                _ => 31,
+            };
+            assert_eq!(
+                day_number(&format!("{:04}-{:02}-{:02}", ymd.0, ymd.1, len + 1)),
+                None
+            );
+            ymd = if ymd.2 < len {
+                (ymd.0, ymd.1, ymd.2 + 1)
+            } else if ymd.1 < 12 {
+                (ymd.0, ymd.1 + 1, 1)
+            } else {
+                (ymd.0 + 1, 1, 1)
+            };
+            expected += 1;
+        }
+        // Anchors: the epoch of the formula, and 1970-01-01 to 2000-01-01 is 10,957 days.
+        assert_eq!(day_number("0000-03-01"), Some(0));
+        assert_eq!(
+            day_number("2000-01-01").unwrap() - day_number("1970-01-01").unwrap(),
+            10_957
+        );
+    }
+
+    #[test]
     fn sums() {
         assert!(sum_matches(&[100.0, 250.0], 350.0));
+        assert!(sum_matches(&[1.0], 1.49));
+        assert!(!sum_matches(&[1.0], 1.5));
         assert!(!sum_matches(&[100.0, 250.0], 360.0));
     }
 }
