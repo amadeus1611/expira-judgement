@@ -62,7 +62,9 @@ pub struct Finding {
 }
 
 /// Words that flip a statement's polarity. Shared so every layer reads negation the same way.
-pub const NEGATORS: [&str; 8] = ["no", "not", "never", "without", "none", "neither", "nor", "cannot"];
+pub const NEGATORS: [&str; 8] = [
+    "no", "not", "never", "without", "none", "neither", "nor", "cannot",
+];
 
 /// True if a lower-cased, punctuation-trimmed word negates ("not", "don't", "isn’t", ...).
 pub fn is_negator(w: &str) -> bool {

@@ -55,11 +55,24 @@ fn schema() -> Value {
 
 impl<T: Transport> ClaudeJudge<T> {
     pub fn new(transport: T, model: impl Into<String>) -> Self {
-        ClaudeJudge { transport, model: model.into(), max_tokens: 2000, effort: "low".into(), pairs: Mutex::new(Vec::new()), usage: Mutex::new(Vec::new()) }
+        ClaudeJudge {
+            transport,
+            model: model.into(),
+            max_tokens: 2000,
+            effort: "low".into(),
+            pairs: Mutex::new(Vec::new()),
+            usage: Mutex::new(Vec::new()),
+        }
     }
 
     pub fn request(&self, claim: &Claim) -> Value {
-        let quotes = claim.evidence.iter().enumerate().map(|(i, e)| format!("[{}] ({}, {}) \"{}\"", i + 1, e.source, e.date, e.quote)).collect::<Vec<_>>().join("\n");
+        let quotes = claim
+            .evidence
+            .iter()
+            .enumerate()
+            .map(|(i, e)| format!("[{}] ({}, {}) \"{}\"", i + 1, e.source, e.date, e.quote))
+            .collect::<Vec<_>>()
+            .join("\n");
         json!({
             "model": self.model,
             "max_tokens": self.max_tokens,
@@ -82,42 +95,112 @@ impl<T: Transport> ClaudeJudge<T> {
 }
 
 /// A parsed reply: ruling, confidence, reason, and the span Claude says it relied on.
-pub struct Reply { pub ruling: Ruling, pub confidence: f32, pub reason: String, pub span: String }
+pub struct Reply {
+    pub ruling: Ruling,
+    pub confidence: f32,
+    pub reason: String,
+    pub span: String,
+}
 
 /// Reads the reply's JSON object into a ruling. None if it is missing, malformed, or a refusal.
 pub fn parse_ruling(response: &Value) -> Option<Reply> {
-    if response["stop_reason"] == "refusal" { return None; }
-    let text: String = response["content"].as_array()?.iter().filter_map(|b| b["text"].as_str()).collect();
+    if response["stop_reason"] == "refusal" {
+        return None;
+    }
+    let text: String = response["content"]
+        .as_array()?
+        .iter()
+        .filter_map(|b| b["text"].as_str())
+        .collect();
     let (start, end) = (text.find('{')?, text.rfind('}')?);
     let v: Value = serde_json::from_str(text.get(start..=end)?).ok()?;
-    let ruling = match v["ruling"].as_str()? { "supports" => Ruling::Supports, "contradicts" => Ruling::Contradicts, "unsure" => Ruling::Unsure, _ => return None };
+    let ruling = match v["ruling"].as_str()? {
+        "supports" => Ruling::Supports,
+        "contradicts" => Ruling::Contradicts,
+        "unsure" => Ruling::Unsure,
+        _ => return None,
+    };
     let conf = v["confidence"].as_f64()?.clamp(0.0, 1.0) as f32;
     let reason = v["reason"].as_str().unwrap_or("").trim().to_string();
     let span = v["evidence_span"].as_str().unwrap_or("").trim().to_string();
-    Some(Reply { ruling, confidence: conf, reason, span })
+    Some(Reply {
+        ruling,
+        confidence: conf,
+        reason,
+        span,
+    })
 }
 
 /// The span appears in some quote, ignoring case and runs of whitespace.
 pub fn span_in_quotes(span: &str, claim: &Claim) -> bool {
-    let norm = |s: &str| s.to_lowercase().split_whitespace().collect::<Vec<_>>().join(" ");
+    let norm = |s: &str| {
+        s.to_lowercase()
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
+    };
     let sp = norm(span.trim_matches(|c: char| c == '"' || c == '\'' || c == '…' || c == '.'));
     !sp.is_empty() && claim.evidence.iter().any(|e| norm(&e.quote).contains(&sp))
 }
 
 impl<T: Transport> Judge for ClaudeJudge<T> {
-    fn layer(&self) -> Layer { Layer::Claude }
+    fn layer(&self) -> Layer {
+        Layer::Claude
+    }
     fn rule(&self, claim: &Claim) -> (Ruling, f32, String) {
         let t = std::time::Instant::now();
-        let resp = match self.transport.post(&self.request(claim)) { Ok(r) => r, Err(e) => return (Ruling::Unsure, 0.0, format!("claude call failed: {e}")) };
-        if let Some(u) = Usage::from_response(&self.model, "escalation", t.elapsed().as_secs_f64() * 1e3, &resp) { self.usage.lock().unwrap().push(u); }
-        let Some(Reply { ruling, confidence: conf, reason, span }) = parse_ruling(&resp) else { return (Ruling::Unsure, 0.0, "claude reply not parseable or refused".into()) };
-        if reason.is_empty() { return (Ruling::Unsure, 0.0, "claude gave no reason".into()); }
-        if ruling != Ruling::Unsure && !span_in_quotes(&span, claim) {
-            return (Ruling::Unsure, 0.0, format!("claude cited text not in the quotes: {span:?}"));
+        let resp = match self.transport.post(&self.request(claim)) {
+            Ok(r) => r,
+            Err(e) => return (Ruling::Unsure, 0.0, format!("claude call failed: {e}")),
+        };
+        if let Some(u) = Usage::from_response(
+            &self.model,
+            "escalation",
+            t.elapsed().as_secs_f64() * 1e3,
+            &resp,
+        ) {
+            self.usage.lock().unwrap().push(u);
         }
-        let label = match ruling { Ruling::Supports => "supports", Ruling::Contradicts => "contradicts", Ruling::Unsure => "unsure" };
-        let quote = claim.evidence.iter().map(|e| e.quote.as_str()).collect::<Vec<_>>().join("\n");
-        self.pairs.lock().unwrap().push(TeacherPair { claim: claim.text.clone(), quote, ruling: label.into(), reason: reason.clone() });
+        let Some(Reply {
+            ruling,
+            confidence: conf,
+            reason,
+            span,
+        }) = parse_ruling(&resp)
+        else {
+            return (
+                Ruling::Unsure,
+                0.0,
+                "claude reply not parseable or refused".into(),
+            );
+        };
+        if reason.is_empty() {
+            return (Ruling::Unsure, 0.0, "claude gave no reason".into());
+        }
+        if ruling != Ruling::Unsure && !span_in_quotes(&span, claim) {
+            return (
+                Ruling::Unsure,
+                0.0,
+                format!("claude cited text not in the quotes: {span:?}"),
+            );
+        }
+        let label = match ruling {
+            Ruling::Supports => "supports",
+            Ruling::Contradicts => "contradicts",
+            Ruling::Unsure => "unsure",
+        };
+        let quote = claim
+            .evidence
+            .iter()
+            .map(|e| e.quote.as_str())
+            .collect::<Vec<_>>()
+            .join("\n");
+        self.pairs.lock().unwrap().push(TeacherPair {
+            claim: claim.text.clone(),
+            quote,
+            ruling: label.into(),
+            reason: reason.clone(),
+        });
         (ruling, conf, reason)
     }
 }
@@ -129,9 +212,27 @@ mod tests {
     use ej_core::{Evidence, Verdict};
 
     struct Canned(Result<Value, String>);
-    impl Transport for Canned { fn post(&self, _: &Value) -> Result<Value, String> { self.0.clone() } }
-    fn reply(text: &str) -> Canned { Canned(Ok(json!({ "content": [{ "type": "text", "text": text }], "usage": { "input_tokens": 120, "output_tokens": 40 } }))) }
-    fn claim() -> Claim { Claim { id: "c".into(), text: "orders carry the fee".into(), evidence: vec![Evidence { source: "s".into(), date: "2026-01-01".into(), quote: "a management fee applies to all orders".into() }] } }
+    impl Transport for Canned {
+        fn post(&self, _: &Value) -> Result<Value, String> {
+            self.0.clone()
+        }
+    }
+    fn reply(text: &str) -> Canned {
+        Canned(Ok(
+            json!({ "content": [{ "type": "text", "text": text }], "usage": { "input_tokens": 120, "output_tokens": 40 } }),
+        ))
+    }
+    fn claim() -> Claim {
+        Claim {
+            id: "c".into(),
+            text: "orders carry the fee".into(),
+            evidence: vec![Evidence {
+                source: "s".into(),
+                date: "2026-01-01".into(),
+                quote: "a management fee applies to all orders".into(),
+            }],
+        }
+    }
 
     #[test]
     fn request_carries_claim_quotes_and_model() {
@@ -141,7 +242,10 @@ mod tests {
         assert_eq!(r["output_config"]["format"]["type"], "json_schema");
         assert_eq!(r["fallbacks"], "default");
         let msg = r["messages"][0]["content"].as_str().unwrap();
-        assert!(msg.contains("orders carry the fee") && msg.contains("a management fee applies to all orders"));
+        assert!(
+            msg.contains("orders carry the fee")
+                && msg.contains("a management fee applies to all orders")
+        );
     }
 
     #[test]
@@ -154,7 +258,10 @@ mod tests {
         assert_eq!(pairs[0].ruling, "supports");
         assert!(j.take_pairs().is_empty());
         let u = j.take_usage();
-        assert_eq!((u.len(), u[0].input_tokens, u[0].route.as_str()), (1, 120, "escalation"));
+        assert_eq!(
+            (u.len(), u[0].input_tokens, u[0].route.as_str()),
+            (1, 120, "escalation")
+        );
     }
 
     #[test]
