@@ -12,13 +12,15 @@ pub struct Quantity {
     pub unit: String,
 }
 
-/// Pull numbers out of text: "PHP 1,250,000", "35%", "2,400 mm", "1.2M". Units are the adjacent token, lower-cased.
+/// Pull numbers out of text: "PHP 1,250,000", "₱1.5M", "$500", "35%", "2,400 mm", "1.2M".
+/// Units are canonical: currencies become "php" / "usd" / "eur", "percent" becomes "%", other units lower-cased.
 pub fn quantities(text: &str) -> Vec<Quantity> {
     let toks: Vec<&str> = text.split_whitespace().collect();
     let mut out = Vec::new();
     for (i, raw) in toks.iter().enumerate() {
         let t = raw.trim_matches(|c: char| c == '(' || c == ')' || c == ',' || c == ';' || c == ':');
         let t = t.trim_end_matches('.');
+        let (cur, t) = strip_currency_prefix(t);
         let (num, suffix) = split_number(t);
         let Some(mut v) = num else { continue };
         let mut unit = suffix.to_lowercase();
@@ -28,6 +30,7 @@ pub fn quantities(text: &str) -> Vec<Quantity> {
             "b" => { v *= 1e9; unit.clear(); }
             _ => {}
         }
+        if let Some(c) = cur { unit = c.into(); }
         if unit.is_empty() {
             if let Some(next) = toks.get(i + 1) {
                 let n = next.trim_matches(|c: char| !c.is_alphanumeric() && c != '%').to_lowercase();
@@ -35,10 +38,9 @@ pub fn quantities(text: &str) -> Vec<Quantity> {
             }
         }
         if unit.is_empty() && i > 0 {
-            let p = toks[i - 1].trim_matches(|c: char| !c.is_alphanumeric()).to_lowercase();
-            if is_currency(&p) { unit = p; }
+            if let Some(c) = currency(toks[i - 1].trim_matches(|c: char| !c.is_alphanumeric() && !"$€₱".contains(c))) { unit = c.into(); }
         }
-        out.push(Quantity { value: v, unit });
+        out.push(Quantity { value: v, unit: canonical_unit(&unit) });
     }
     out
 }
@@ -47,21 +49,41 @@ fn is_length_context(toks: &[&str], i: usize) -> bool {
     toks.get(i + 1).map_or(false, |n| n.eq_ignore_ascii_case("long") || n.eq_ignore_ascii_case("wide"))
 }
 
-fn split_number(t: &str) -> (Option<f64>, &str) {
-    let t = t.strip_prefix('₱').unwrap_or(t);
-    let end = t.find(|c: char| !(c.is_ascii_digit() || c == '.' || c == ',')).unwrap_or(t.len());
-    let (n, rest) = t.split_at(end);
-    if !n.chars().any(|c| c.is_ascii_digit()) { return (None, ""); }
-    (n.replace(',', "").parse().ok(), rest)
+/// Splits a currency marker glued to the number ("₱900", "$5", "US$5", "PHP1,000", "P900").
+fn strip_currency_prefix(t: &str) -> (Option<&'static str>, &str) {
+    let digit = t.find(|c: char| c.is_ascii_digit()).unwrap_or(0);
+    if digit == 0 { return (None, t); }
+    match currency(&t[..digit]) { Some(c) => (Some(c), &t[digit..]), None => (None, t) }
 }
 
-fn is_currency(s: &str) -> bool { matches!(s, "php" | "usd" | "eur" | "p") }
+fn split_number(t: &str) -> (Option<f64>, &str) {
+    let end = t.find(|c: char| !(c.is_ascii_digit() || c == '.' || c == ',')).unwrap_or(t.len());
+    let (n, rest) = t.split_at(end);
+    if !n.starts_with(|c: char| c.is_ascii_digit()) { return (None, ""); }
+    (n.trim_end_matches([',', '.']).replace(',', "").parse().ok(), rest)
+}
+
+/// Canonical currency code for a marker or word, if it is one.
+fn currency(s: &str) -> Option<&'static str> {
+    match s.to_lowercase().as_str() {
+        "php" | "p" | "₱" | "peso" | "pesos" => Some("php"),
+        "usd" | "$" | "us$" | "dollar" | "dollars" => Some("usd"),
+        "eur" | "€" | "euro" | "euros" => Some("eur"),
+        _ => None,
+    }
+}
+
+fn canonical_unit(u: &str) -> String {
+    if let Some(c) = currency(u) { return c.into(); }
+    match u { "percent" => "%".into(), "day" => "days".into(), _ => u.into() }
+}
+
 fn is_unit(s: &str) -> bool {
-    is_currency(s) || matches!(s, "%" | "mm" | "cm" | "m" | "sqm" | "m2" | "kg" | "days" | "day" | "pcs" | "units" | "percent")
+    currency(s).is_some() || matches!(s, "%" | "mm" | "cm" | "m" | "sqm" | "m2" | "kg" | "days" | "day" | "pcs" | "units" | "percent")
 }
 
 fn same(a: &Quantity, b: &Quantity) -> bool {
-    let unit_ok = a.unit == b.unit || a.unit.is_empty() || b.unit.is_empty() || (a.unit == "%" && b.unit == "percent") || (a.unit == "percent" && b.unit == "%");
+    let unit_ok = a.unit == b.unit || a.unit.is_empty() || b.unit.is_empty();
     unit_ok && (a.value - b.value).abs() <= 1e-9 * a.value.abs().max(1.0)
 }
 
@@ -134,6 +156,25 @@ mod tests {
             Quantity { value: 2400.0, unit: "mm".into() },
         ]);
         assert_eq!(quantities("about 1.2M")[0].value, 1_200_000.0);
+    }
+
+    #[test]
+    fn currencies_are_canonical_whatever_the_marker() {
+        let q = |t: &str| quantities(t).into_iter().map(|q| (q.value, q.unit)).collect::<Vec<_>>();
+        for t in ["PHP 1,500,000", "₱1.5M", "PHP1,500,000", "P1,500,000", "1,500,000 pesos", "Php 1.5M"] {
+            assert_eq!(q(t), vec![(1_500_000.0, "php".to_string())], "{t}");
+        }
+        for t in ["$500", "US$ 500", "US$500", "USD 500", "500 dollars"] { assert_eq!(q(t), vec![(500.0, "usd".to_string())], "{t}"); }
+        assert_eq!(q("€20"), vec![(20.0, "eur".to_string())]);
+        assert_eq!(q("35 percent"), vec![(35.0, "%".to_string())]);
+    }
+
+    #[test]
+    fn different_currency_same_number_is_mismatch() {
+        let c = claim("The deposit is USD 5,000", "a deposit of PHP 5,000 is required", "2026-09-01");
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Mismatch);
+        let c = claim("The deposit is ₱5,000", "a deposit of PHP 5,000 is required", "2026-09-01");
+        assert!(check(&c, &pol()).is_none());
     }
 
     #[test]
