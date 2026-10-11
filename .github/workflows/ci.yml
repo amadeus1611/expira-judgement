@@ -14,3 +14,21 @@ jobs:
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Tests
         run: cargo test --workspace --locked
+  mutants:
+    # Every injected fault in the decision-critical crates must be caught by a test (zero missed).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup show active-toolchain || rustup toolchain install
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-mutants
+      - name: Mutation testing (fails on any missed mutant)
+        env:
+          PROPTEST_CASES: "256"
+        run: cargo mutants --in-place --timeout 180 -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutants-out
+          path: mutants.out

@@ -78,3 +78,26 @@ no invented figures; one small tested change per commit.
 ### Next
 - Fit round 2, log it, adopt or reject; then MiniCheck (needs ONNX export) and a Haiku-first escalation cascade measured on teacher pairs.
 - Supply-chain gate (cargo-deny: licences and advisories) and `missing_docs`, as the next engineering ratchets.
+
+## 2026-10-11 (same session) Test rigour, round 2, hand-over to Codex
+
+### Done
+- Property tests (proptest): layer 1 (7 invariants x 2,000 cases), acting statistics, routing.
+- Mutation testing (cargo-mutants): zero missed in ej-core, ej-evidence, ej-judge, ej-delegate, ej-habits; CI job enforces it.
+  It found and we fixed: a claimed day backed by a month-only quote; a figure tolerance loose enough to equate
+  1,000,000,001 with 1,000,000,000; a magic acting bar replaced by `Judge::self_gated()`.
+- Toolchain pinned (1.97.0) after CI's newer clippy diverged.
+- Round 2 (public FEVER + MNLI, same splits): cross-encoder DeBERTa-v3-base rejected (AUROC 0.958 vs 0.956, ~2.6x slower).
+  MoritzLaurer DeBERTa-v3-large mnli-fever-anli-ling-wanli: the 8-bit ONNX build is damaged (MNLI AUROC 0.935) while the
+  fp32 build scores 0.990 on MNLI (median ~358 ms under load). Mean of all calibrated judges at target 0.90: 93/94
+  stated calls right, 0 stress wrong passes, pass bound 0.942 (not yet 0.99).
+- `AGENTS.md` so Codex (or any agent) follows the same rules, skill and standards.
+
+### Open
+- fp32 large model: full cal/test/stress scoring was running at hand-over (scratchpad, not in repo); fit it and its
+  ensembles, measure latency on a quiet machine, log as round 2 in `docs/bench/`.
+- ej-bench lib not yet mutation-tested (376 mutants incl. CLI); add to the CI mutants job once at zero.
+- Standard v1 still not passed; more held-out labelled ledger cases (teacher pairs) remain the main lever.
+
+### Next
+- Round 2 log and decision; then MiniCheck (ONNX export) and a Haiku-first escalation cascade measured on teacher pairs.
