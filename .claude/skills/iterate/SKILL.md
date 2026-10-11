@@ -1,17 +1,27 @@
 ---
 name: iterate
-description: Improve the EXPIRA Judgement decision block, researching open sources (papers, open models, repos, docs) whenever a problem appears, (local judges, calibration, thresholds, layer-1 checks, Claude escalation) against the standard in crates/ej-bench/src/standard.rs. Use whenever a judge, model, threshold, check or escalation setting is added or changed, when new labelled data or teacher pairs arrive, or when the standard is not yet passed.
+description: Continuously improve EXPIRA Judgement - its decision block (layer-1 checks, local judges, calibration, Claude escalation), its cost and usage, its delegation, and its own structure - against the standard in crates/ej-bench/src/standard.rs, researching open academic and open-source work whenever a problem or an opportunity appears. Use whenever a judge, model, threshold, check or escalation setting is added or changed, when new labelled data or teacher pairs arrive, or when the standard is not yet passed.
 ---
 
-# Iterate on the decision block
+# Iterate: always optimise
 
-The loop improves the repo's harness (checks, judges, calibration, data, docs), never a model's weights in place.
+The loop improves the repo's harness (code, checks, judges, calibration, data, routing, docs, structure), never a model's
+weights in place. It runs on every change to these systems and whenever a session has spare capacity: there is always a
+next gate to tighten, a cost to cut, or a slower path to remove. Out-of-the-box changes (a different architecture, a new
+layer, removing a layer) are in scope when measurement supports them.
+
+What is measured, all from logs in this repo:
+- quality: the standard's gates (`ej-bench fit`);
+- cost and usage: `usage.jsonl` (tokens, cache hits, latency, route per Claude call) priced with `config/prices.json`;
+  the number to drive down is cost per settled claim and per completed delegated task, never cost per request;
+- delegation: the tier log (attempts and gate passes per task kind and tier) feeding `ej-delegate/src/cost.rs`.
+Models: Claude only, Haiku 5.5 / Sonnet 5.5 / Opus 5.5 (`config/roster.json`, enforced in code). No other vendor's models.
 
 1. **Baseline.** Score every candidate judge on the frozen splits and fit:
    `ej-bench score <split>.jsonl --out <split>.<judge>.scores ...` then
    `ej-bench fit --cal <cal scores> --test <test scores> --stress <stress scores> --write-policy policy.json`.
    Exit 0 means at least one configuration passes the standard. Record the verdicts.
-2. **Find the binding gate.** Read which gate fails (`pass_lower_bound`, `block_lower_bound`, `stress_wrong_passes`, `max_ece`, `min_coverage`, `max_p95_ms`) and why: too few held-out cases, a failure class (figures, negation, dates), a slow model, poor ranking (AUROC).
+2. **Find the binding gate or the biggest cost.** Read which gate fails (`pass_lower_bound`, `block_lower_bound`, `stress_wrong_passes`, `max_ece`, `min_coverage`, `max_p95_ms`) and why: too few held-out cases, a failure class (figures, negation, dates), a slow model, poor ranking (AUROC).
 3. **Research, every time a problem shows up.** A failing gate, a failing test, a judge error class, a slow path or a surprise in the numbers triggers external research before any fix. Search as widely as the problem needs, open sources first:
    - papers and preprints (arXiv, ACL Anthology, OpenReview), with their code;
    - open model hubs (Hugging Face model and dataset cards, eval results), open-source repos (GitHub: issues, benchmarks, changelogs);
@@ -23,9 +33,11 @@ The loop improves the repo's harness (checks, judges, calibration, data, docs), 
    - layer 1: a deterministic check that removes a failure class before any model sees it;
    - a judge: a new model (ONNX in Rust where possible), a different question wording, an ensemble;
    - fitting: target, minimum sample, calibration method;
-   - escalation: Claude model, effort, prompt, schema.
-5. **Re-measure on the same splits.** Never fit on the test split. Never tune against the stress set and then report it as unseen; add a fresh stress class instead.
-6. **Keep or revert.** Keep only if the standard verdict improves, or with the same verdict the coverage at the same risk rises, or latency falls with nothing else worse. Otherwise revert and log why.
+   - escalation: Claude model (Haiku before Sonnet before Opus where measured accuracy allows), effort, prompt, schema;
+   - cost: prompt caching, the Batch API for work nobody waits on, fewer or shorter calls, tier start points;
+   - structure: merge, split or remove crates, layers or steps when the numbers say so.
+5. **Re-measure on the same splits and the same usage replay.** Never fit on the test split. Never tune against the stress set and then report it as unseen; add a fresh stress class instead.
+6. **Keep or revert.** Keep only if the standard verdict improves, or with the same verdict the coverage at the same risk rises, or cost per settled claim or latency falls with nothing else worse. Otherwise revert and log why.
 7. **Log.** Append a dated run to `docs/bench/` (data, machine, commands, every gate value) and a section to `HANDOFF.md`.
 
 If the standard cannot be met with what is available, say exactly which gate binds and what would move it (usually more held-out labelled cases); do not lower a bar to pass.
