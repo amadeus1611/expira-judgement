@@ -118,6 +118,31 @@ mod tests {
     }
 
     #[test]
+    fn every_ruling_word_is_read() {
+        for (w, r) in [
+            ("supports", Ruling::Supports),
+            ("contradicts", Ruling::Contradicts),
+            ("unsure", Ruling::Unsure),
+        ] {
+            assert_eq!(ruling_of(&json!({ "ruling": w })), Ok(r));
+        }
+        assert!(ruling_of(&json!({ "ruling": "maybe" })).is_err());
+        assert!(ruling_of(&json!({})).is_err());
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn drop_stops_the_child() {
+        let j = CommandJudge::spawn(&["sleep".into(), "30".into()]).unwrap();
+        let pid = j.io.lock().unwrap().0.id();
+        let proc_dir = std::path::PathBuf::from(format!("/proc/{pid}"));
+        assert!(proc_dir.exists());
+        drop(j);
+        // Killed and reaped: the process entry is gone at once.
+        assert!(!proc_dir.exists());
+    }
+
+    #[test]
     fn dead_child_is_unsure() {
         let j = CommandJudge::spawn(&["true".into()]).unwrap();
         let c = Claim {

@@ -33,7 +33,7 @@ key is needed to develop or test it.
 **Hard rules (also in AGENTS.md):** never lower a bar in `standard.rs`, delete or weaken a test, edit frozen data, or fit
 on test data; work on a branch and open a PR with measured before/after; before every push run `cargo fmt --all --
 --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`, and for the decision crates
-`cargo mutants -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits` (zero missed); keep the toolchain pin
+`cargo mutants -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits -p ej-bench --exclude crates/ej-bench/src/main.rs` (zero missed); keep the toolchain pin
 unless you are deliberately upgrading it and fixing every new lint in the same change; fresh code only (nothing copied
 from gssc-system/, client data, memory or pricing); no invented figures; claims about models need measured numbers.
 
@@ -47,7 +47,7 @@ ranked worst and passes many negated claims; that finding is reported, not acted
    a user's subscription CLI (e.g. `claude -p --output-format json`, `codex exec`), and move the allowed-model list from
    `ej_delegate::ALLOWED_MODELS` into `config/roster.json`, keeping my Claude-only list (Haiku 5.5, Sonnet 5.5,
    Opus 5.5) as the shipped default with a test that pins it. Tests that kill every mutant.
-2. Bring `ej-bench` (lib) to zero missed mutants and add it to the CI mutants job.
+2. Done 2026-10-11: `ej-bench` (lib) is at zero missed mutants and in the CI mutants job; keep it there.
 3. Bench: re-measure large fp32 latency on a quiet machine; try MiniCheck (export to ONNX), a calibrated int8 large
    model, and layer-1 negation handling in front of the judges (all stress wrong passes so far are negations).
 4. Collect real labelled ledger cases (teacher pairs from escalation) to make the 0.99 bound reachable.

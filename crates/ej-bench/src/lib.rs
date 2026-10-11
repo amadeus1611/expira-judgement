@@ -160,6 +160,56 @@ mod tests {
     }
 
     #[test]
+    fn percentile_index_is_nearest_rank() {
+        assert_eq!(percentile_index(5, 0.5), 2);
+        assert_eq!(percentile_index(5, 0.95), 4);
+        assert_eq!(percentile_index(11, 0.2), 2);
+        assert_eq!(percentile_index(1, 0.95), 0);
+        assert_eq!(percentile_index(5, 7.0), 4);
+    }
+
+    #[test]
+    fn wrong_acts_are_not_counted_right_and_unsure_share_is_exact() {
+        // Three acted (one right), one escalated: accuracy 1/3, unsure 1/4.
+        let cases = load_cases(concat!(
+            "{\"claim\":\"a\",\"quote\":\"yes\",\"label\":\"supports\"}\n",
+            "{\"claim\":\"b\",\"quote\":\"yes\",\"label\":\"contradicts\"}\n",
+            "{\"claim\":\"c\",\"quote\":\"yes\",\"label\":\"unsure\"}\n",
+            "{\"claim\":\"d\",\"quote\":\"-\",\"label\":\"unsure\"}\n",
+        ))
+        .unwrap();
+        let r = run("kw", &Keyword, &cases, Bars::default());
+        assert_eq!((r.acted, r.correct_when_acting), (3, 1));
+        assert!((r.unsure_rate - 0.25).abs() < 1e-12);
+    }
+
+    /// Takes a fixed 5 ms per ruling.
+    struct Slow;
+    impl Judge for Slow {
+        fn layer(&self) -> Layer {
+            Layer::LocalJudge
+        }
+        fn rule(&self, _: &Claim) -> (Ruling, f32, String) {
+            std::thread::sleep(std::time::Duration::from_millis(5));
+            (Ruling::Unsure, 0.0, String::new())
+        }
+    }
+
+    #[test]
+    fn latency_is_reported_in_milliseconds() {
+        let case = Case {
+            claim: "c".into(),
+            quote: "q".into(),
+            label: "unsure".into(),
+        };
+        let r = run("slow", &Slow, &[case.clone(), case], Bars::default());
+        assert!(
+            (5.0..500.0).contains(&r.latency_ms_p50) && (5.0..500.0).contains(&r.latency_ms_p95),
+            "{r:?}"
+        );
+    }
+
+    #[test]
     fn teacher_pairs_load_as_cases() {
         let c = load_cases(
             "{\"claim\":\"a\",\"quote\":\"q\",\"ruling\":\"supports\",\"reason\":\"r\"}",

@@ -106,3 +106,24 @@ no invented figures; one small tested change per commit.
 
 ### Next
 - Pluggable escalation transport (subscription CLI) and configurable allowed-model list; then then MiniCheck (ONNX export) and a Haiku-first escalation cascade measured on teacher pairs.
+
+## 2026-10-11 (Claude, branch claude/ej-ratchets) Engineering ratchets
+
+### Done
+- `ej-bench` lib at zero missed mutants (CLI `main.rs` excluded): 78 missed + 1 timeout before, 0 after. `Platt::fit`
+  rewritten with bounded loops (fixed Newton iterations, step chosen from a fixed ladder including 0, so loss never rises
+  and no mutant can loop forever); new tests check the Newton direction against finite differences, the two-point
+  optimum, loss/logit/apply hand values, AUROC over all pairs, ECE bins, selective coverage, percentile ranks, latency
+  units, every command-judge ruling word, child cleanup on drop, and the block gate when a judge never blocks.
+  Added to the CI mutants job, `AGENTS.md` and `docs/handoffs/codex-start.md`.
+- Supply-chain gate: `deny.toml` + `cargo-deny-action@v2` in the CI `check` job (note: `docs/research/2026-10-11-supply-chain.md`).
+  Licences: MIT, Apache-2.0, BSD-3-Clause, ISC, Unicode-3.0, CDLA-Permissive-2.0. No vulnerabilities; RUSTSEC-2024-0436
+  (paste unmaintained, via tokenizers) ignored with its reason.
+- `missing_docs = "deny"`: every public item in every crate documented.
+
+### Open
+- The paste advisory ignore should go when tokenizers drops paste.
+- Duplicate crate versions only warn (base64, getrandom, r-efi, rand_core, smallvec, syn, windows-sys).
+
+### Next
+- Tighten `bans.multiple-versions` to deny once the duplicates are gone; consider cargo-llvm-cov as the next ratchet.

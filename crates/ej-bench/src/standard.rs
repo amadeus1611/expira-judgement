@@ -184,6 +184,20 @@ mod tests {
     }
 
     #[test]
+    fn block_gate_passes_when_never_blocking_and_fails_on_a_weak_bound() {
+        let ev = |t| Evidence {
+            test: t,
+            test_ece: 0.03,
+            stress: None,
+            p95_ms: None,
+        };
+        let never_blocks = sel(500, 500, 0, 0, 1000);
+        assert!(check("j", &V1, &ev(&never_blocks)).gates[1].passed);
+        let weak = sel(500, 500, 10, 5, 1000);
+        assert!(!check("j", &V1, &ev(&weak)).gates[1].passed);
+    }
+
+    #[test]
     fn unmeasured_gates_fail() {
         let t = sel(500, 500, 300, 299, 1000);
         let v = check(

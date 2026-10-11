@@ -76,40 +76,51 @@ pub struct Platt {
 }
 impl Platt {
     /// Fits `a` and `b` to `xs` by minimising log loss (damped Newton steps).
+    ///
+    /// Every loop is bounded: a fixed number of Newton iterations, and each step length is the best of a fixed ladder
+    /// (1, 1/2, ..., 2^-19, and 0 = stay), so the loss never goes up and no input can make the fit loop forever.
     #[must_use]
     pub fn fit(xs: &[Scored]) -> Platt {
         let (mut a, mut b) = (1.0, 0.0);
-        for _ in 0..100 {
-            let (mut ga, mut gb, mut haa, mut hab, mut hbb) = (0.0, 0.0, 1e-9, 0.0, 1e-9);
-            for s in xs {
-                let x = logit(s.p);
-                let q = sigmoid(a * x + b);
-                let r = q - f64::from(u8::from(s.stated));
-                let w = q * (1.0 - q);
-                ga += r * x;
-                gb += r;
-                haa += w * x * x;
-                hab += w * x;
-                hbb += w;
-            }
-            let det = haa * hbb - hab * hab;
-            if det.abs() < 1e-12 {
-                break;
-            }
-            let (da, db) = ((hbb * ga - hab * gb) / det, (haa * gb - hab * ga) / det);
-            // Halve the Newton step until the loss goes down: full steps overshoot on very over-confident scores.
-            let (base, mut step) = (Self::loss(xs, a, b), 1.0);
-            while step > 1e-6 && Self::loss(xs, a - step * da, b - step * db) > base {
-                step /= 2.0;
-            }
+        for _ in 0..NEWTON_ITERATIONS {
+            let (da, db) = Self::newton_direction(xs, a, b);
+            let loss_at = |step: f64| Self::loss(xs, a - step * da, b - step * db);
+            let step = (0..=STEP_HALVINGS)
+                .map(|k| {
+                    if k == STEP_HALVINGS {
+                        0.0
+                    } else {
+                        0.5f64.powi(k)
+                    }
+                })
+                .map(|step| (loss_at(step), step))
+                .min_by(|x, y| x.0.total_cmp(&y.0))
+                .map_or(0.0, |(_, step)| step);
             a -= step * da;
             b -= step * db;
-            if (step * da).abs() + (step * db).abs() < 1e-10 {
-                break;
-            }
         }
         Platt { a, b }
     }
+
+    /// The Newton step H^-1 g for the log loss at (a, b). A tiny ridge on the diagonal keeps H positive definite
+    /// (det >= 1e-18 > 0 by Cauchy-Schwarz), so the solve never divides by zero.
+    fn newton_direction(xs: &[Scored], a: f64, b: f64) -> (f64, f64) {
+        let (mut ga, mut gb, mut haa, mut hab, mut hbb) = (0.0, 0.0, 1e-9, 0.0, 1e-9);
+        for s in xs {
+            let x = logit(s.p);
+            let q = sigmoid(a * x + b);
+            let r = q - f64::from(u8::from(s.stated));
+            let w = q * (1.0 - q);
+            ga += r * x;
+            gb += r;
+            haa += w * x * x;
+            hab += w * x;
+            hbb += w;
+        }
+        let det = haa * hbb - hab * hab;
+        ((hbb * ga - hab * gb) / det, (haa * gb - hab * ga) / det)
+    }
+
     fn loss(xs: &[Scored], a: f64, b: f64) -> f64 {
         xs.iter()
             .map(|s| {
@@ -122,12 +133,18 @@ impl Platt {
             })
             .sum()
     }
+
     /// The calibrated probability for a raw score `p`.
     #[must_use]
     pub fn apply(&self, p: f64) -> f64 {
         sigmoid(self.a * logit(p) + self.b)
     }
 }
+
+/// Newton iterations in [`Platt::fit`]; the loss is convex in (a, b), so this is far more than convergence needs.
+const NEWTON_ITERATIONS: usize = 100;
+/// Step lengths tried per iteration: 1, 1/2, ..., 2^-(STEP_HALVINGS - 1), then 0.
+const STEP_HALVINGS: i32 = 20;
 
 /// Act "stated" when p >= yes, "not stated" when p <= no, otherwise escalate.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize)]
@@ -280,6 +297,122 @@ mod tests {
         assert!(
             (f.apply(0.99) - 0.70).abs() < 0.01 && (f.apply(0.01) - 0.30).abs() < 0.01,
             "{f:?}"
+        );
+    }
+
+    #[test]
+    fn logit_and_apply_match_hand_values() {
+        assert!((logit(0.8) - 4f64.ln()).abs() < 1e-12);
+        assert!(logit(0.5).abs() < 1e-12);
+        assert!((logit(0.0) - (1e-6f64 / (1.0 - 1e-6)).ln()).abs() < 1e-9);
+        assert!((logit(1.0) + (1e-6f64 / (1.0 - 1e-6)).ln()).abs() < 1e-9);
+        let f = Platt { a: 2.0, b: 0.5 };
+        let want = 1.0 / (1.0 + (-(2.0 * 4f64.ln() + 0.5)).exp());
+        assert!((f.apply(0.8) - want).abs() < 1e-12);
+    }
+
+    #[test]
+    fn loss_matches_hand_value_and_stays_finite() {
+        let sig = |z: f64| 1.0 / (1.0 + (-z).exp());
+        let xs = [s(0.8, true), s(0.2, false)];
+        let want = -sig(4f64.ln() + 0.5).ln() - (1.0 - sig(-(4f64.ln()) + 0.5)).ln();
+        assert!((Platt::loss(&xs, 1.0, 0.5) - want).abs() < 1e-12);
+        // A saturated wrong call is clamped to q = 1 - 1e-12, so its loss is large but finite.
+        let l = Platt::loss(&[s(1.0, false)], 1000.0, 0.0);
+        assert!((l + (1e-12f64).ln()).abs() < 1e-3, "{l}");
+    }
+
+    #[test]
+    fn newton_direction_matches_finite_differences() {
+        let xs = [
+            s(0.9, true),
+            s(0.7, false),
+            s(0.4, true),
+            s(0.2, false),
+            s(0.6, true),
+        ];
+        let (a, b, h) = (0.7, -0.3, 1e-4);
+        let l = |a: f64, b: f64| Platt::loss(&xs, a, b);
+        let ga = (l(a + h, b) - l(a - h, b)) / (2.0 * h);
+        let gb = (l(a, b + h) - l(a, b - h)) / (2.0 * h);
+        let haa = (l(a + h, b) - 2.0 * l(a, b) + l(a - h, b)) / (h * h);
+        let hbb = (l(a, b + h) - 2.0 * l(a, b) + l(a, b - h)) / (h * h);
+        let hab =
+            (l(a + h, b + h) - l(a + h, b - h) - l(a - h, b + h) + l(a - h, b - h)) / (4.0 * h * h);
+        let det = haa * hbb - hab * hab;
+        let (wa, wb) = ((hbb * ga - hab * gb) / det, (haa * gb - hab * ga) / det);
+        let (da, db) = Platt::newton_direction(&xs, a, b);
+        assert!(
+            (da - wa).abs() < 1e-3 && (db - wb).abs() < 1e-3,
+            "{da} {db} vs {wa} {wb}"
+        );
+    }
+
+    #[test]
+    fn fit_reaches_the_two_point_optimum() {
+        // Two distinct scores: the log-loss optimum reproduces each score's observed rate exactly (0.7 and 0.2).
+        let mut xs = Vec::new();
+        for i in 0..10 {
+            xs.push(s(0.8, i < 7));
+            xs.push(s(0.3, i < 2));
+        }
+        let f = Platt::fit(&xs);
+        assert!(
+            (f.apply(0.8) - 0.7).abs() < 1e-6 && (f.apply(0.3) - 0.2).abs() < 1e-6,
+            "{f:?}"
+        );
+        // No data: nothing to move towards, the identity map stays.
+        assert_eq!(Platt::fit(&[]), Platt { a: 1.0, b: 0.0 });
+    }
+
+    #[test]
+    fn auroc_counts_all_pairs_and_ece_bins() {
+        // 2 stated x 1 unstated: one win, one loss.
+        assert_eq!(
+            auroc(&[s(0.9, true), s(0.1, true), s(0.5, false)]),
+            Some(0.5)
+        );
+        assert_eq!(
+            auroc(&[s(0.9, true), s(0.6, true), s(0.5, false)]),
+            Some(1.0)
+        );
+        // 2 x 2: three wins of four pairs.
+        assert_eq!(
+            auroc(&[s(0.9, true), s(0.1, true), s(0.5, false), s(0.05, false)]),
+            Some(0.75)
+        );
+        assert_eq!(bin_index(0.0, 10), 0);
+        assert_eq!(bin_index(0.25, 10), 2);
+        assert_eq!(bin_index(0.55, 10), 5);
+        assert_eq!(bin_index(1.0, 10), 9);
+        assert_eq!(bin_index(f64::NAN, 10), 0);
+        // Two bins that each look calibrated on their own, but not if pooled.
+        let xs = [s(0.95, true), s(0.05, false)];
+        assert!((ece(&xs, 10) - 0.05).abs() < 1e-12);
+        assert!(ece(&[], 10).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn selective_coverage_and_none_when_idle() {
+        let t = Thresholds { yes: 0.8, no: 0.2 };
+        let r = selective(
+            &[s(0.9, true), s(0.5, true), s(0.5, false), s(0.1, true)],
+            t,
+        );
+        assert!((r.coverage - 0.5).abs() < 1e-12);
+        assert_eq!(r.accuracy_when_acting, Some(0.5));
+        let idle = selective(&[s(0.5, true)], t);
+        assert_eq!((idle.acted, idle.accuracy_when_acting), (0, None));
+        assert!(selective(&[], t).coverage.abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn no_side_never_reuses_the_yes_threshold() {
+        // Target 0 accepts any side with one case: yes takes the lowest score, so no must stay below it (none left).
+        let t = fit_thresholds(&[s(0.1, false), s(0.9, true)], 0.0, 1);
+        assert!(
+            (t.yes - 0.1).abs() < f64::EPSILON && t.no == f64::NEG_INFINITY,
+            "{t:?}"
         );
     }
 
