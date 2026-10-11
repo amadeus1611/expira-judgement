@@ -20,6 +20,84 @@ pub struct Quantity {
 pub fn quantities(text: &str) -> Vec<Quantity> {
     let toks = range_tokens(text);
     let toks: Vec<&str> = toks.iter().map(String::as_str).collect();
+    located(&toks).into_iter().map(|(_, q)| q).collect()
+}
+
+/// How a claim states a figure: exactly, or as a bound ("more than 64", "before 19 October 1984").
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Cmp {
+    /// The figure itself.
+    Eq,
+    /// Strictly above: more than, over, above, greater than, exceeding, after.
+    Gt,
+    /// Strictly below: less than, fewer than, under, below, before.
+    Lt,
+    /// At least.
+    Ge,
+    /// At most.
+    Le,
+}
+
+impl Cmp {
+    /// Does `x` satisfy the bound `bound`?
+    #[must_use]
+    pub fn holds(self, x: f64, bound: f64) -> bool {
+        match self {
+            Cmp::Eq => (x - bound).abs() <= 1e-12 * bound.abs().max(1.0),
+            Cmp::Gt => x > bound,
+            Cmp::Lt => x < bound,
+            Cmp::Ge => x >= bound,
+            Cmp::Le => x <= bound,
+        }
+    }
+}
+
+/// Quantities with the comparison the text puts in front of each (`Cmp::Eq` when none), reading back over currency
+/// markers ("less than $ 0.4 million").
+#[must_use]
+pub fn bounded_quantities(text: &str) -> Vec<(Quantity, Cmp)> {
+    let toks = range_tokens(text);
+    let toks: Vec<&str> = toks.iter().map(String::as_str).collect();
+    let word = |i: usize| {
+        toks[i]
+            .trim_matches(|c: char| !c.is_alphanumeric())
+            .to_lowercase()
+    };
+    located(&toks)
+        .into_iter()
+        .map(|(i, q)| {
+            let mut j = i;
+            while j > 0
+                && currency(
+                    toks[j - 1].trim_matches(|c: char| !c.is_alphanumeric() && !"$€₱".contains(c)),
+                )
+                .is_some()
+            {
+                j -= 1;
+            }
+            let one = if j >= 1 { word(j - 1) } else { String::new() };
+            let two = if j >= 2 {
+                format!("{} {one}", word(j - 2))
+            } else {
+                String::new()
+            };
+            let cmp = match (two.as_str(), one.as_str()) {
+                ("more than" | "greater than" | "higher than" | "larger than", _)
+                | (_, "over" | "above" | "exceeding" | "after") => Cmp::Gt,
+                ("less than" | "fewer than" | "lower than" | "smaller than", _)
+                | (_, "under" | "below" | "before") => Cmp::Lt,
+                ("at least", _) => Cmp::Ge,
+                ("at most", _) => Cmp::Le,
+                _ => Cmp::Eq,
+            };
+            (q, cmp)
+        })
+        .collect()
+}
+
+/// Quantities with the token index each starts at, in text order.
+fn located(toks: &[&str]) -> Vec<(usize, Quantity)> {
+    let toks = toks.to_vec();
     let (mut out, used) = dates(&toks);
     for (i, raw) in toks.iter().enumerate() {
         if used[i] {
@@ -96,7 +174,7 @@ pub fn quantities(text: &str) -> Vec<Quantity> {
         }
     }
     out.sort_by_key(|(i, _)| *i);
-    out.into_iter().map(|(_, q)| q).collect()
+    out
 }
 
 fn month(t: &str) -> Option<i64> {
@@ -310,6 +388,30 @@ fn is_unit(s: &str) -> bool {
         )
 }
 
+/// Can a bound on `want` be tested against `have`: the same kind of thing (dates with dates, months with months,
+/// matching units, or one side unit-less)?
+fn comparable(want: &Quantity, have: &Quantity) -> bool {
+    match (want.unit.as_str(), have.unit.as_str()) {
+        ("date" | "month", u) | (u, "date" | "month") => want.unit == u && have.unit == want.unit,
+        (a, b) => a == b || a.is_empty() || b.is_empty(),
+    }
+}
+
+/// A bare year in the claim ("born in 2014") is backed by a date or month in that year ("June 2014").
+fn year_of(want: &Quantity, have: &Quantity) -> bool {
+    #[allow(clippy::cast_possible_truncation)]
+    let whole = |x: f64| x.round() as i64;
+    let year = whole(want.value);
+    want.unit.is_empty()
+        && (want.value - want.value.round()).abs() < f64::EPSILON
+        && (1000..=2999).contains(&year)
+        && match have.unit.as_str() {
+            "date" => whole(have.value) / 10_000 == year,
+            "month" => whole(have.value) / 100 == year,
+            _ => false,
+        }
+}
+
 /// Does quote quantity `have` back claim quantity `want`?
 fn same(want: &Quantity, have: &Quantity) -> bool {
     // Dates (YYYYMMDD) and months (YYYYMM) are whole numbers held in f64; compare them as integers.
@@ -407,11 +509,25 @@ pub fn check(claim: &Claim, policy: &Policy) -> Option<Finding> {
             );
         }
     }
-    let want = quantities(&claim.text);
+    let want = bounded_quantities(&claim.text);
     let have: Vec<Quantity> = usable.iter().flat_map(|e| quantities(&e.quote)).collect();
+    // A figure stated exactly must be in a quote. A bound ("more than 64") is met by a quote figure of the same kind that
+    // satisfies it; when none does, the claim may still follow in a way code cannot see ("more than 100" from a ban on
+    // "more than 50"), so it escalates instead of being called a mismatch. A bare year is met by a date or month in it.
+    let mut unproven = false;
     let missing: Vec<&Quantity> = want
         .iter()
-        .filter(|q| !have.iter().any(|h| same(q, h)))
+        .filter(|(q, cmp)| {
+            if *cmp == Cmp::Eq {
+                return !have.iter().any(|h| same(q, h) || year_of(q, h));
+            }
+            let met = have
+                .iter()
+                .any(|h| comparable(q, h) && cmp.holds(h.value, q.value));
+            unproven |= !met;
+            false
+        })
+        .map(|(q, _)| q)
         .collect();
     if !missing.is_empty() {
         let list = missing
@@ -424,6 +540,9 @@ pub fn check(claim: &Claim, policy: &Policy) -> Option<Finding> {
             1.0,
             format!("figures not in any quote: {list}"),
         );
+    }
+    if unproven {
+        return None;
     }
     if usable
         .iter()
@@ -1029,6 +1148,152 @@ mod tests {
             &["Iloilo is lovely", "so is Cebu."]
         ));
         assert!(names_in_quotes("no names here", &[]));
+    }
+
+    #[test]
+    fn bounds_are_read_from_the_words_before_a_figure() {
+        let b = |t: &str| {
+            bounded_quantities(t)
+                .into_iter()
+                .map(|(_, c)| c)
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(b("more than 64 yards"), vec![Cmp::Gt]);
+        assert_eq!(b("fewer than 127 critics"), vec![Cmp::Lt]);
+        assert_eq!(b("less than $ 0.4 million"), vec![Cmp::Lt]);
+        assert_eq!(b("at least 3 and at most 9"), vec![Cmp::Ge, Cmp::Le]);
+        assert_eq!(b("born before October 19th 1984"), vec![Cmp::Lt]);
+        assert_eq!(
+            b("over 20 and after 2015, exactly 7"),
+            vec![Cmp::Gt, Cmp::Gt, Cmp::Eq]
+        );
+        assert!(
+            Cmp::Eq.holds(5.0, 5.0)
+                && !Cmp::Eq.holds(5.0, 6.0)
+                && Cmp::Ge.holds(5.0, 5.0)
+                && !Cmp::Gt.holds(5.0, 5.0)
+        );
+        assert!(
+            Cmp::Le.holds(5.0, 5.0)
+                && !Cmp::Lt.holds(5.0, 5.0)
+                && Cmp::Lt.holds(4.0, 5.0)
+                && !Cmp::Le.holds(6.0, 5.0)
+        );
+    }
+
+    #[test]
+    fn bounds_met_by_the_quote_are_not_mismatches() {
+        // Met: grey zone for the judges (code proved the figure, not the rest of the sentence).
+        for (c, q) in [
+            (
+                "Tucker made a field goal of more than 64 yards",
+                "The longest field goal made was 65 yards by Justin Tucker",
+            ),
+            (
+                "Blended was rated based on fewer than 127 critics",
+                "it holds a rating based on 126 critics",
+            ),
+            (
+                "Thundercat was born before October 19th 1984",
+                "Stephen Bruner ( born October 18 , 1984 ) is Thundercat",
+            ),
+            (
+                "Gloria Bell grossed less than $ 0.4 million elsewhere",
+                "Gloria Bell grossed $ 0.3 million in other territories",
+            ),
+        ] {
+            assert!(check(&claim(c, q, "2026-09-01"), &pol()).is_none(), "{c}");
+        }
+        // Not met by any quote figure: escalate, never a certain mismatch (the claim may follow indirectly).
+        let c = claim(
+            "Gatherings of more than 100 people are banned",
+            "the government banned gatherings of more than 50 people",
+            "2026-09-01",
+        );
+        assert!(check(&c, &pol()).is_none());
+        // An exact figure that is missing is still a mismatch, even next to a met bound.
+        let c = claim(
+            "More than 20 critics gave it 45 %",
+            "an approval rating of 48 % , based on 21 critics",
+            "2026-09-01",
+        );
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Mismatch);
+        // A bound on a different kind of figure is not met by it.
+        let c = claim("It cost more than 100 USD", "it cost 200 EUR", "2026-09-01");
+        assert!(check(&c, &pol()).is_none());
+        assert!(!comparable(
+            &Quantity {
+                value: 1.0,
+                unit: "date".into()
+            },
+            &Quantity {
+                value: 1.0,
+                unit: String::new()
+            }
+        ));
+        assert!(comparable(
+            &Quantity {
+                value: 1.0,
+                unit: "usd".into()
+            },
+            &Quantity {
+                value: 1.0,
+                unit: String::new()
+            }
+        ));
+    }
+
+    #[test]
+    fn a_bare_year_is_backed_by_a_date_or_month_in_it() {
+        let c = claim(
+            "Showalter's twins were born in 2014",
+            "In June 2014 , his wife gave birth to twins.",
+            "2026-09-01",
+        );
+        assert!(check(&c, &pol()).is_none());
+        let c = claim(
+            "Showalter's twins were born in 2015",
+            "In June 2014 , his wife gave birth to twins.",
+            "2026-09-01",
+        );
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Mismatch);
+        let c = claim(
+            "It opened in 2026",
+            "It opened on 2026-09-01.",
+            "2026-09-02",
+        );
+        assert!(check(&c, &pol()).is_none());
+        // Not a year: a decimal, or out of range.
+        assert!(!year_of(
+            &Quantity {
+                value: 2014.5,
+                unit: String::new()
+            },
+            &Quantity {
+                value: 201_406.0,
+                unit: "month".into()
+            }
+        ));
+        assert!(!year_of(
+            &Quantity {
+                value: 999.0,
+                unit: String::new()
+            },
+            &Quantity {
+                value: 99_906.0,
+                unit: "month".into()
+            }
+        ));
+        assert!(!year_of(
+            &Quantity {
+                value: 2014.0,
+                unit: "usd".into()
+            },
+            &Quantity {
+                value: 201_406.0,
+                unit: "month".into()
+            }
+        ));
     }
 
     #[test]

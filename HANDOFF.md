@@ -134,3 +134,21 @@ from adopted habits (`docs/HABITS.md`).
 ### Next
 - Fit and log round 3 in `docs/bench/2026-10-11-round3-general-99.md`; adopt the escalation design that proves 0.99.
 - Rust `CommandTransport` for `ej check` using the same CLI flags as `tools/escalation_bench.py`.
+
+## 2026-10-11 (hand-over to Codex) Round 3 stopped at the owner's usage limit
+
+### Done
+- Round 3 logged: `docs/bench/2026-10-11-round3-general-99.md` (VitaminC; xsmall 0.9336 -> 0.9438 with the name rule;
+  Haiku 277/289, Opus 185/194, agreement 164/171 on partial runs; cost per call; label-noise and cascade findings).
+- Overlap placeholder removed from the `ej check` cascade (it passed 9 of 82 unsupported claims); retired habit recorded.
+- Layer 1 reads bounds ("more than", "fewer than", "before", "at least" ...; `Cmp`, `bounded_quantities`) and bare years;
+  a bound not met by any quote figure escalates instead of being a certain mismatch. False "mismatch" on true claims in
+  the 1,000-row sample: 145 -> 33; "backed" unchanged 13/13. 100 tests pass.
+- MiniCheck ONNX export verified against PyTorch (1e-6); scores weakly on a 40-row sample.
+- All background runs stopped to save the owner's usage; agent work saved on branch `claude/ej-ratchets` (2 finished
+  commits + 1 WIP commit, unverified).
+- Cold-start prompt for Codex rewritten: `docs/handoffs/codex-start.md`.
+
+### Open / Next
+- See `docs/handoffs/codex-start.md` section 4 (ordered next steps). Mutation testing of the new layer-1 bound and
+  name-rule code was not run yet; run it first (`cargo mutants -p ej-evidence -p ej-judge`).
