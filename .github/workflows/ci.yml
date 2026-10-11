@@ -2,6 +2,10 @@ name: ci
 on:
   push:
   pull_request:
+# A newer push to the same ref supersedes the running checks.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -26,7 +30,8 @@ jobs:
       - name: Mutation testing (fails on any missed mutant)
         env:
           PROPTEST_CASES: "256"
-        run: cargo mutants --in-place --timeout 180 -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits
+        # Parallel copies; the test suite takes ~2 s, so 60 s only ever trips on mutants that loop forever (counted as caught).
+        run: cargo mutants -j 4 --timeout 60 -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits
       - uses: actions/upload-artifact@v4
         if: always()
         with:
