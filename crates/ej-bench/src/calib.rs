@@ -139,7 +139,9 @@ pub fn wilson_lower(k: usize, n: usize, z: f64) -> f64 {
     }
     let (n, p) = (n as f64, k as f64 / n as f64);
     let d = 1.0 + z * z / n;
-    ((p + z * z / (2.0 * n)) - z * ((p * (1.0 - p) / n) + z * z / (4.0 * n * n)).sqrt()) / d
+    // At k = 0 the exact bound is 0; rounding can land a hair below it, so clamp to the valid range.
+    (((p + z * z / (2.0 * n)) - z * ((p * (1.0 - p) / n) + z * z / (4.0 * n * n)).sqrt()) / d)
+        .clamp(0.0, 1.0)
 }
 
 pub const Z95: f64 = 1.96;
@@ -267,6 +269,9 @@ mod tests {
         assert!((wilson_lower(10, 10, Z95) - 0.7225).abs() < 1e-3); // 10/10 right only proves ~72%
         assert!(wilson_lower(1000, 1000, Z95) > 0.996);
         assert!(wilson_lower(0, 0, Z95).abs() < f64::EPSILON);
+        // Found by the property test in CI: rounding made the k = 0 bound slightly negative.
+        let lb = wilson_lower(0, 303, Z95);
+        assert!((0.0..=1e-12).contains(&lb), "{lb}");
     }
 
     #[test]
