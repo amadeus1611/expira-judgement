@@ -377,6 +377,7 @@ dependencies = [
  "ej-evidence",
  "ej-habits",
  "ej-judge",
+ "ej-nli",
  "serde",
  "serde_json",
  "ureq",

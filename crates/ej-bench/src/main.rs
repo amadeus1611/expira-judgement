@@ -106,7 +106,7 @@ fn main() {
                 let v = check(name, &V1, &Measured { test: &r.test_fitted, test_ece: r.test_ece_calibrated, stress: st_sel.as_ref(), p95_ms: lat });
                 any_passed |= v.passed;
                 println!("{}", serde_json::json!({ "report": r, "stress": st_sel, "test_p95_ms": lat, "standard_v1": v }));
-                policy.insert(name.clone(), serde_json::json!({ "a": f.a, "b": f.b, "yes": r.fitted.yes, "no": r.fitted.no, "passed_v1": v.passed }));
+                policy.insert(name.clone(), serde_json::json!({ "a": f.a, "b": f.b, "yes": r.fitted.yes.min(2.0), "no": r.fitted.no.max(-1.0), "passed_v1": v.passed }));
                 cal_all.push(calibrated(&f, c));
                 test_all.push(calibrated(&f, t));
                 if let Some(x) = st { stress_all.push(x); }
@@ -120,6 +120,7 @@ fn main() {
                 any_passed |= v.passed;
                 println!("{}", serde_json::json!({ "report": r, "stress": st_sel, "test_p95_ms_sum": p95_sum, "standard_v1": v }));
             }
+            // A side that never acts has an infinite threshold; JSON has no infinity, so it is written out of range (2 / -1).
             if let Some(path) = opt("--write-policy") {
                 let doc = serde_json::json!({ "standard": "v1", "target": target, "judges": policy });
                 std::fs::write(&path, serde_json::to_string_pretty(&doc).unwrap()).unwrap_or_else(|e| die(format!("{path}: {e}")));
