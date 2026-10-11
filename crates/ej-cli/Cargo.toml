@@ -17,3 +17,4 @@ ej-evidence.workspace = true
 ej-judge.workspace = true
 ej-habits.workspace = true
 ej-delegate.workspace = true
+ureq = { version = "3", default-features = false, features = ["rustls", "json", "platform-verifier"] }
