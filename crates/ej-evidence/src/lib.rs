@@ -15,11 +15,14 @@ pub struct Quantity {
 /// Pull numbers out of text: "PHP 1,250,000", "₱1.5M", "$500", "35%", "2,400 mm", "1.2M".
 /// Units are canonical: currencies become "php" / "usd" / "eur", "percent" becomes "%", other units lower-cased.
 /// Ranges ("1,000-2,000", "1,000 to 2,000", "between 10 and 20 days") give both ends, sharing the unit stated on either.
+/// Dates ("2026-09-01", "1 Sept 2026", "Sept 1, 2026") are one quantity, unit "date", value YYYYMMDD;
+/// a month alone ("September 2026", "2026-09") is unit "month", value YYYYMM.
 pub fn quantities(text: &str) -> Vec<Quantity> {
     let toks = range_tokens(text);
     let toks: Vec<&str> = toks.iter().map(String::as_str).collect();
-    let mut out: Vec<(usize, Quantity)> = Vec::new();
+    let (mut out, used) = dates(&toks);
     for (i, raw) in toks.iter().enumerate() {
+        if used[i] { continue; }
         let t = raw.trim_matches(|c: char| c == '(' || c == ')' || c == ',' || c == ';' || c == ':');
         let t = t.trim_end_matches('.');
         let (cur, t) = strip_currency_prefix(t);
@@ -51,7 +54,50 @@ pub fn quantities(text: &str) -> Vec<Quantity> {
         let (a, b) = (out[k - 1].1.unit.clone(), out[k].1.unit.clone());
         if a.is_empty() { out[k - 1].1.unit = b; } else if b.is_empty() { out[k].1.unit = a; }
     }
+    out.sort_by_key(|(i, _)| *i);
     out.into_iter().map(|(_, q)| q).collect()
+}
+
+fn month(t: &str) -> Option<i64> {
+    let t = t.trim_matches(|c: char| !c.is_alphabetic()).to_lowercase();
+    if t.len() < 3 { return None; }
+    const NAMES: [&str; 12] = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+    NAMES.iter().position(|n| n.starts_with(&t) || (t == "sept" && *n == "september")).map(|i| i as i64 + 1)
+}
+
+fn int(t: &str, digits: std::ops::RangeInclusive<usize>) -> Option<i64> {
+    let t = t.trim_matches(|c: char| !c.is_ascii_digit());
+    if !digits.contains(&t.len()) || !t.chars().all(|c| c.is_ascii_digit()) { return None; }
+    t.parse().ok()
+}
+
+/// Finds dates and months in the tokens; returns them with their first token index, and which tokens they used.
+fn dates(toks: &[&str]) -> (Vec<(usize, Quantity)>, Vec<bool>) {
+    let mut out = Vec::new();
+    let mut used = vec![false; toks.len()];
+    let valid = |y: i64, m: i64, d: i64| day_number(&format!("{y:04}-{m:02}-{d:02}")).is_some();
+    let date = |y: i64, m: i64, d: i64| Quantity { value: (y * 10000 + m * 100 + d) as f64, unit: "date".into() };
+    let mut i = 0;
+    while i < toks.len() {
+        let t = |k: usize| toks.get(i + k).copied().unwrap_or("");
+        let iso: Vec<&str> = t(0).trim_matches(|c: char| !c.is_ascii_digit()).split('-').collect();
+        let found: Option<(Quantity, usize)> = if iso.len() == 3 && iso[0].len() == 4 && iso[1].len() == 2 && iso[2].len() == 2 {
+            match (iso[0].parse(), iso[1].parse(), iso[2].parse()) { (Ok(y), Ok(m), Ok(d)) if valid(y, m, d) => Some((date(y, m, d), 1)), _ => None }
+        } else if iso.len() == 2 && iso[0].len() == 4 && iso[1].len() == 2 && matches!(iso[1].parse::<i64>(), Ok(1..=12)) {
+            iso[0].parse::<i64>().ok().zip(iso[1].parse::<i64>().ok()).map(|(y, m)| (Quantity { value: (y * 100 + m) as f64, unit: "month".into() }, 1))
+        } else if let (Some(d), Some(m), Some(y)) = (int(t(0), 1..=2), month(t(1)), int(t(2), 4..=4)) {
+            valid(y, m, d).then(|| (date(y, m, d), 3))
+        } else if let (Some(m), Some(d), Some(y)) = (month(t(0)), int(t(1), 1..=2), int(t(2), 4..=4)) {
+            valid(y, m, d).then(|| (date(y, m, d), 3))
+        } else if let (Some(m), Some(y)) = (month(t(0)), int(t(1), 4..=4)) {
+            Some((Quantity { value: (y * 100 + m) as f64, unit: "month".into() }, 2))
+        } else { None };
+        match found {
+            Some((q, n)) => { out.push((i, q)); used[i..i + n].iter_mut().for_each(|u| *u = true); i += n; }
+            None => i += 1,
+        }
+    }
+    (out, used)
 }
 
 /// Whitespace tokens, with a single-dash range "A-B" / "A–B" split into "A", "-", "B" when both sides start with a figure.
@@ -60,7 +106,8 @@ fn range_tokens(text: &str) -> Vec<String> {
     for t in text.split_whitespace() {
         let parts: Vec<&str> = t.split(['-', '–']).collect();
         let figure = |p: &str| { let (_, rest) = strip_currency_prefix(p); rest.starts_with(|c: char| c.is_ascii_digit()) };
-        if parts.len() == 2 && figure(parts[0]) && figure(parts[1]) {
+        let iso_month = parts.len() == 2 && parts[0].len() == 4 && parts[1].len() == 2 && parts.iter().all(|p| p.chars().all(|c| c.is_ascii_digit())) && matches!(parts[1].parse::<u8>(), Ok(1..=12));
+        if parts.len() == 2 && figure(parts[0]) && figure(parts[1]) && !iso_month {
             out.extend([parts[0].to_string(), "-".to_string(), parts[1].to_string()]);
         } else {
             out.push(t.to_string());
@@ -107,6 +154,13 @@ fn is_unit(s: &str) -> bool {
 }
 
 fn same(a: &Quantity, b: &Quantity) -> bool {
+    // A month in the claim is backed by any date in that month in the quote, and vice versa.
+    match (a.unit.as_str(), b.unit.as_str()) {
+        ("month", "date") => return (b.value / 100.0).floor() == a.value,
+        ("date", "month") => return (a.value / 100.0).floor() == b.value,
+        ("date" | "month", _) | (_, "date" | "month") => return a.unit == b.unit && a.value == b.value,
+        _ => {}
+    }
     let unit_ok = a.unit == b.unit || a.unit.is_empty() || b.unit.is_empty();
     unit_ok && (a.value - b.value).abs() <= 1e-9 * a.value.abs().max(1.0)
 }
@@ -208,6 +262,29 @@ mod tests {
         assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Mismatch);
         let c = claim("Rates run PHP 1,000-2,000", "rates from PHP 1,000 to 2,000 per day", "2026-09-01");
         assert!(check(&c, &pol()).is_none());
+    }
+
+    #[test]
+    fn dates_in_text_are_single_values() {
+        let q = |t: &str| quantities(t).into_iter().map(|q| (q.value, q.unit)).collect::<Vec<_>>();
+        let d = vec![(20260901.0, "date".to_string())];
+        for t in ["on 2026-09-01.", "on 1 Sept 2026", "on 1 September 2026,", "on Sept 1, 2026", "on September 1 2026"] { assert_eq!(q(t), d, "{t}"); }
+        assert_eq!(q("in September 2026"), vec![(202609.0, "month".to_string())]);
+        assert_eq!(q("in 2026-09"), vec![(202609.0, "month".to_string())]);
+        assert_eq!(q("opened 1 Sept 2026 at PHP 900"), vec![(20260901.0, "date".to_string()), (900.0, "php".to_string())]);
+        assert_eq!(q("31 Feb 2026").len(), 2); // not a date: stays two plain numbers
+    }
+
+    #[test]
+    fn date_claims_check_against_quote_dates() {
+        let c = claim("The branch opened on 1 Sept 2026", "The branch opened on 2026-09-01.", "2026-09-02");
+        assert!(check(&c, &pol()).is_none());
+        let c = claim("The branch opened in September 2026", "The branch opened on 2026-09-01.", "2026-09-02");
+        assert!(check(&c, &pol()).is_none());
+        let c = claim("The branch opened on 2 Sept 2026", "The branch opened on 2026-09-01.", "2026-09-02");
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Mismatch);
+        let c = claim("The branch opened on 1 Sept 2026", "Opened 2026, phase 9, lot 1.", "2026-09-02");
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Mismatch);
     }
 
     #[test]
