@@ -41,3 +41,20 @@ Models: Claude only, Haiku 5.5 / Sonnet 5.5 / Opus 5.5 (`config/roster.json`, en
 7. **Log.** Append a dated run to `docs/bench/` (data, machine, commands, every gate value) and a section to `HANDOFF.md`.
 
 If the standard cannot be met with what is available, say exactly which gate binds and what would move it (usually more held-out labelled cases); do not lower a bar to pass.
+
+## Running without a human researcher
+
+The loop is meant to run unattended: it picks the next problem itself (the binding gate, the biggest cost line, the
+slowest path, the newest relevant open research), researches, changes, measures and logs, round after round. It learns
+from any model's or system's published efficiency work (distillation, quantisation, caching, cascades, routing, early
+exit, retrieval) and from its own logs (teacher pairs, usage, tier log, past research notes), and can change the loop
+itself (this skill, the bench, the standard's measurement code) when that makes it better at improving.
+
+Guardrails that hold in every unattended round, because an optimiser that can edit its own scorer will otherwise find it:
+- Never lower a bar in `standard.rs`, delete or weaken a test, edit a frozen split, or fit on test data to pass.
+  Raising a bar, adding a gate or a stress class, or adding held-out data is always allowed.
+- Work on a branch and open a PR with the measured before/after; never push to `main` and never merge.
+- Every kept change carries its research note, its bench log and a passing `cargo test`.
+- Stay inside the session's budget: stop a round that is not converging, log what was learned, and leave the next step in `HANDOFF.md`.
+- Claude models only (`config/roster.json`); local judges must be open-licence and run here.
+- What cannot be changed from the repo (a model's weights, account settings, other repositories) is reported, not attempted.
