@@ -17,3 +17,4 @@ ej-judge = { path = "crates/ej-judge" }
 ej-habits = { path = "crates/ej-habits" }
 ej-delegate = { path = "crates/ej-delegate" }
 ej-bench = { path = "crates/ej-bench" }
+ej-nli = { path = "crates/ej-nli" }
