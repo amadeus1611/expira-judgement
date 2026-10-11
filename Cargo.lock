@@ -55,6 +55,7 @@ name = "ej-judge"
 version = "0.1.0"
 dependencies = [
  "ej-core",
+ "ej-habits",
  "serde",
  "serde_json",
 ]

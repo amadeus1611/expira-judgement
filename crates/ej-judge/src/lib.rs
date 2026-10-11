@@ -1,6 +1,8 @@
 //! Layers 2 and 3: judges for the grey zone layer 1 cannot settle.
 //! A judge answers supports / contradicts / unsure with a confidence. It never writes the claim or the evidence.
 
+pub mod claude;
+
 use ej_core::{Claim, Finding, Layer, Verdict};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
