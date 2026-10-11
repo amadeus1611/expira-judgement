@@ -18,6 +18,8 @@ jobs:
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Tests
         run: cargo test --workspace --locked
+      - name: Supply chain (licences, advisories, bans, sources; deny.toml)
+        uses: EmbarkStudios/cargo-deny-action@v2
   mutants:
     # Every injected fault in the decision-critical crates must be caught by a test (zero missed).
     runs-on: ubuntu-latest

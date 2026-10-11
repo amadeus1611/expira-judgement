@@ -1,0 +1,43 @@
+# Supply-chain gate (cargo-deny), run in CI. Decision and sources: docs/research/2026-10-11-supply-chain.md.
+# Ratchet: the licence list only grows by a deliberate commit that names the crate that needs it.
+
+[graph]
+all-features = true
+
+[advisories]
+# Every RustSec vulnerability is an error; unmaintained and unsound notices are errors too unless ignored here with a reason.
+version = 2
+yanked = "deny"
+ignore = [
+    # paste is unmaintained (archived), not vulnerable; it is a compile-time macro pulled in only by tokenizers 0.21
+    # (ej-nli) and has no safe upgrade. Remove this entry when tokenizers drops it.
+    { id = "RUSTSEC-2024-0436", reason = "unmaintained proc-macro via tokenizers; no vulnerability, no upgrade path" },
+]
+
+[licenses]
+version = 2
+# Only permissive licences that some crate in Cargo.lock actually needs (dual-licensed crates resolve to MIT/Apache-2.0).
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-3-Clause",        # subtle
+    "ISC",                 # ring, rustls-webpki, untrusted
+    "Unicode-3.0",         # unicode-ident (MIT OR Apache-2.0, AND Unicode-3.0 for its tables)
+    "CDLA-Permissive-2.0", # webpki-roots, webpki-root-certs (Mozilla root certificate data)
+]
+confidence-threshold = 0.93
+
+[licenses.private]
+# Workspace crates are `publish = false` and UNLICENSED (private repo); they are not checked against the list.
+ignore = true
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+allow-wildcard-paths = true
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []
