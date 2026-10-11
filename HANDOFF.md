@@ -190,17 +190,19 @@ from adopted habits (`docs/HABITS.md`).
   updated the cold-start pre-push command accordingly. Results: `docs/bench/2026-10-11-codex-ratchets.md`.
 - Exercised the complete installer twice; saved install_script and start_skill in the environment draft. Saved required
   GitHub API and Hugging Face domain additions while preserving package-manager presets. No publication is claimed.
+- Pushed `codex/ej-ratchets` and opened https://github.com/amadeus1611/expira-judgement/pull/3 through the platform
+  GitHub CLI route. That route also reads CI successfully despite native API CONNECT requests returning 403.
+  The PR carries the verified ratchets; merging requires green CI. Inspect its current state through `gh pr view 3`.
 
 ### Open
-- GitHub API requests are proxy-blocked (CONNECT 403); PR creation, green CI and merge are outstanding until access works.
-  Git HTTPS read access works; API authorization is not established by that read.
+- Native GitHub API requests are proxy-blocked (CONNECT 403); use the working platform `gh` route for PR operations.
 - Hugging Face requests are proxy-blocked, so VitaminC rebuilding/model download and whole-cascade scoring are unrun.
 - Claude CLI is absent; ANTHROPIC_API_KEY and EJ_NLI_DIR are unset. No model inference or live escalation was validated.
   Escalation calls this session: 0; cost: $0. The general-layer 99% goal remains unproven; no standard bars or frozen data changed.
 
 ### Next
-- Review/save the environment draft in settings and publish the prepared environment; recheck actual GitHub API and
-  Hugging Face access. Complete the ratchet PR and merge only after CI is green.
+- Merge PR #3 only after CI is green. Review/save the environment draft in settings and publish the prepared
+  environment; recheck actual Hugging Face access.
 - Make the intended subscription CLI available and authenticated without sending credential values in chat.
 - Resume cold-start section 4 step 2: rebuild frozen VitaminC splits, measure the whole cascade using only proven local
   judges and small escalation runs, report raw results and observed cost, then do the label audit separately without fitting on it.

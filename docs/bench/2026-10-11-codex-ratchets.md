@@ -52,8 +52,10 @@ existing-checkout guidance and readiness checks. Saved custom HTTPS destinations
 datasets-server.huggingface.co; package-manager presets are preserved. Draft saving does not apply runtime changes
 or publish the environment. Setup outputs and full logs are outside the checkout under /workspace/setup.
 
-Git HTTPS read works through the platform proxy. GitHub API CONNECT requests and Hugging Face requests return 403
-under the current policy. PR creation, CI inspection and merge cannot be claimed until access works. VitaminC was
+Git HTTPS read and branch push work through the platform proxy. Native GitHub API CONNECT requests return 403,
+but the platform GitHub CLI route successfully created PR #3 and inspected its CI; no new credential was required.
+PR: https://github.com/amadeus1611/expira-judgement/pull/3 . Merge requires green CI.
+Hugging Face requests return 403 under the current policy. VitaminC was
 not rebuilt, and no whole-cascade, audited-label or model-latency result is claimed. Claude CLI is absent and
 ANTHROPIC_API_KEY is unset. Escalation calls: 0; escalation cost: $0. No frozen data or standard v1 bars changed;
 the proven-99% goal remains open.

@@ -39,6 +39,8 @@ Keep all setup artifacts outside the checkout and use locked Cargo installs/buil
 cargo-deny 0.20.2. Exercise the complete saved installer and the CLI, then save install_script and start_skill.
 
 This restores build, lint, test and CLI capabilities without validating model inference: EJ_NLI_DIR is unset.
-Git HTTPS read works with existing platform authentication. GitHub API and Hugging Face access remain blocked by
-the current egress policy; domain additions are saved as a draft, not claimed to be active. Claude CLI/authentication
-is absent, so no paid escalation is attempted. These are external prerequisites for PR operations and cascade measurement.
+Git HTTPS read and push work with existing platform authentication. Native GitHub API CONNECT requests were denied,
+but the platform GitHub CLI route subsequently created PR #3 and inspected its CI using existing credentials.
+Hugging Face access remains blocked by the current egress policy; domain additions are saved as a draft, not claimed
+to be active. Claude CLI/authentication is absent, so no paid escalation is attempted. Data access and an authenticated
+escalation transport remain external prerequisites for cascade measurement.
