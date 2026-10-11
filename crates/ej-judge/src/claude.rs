@@ -276,7 +276,7 @@ mod tests {
         let pairs = j.take_pairs();
         assert_eq!(pairs.len(), 1);
         assert_eq!(pairs[0].ruling, "supports");
-        assert!(j.take_pairs().is_empty());
+        assert_eq!(j.take_pairs(), Vec::<TeacherPair>::new());
         let u = j.take_usage();
         assert_eq!(
             (u.len(), u[0].input_tokens, u[0].route.as_str()),
@@ -291,7 +291,7 @@ mod tests {
         for t in [reply("{\"ruling\":\"supports\",\"confidence\":0.99,\"evidence_span\":\"applies\",\"reason\":\"\"}"), reply("sure, it supports it"), Canned(Err("timeout".into())), refusal, invented] {
             let j = ClaudeJudge::new(t, "m");
             assert_eq!(j.rule(&claim()).0, Ruling::Unsure);
-            assert!(j.take_pairs().is_empty());
+            assert_eq!(j.take_pairs(), Vec::<TeacherPair>::new());
         }
     }
 }

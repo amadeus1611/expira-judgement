@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: rustup component add rustfmt clippy
+      - run: rustup show active-toolchain || rustup toolchain install
       - name: Format
         run: cargo fmt --all -- --check
       - name: Lints (workspace lints in Cargo.toml; warnings are errors)
