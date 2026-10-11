@@ -166,16 +166,16 @@ pub fn fit_thresholds(xs: &[Scored], target: f64, min_acted: usize) -> Threshold
         .copied()
         .find(|&t| ok(xs.iter().filter(|s| s.p >= t).collect(), true))
         .unwrap_or(f64::INFINITY);
+    // The "not stated" side is searched only below the "stated" threshold, so the two acting regions never overlap
+    // and each is exactly the set of cases its bound was checked on (found by the property test).
     let no = ps
         .iter()
         .rev()
         .copied()
+        .filter(|&t| t < yes)
         .find(|&t| ok(xs.iter().filter(|s| s.p <= t).collect(), false))
         .unwrap_or(f64::NEG_INFINITY);
-    Thresholds {
-        yes,
-        no: if no >= yes { yes - f64::EPSILON } else { no },
-    }
+    Thresholds { yes, no }
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
