@@ -29,5 +29,8 @@ Documented LAYA limits to test directly: over-confidence as released (mean calib
 per its README), weakness on negation, yes/no answers swayed by option wording.
 
 ## Decision
-Pending the measured run (scores on FEVER and MNLI calibration/test splits, plus a figure/negation stress set).
-Each candidate is adopted only if it passes the standard in `crates/ej-bench/src/standard.rs`; results go to `docs/bench/`.
+Measured in `docs/bench/2026-10-11-round1-laya-vs-deberta-calibrated.md`. No candidate passes standard v1 (binding gate:
+the 0.99 bound on "stated" calls). DeBERTa-v3-xsmall ranks clearly better than LAYA (AUROC 0.956 vs 0.875), LAYA's documented
+negation weakness reproduced (51/200 negated claims scored >= 0.6), and LAYA's current engine bar is right on 68% of its
+"stated" calls on this data. Adopted: DeBERTa as a calibrated "not stated" pre-filter only. Rejected for "stated" calls: LAYA
+and the ensemble. Round 2 tests stronger open verification models.
