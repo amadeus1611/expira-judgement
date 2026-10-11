@@ -17,8 +17,10 @@ rule in code for logged habits. Habits move here only with evidence; a retired h
 - **Research before change, licence from the source.** A note in docs/research/ with links before a fix; licences read
   from the model or dataset card or LICENSE file, never recalled.
 - **One change at a time, kept only if measured better,** on the same frozen splits, logged in docs/bench/.
-- **Held-out data is reproducible and leak-free.** Fetched by a script that rebuilds it byte for byte; contrastive data is
-  split by case, never by row (tools/fetch_general.py).
+- **Frozen data is reproducible; grouping and overlap are checked separately.** Fetch byte-identical files and split
+  contrastive data by case, never by row (tools/fetch_general.py). Retain identities and measure text overlap before
+  claiming independence. Evidence: disjoint case IDs still left 21 exact claim–quote pairs across cal/test
+  (docs/bench/2026-10-11-rigorous-99-baseline.md). Preserve old frozen splits and report their limitations.
 - **Compute a number before stating it.** Any count, bound or price in a report comes from a calculation or a measurement
   shown in the same place.
 - **Loops are bounded and toolchains pinned.** Every scan has an iteration bound; CI and local runs use the same pinned
@@ -29,6 +31,11 @@ rule in code for logged habits. Habits move here only with evidence; a retired h
 
 ## Retired
 
+- **Treating disjoint case IDs as proof of leak-free data.** Why retired: different cases can repeat the same text;
+  grouping alone misses overlap and does not make contrastive rows independent. Evidence: 21 exact / 24 normalised
+  claim–quote pairs cross calibration/test despite zero shared case IDs, and 3,095 test rows represent only 935 cases
+  (docs/bench/2026-10-11-rigorous-99-baseline.md). Replaced by: separate reproducibility, grouping and overlap checks;
+  untouched confirmation with a declared sampling unit (docs/validation/general-99.md), preserving frozen files.
 - **Acting on a raw, uncalibrated score with a hand-set bar.** Why retired: LAYA's 0.6 bar passed many unsupported claims
   (257/378 right) and 51 of 200 negated ones. Evidence: docs/bench/2026-10-11-round1-laya-vs-deberta-calibrated.md.
   Replaced by: fitted thresholds (Adopted).
