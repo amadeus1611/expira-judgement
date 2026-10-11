@@ -29,7 +29,7 @@ def main(model_id, out, labels=None):
     axes = {n: {0: "batch", 1: "seq"} for n in names}
     axes["logits"] = {0: "batch"}
     torch.onnx.export(model, tuple(enc[n] for n in names), os.path.join(out, "model.onnx"), input_names=names,
-                      output_names=["logits"], dynamic_axes=axes, opset_version=17)
+                      output_names=["logits"], dynamic_axes=axes, opset_version=17, dynamo=False)
     if labels:
         with open(os.path.join(out, "ej_labels.json"), "w") as f:
             json.dump(labels.split(","), f)
