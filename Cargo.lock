@@ -118,6 +118,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ej-bench"
+version = "0.1.0"
+dependencies = [
+ "ej-core",
+ "ej-judge",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "ej-cli"
 version = "0.1.0"
 dependencies = [
