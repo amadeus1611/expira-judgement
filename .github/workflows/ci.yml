@@ -1,0 +1,39 @@
+name: ci
+on:
+  push:
+  pull_request:
+# A newer push to the same ref supersedes the running checks.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup show active-toolchain || rustup toolchain install
+      - name: Format
+        run: cargo fmt --all -- --check
+      - name: Lints (workspace lints in Cargo.toml; warnings are errors)
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Tests
+        run: cargo test --workspace --locked
+  mutants:
+    # Every injected fault in the decision-critical crates must be caught by a test (zero missed).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup show active-toolchain || rustup toolchain install
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-mutants
+      - name: Mutation testing (fails on any missed mutant)
+        env:
+          PROPTEST_CASES: "256"
+        # Parallel copies; the test suite takes ~2 s, so 60 s only ever trips on mutants that loop forever (counted as caught).
+        run: cargo mutants -j 4 --timeout 60 -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutants-out
+          path: mutants.out

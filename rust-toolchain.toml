@@ -1,0 +1,5 @@
+# Pinned so local checks and CI run the same compiler and lints. Upgrading is a deliberate ratchet step:
+# bump the version, fix every new lint, commit both together.
+[toolchain]
+channel = "1.97.0"
+components = ["rustfmt", "clippy"]
