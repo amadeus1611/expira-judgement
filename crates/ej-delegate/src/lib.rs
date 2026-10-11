@@ -1,6 +1,8 @@
 //! Agent delegation: route each task to the cheapest tier that can pass its gate, and escalate one tier at a time.
 //! Mirrors the roster: scout/worker (cheap model) -> builder (mid) -> reviewer (top). Model IDs are config, not code.
 
+pub mod cost;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
