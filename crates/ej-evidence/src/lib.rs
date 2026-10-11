@@ -29,6 +29,8 @@ pub fn quantities(text: &str) -> Vec<Quantity> {
         let (num, suffix) = split_number(t);
         let Some(mut v) = num else { continue };
         let mut unit = suffix.to_lowercase();
+        // A decade: "1970s", "1970's" -> 1970 with no unit.
+        if matches!(unit.as_str(), "s" | "'s" | "’s") && (1000.0..=2999.0).contains(&v) { unit.clear(); }
         match unit.as_str() {
             "k" => { v *= 1e3; unit.clear(); }
             "m" if !is_length_context(&toks, i) => { v *= 1e6; unit.clear(); }
@@ -66,6 +68,8 @@ fn month(t: &str) -> Option<i64> {
 }
 
 fn int(t: &str, digits: std::ops::RangeInclusive<usize>) -> Option<i64> {
+    let t = t.trim_matches(|c: char| !c.is_alphanumeric());
+    let t = ["st", "nd", "rd", "th"].iter().find_map(|o| t.strip_suffix(o)).unwrap_or(t); // "6th"
     let t = t.trim_matches(|c: char| !c.is_ascii_digit());
     if !digits.contains(&t.len()) || !t.chars().all(|c| c.is_ascii_digit()) { return None; }
     t.parse().ok()
@@ -103,7 +107,8 @@ fn dates(toks: &[&str]) -> (Vec<(usize, Quantity)>, Vec<bool>) {
 /// Whitespace tokens, with a single-dash range "A-B" / "A–B" split into "A", "-", "B" when both sides start with a figure.
 fn range_tokens(text: &str) -> Vec<String> {
     let mut out = Vec::new();
-    for t in text.split_whitespace() {
+    // A comma or semicolon typed as its own word ("June 24 , 2007") carries nothing and breaks date patterns.
+    for t in text.split_whitespace().filter(|t| !t.chars().all(|c| c == ',' || c == ';')) {
         let parts: Vec<&str> = t.split(['-', '–']).collect();
         let figure = |p: &str| { let (_, rest) = strip_currency_prefix(p); rest.starts_with(|c: char| c.is_ascii_digit()) };
         let iso_month = parts.len() == 2 && parts[0].len() == 4 && parts[1].len() == 2 && parts.iter().all(|p| p.chars().all(|c| c.is_ascii_digit())) && matches!(parts[1].parse::<u8>(), Ok(1..=12));
@@ -286,6 +291,9 @@ mod tests {
         assert_eq!(q("in 2026-09"), vec![(202609.0, "month".to_string())]);
         assert_eq!(q("opened 1 Sept 2026 at PHP 900"), vec![(20260901.0, "date".to_string()), (900.0, "php".to_string())]);
         assert_eq!(q("31 Feb 2026").len(), 2); // not a date: stays two plain numbers
+        assert_eq!(q("( May 21 , 1967 -- June 24 , 2007 )"), vec![(19670521.0, "date".to_string()), (20070624.0, "date".to_string())]);
+        assert_eq!(q("born January 6th, 1924"), vec![(19240106.0, "date".to_string())]);
+        assert_eq!(q("the 1970's"), q("the early 1970s"));
     }
 
     #[test]
