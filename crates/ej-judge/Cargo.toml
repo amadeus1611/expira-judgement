@@ -10,3 +10,6 @@ serde.workspace = true
 serde_json.workspace = true
 ej-core.workspace = true
 ej-habits.workspace = true
+
+[lints]
+workspace = true

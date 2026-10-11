@@ -23,6 +23,17 @@ pub struct Case {
     pub label: String,
 }
 
+/// Index of the `p` quantile (0..=1) in a sorted slice of length `len` (> 0), nearest rank.
+#[allow(clippy::cast_sign_loss)] // p is clamped to [0, 1], so the rounded product is never negative
+#[must_use]
+pub fn percentile_index(len: usize, p: f64) -> usize {
+    ((len - 1) as f64 * p.clamp(0.0, 1.0)).round() as usize
+}
+
+/// Parses JSON-lines cases (blank lines skipped).
+///
+/// # Errors
+/// A line that is not a valid case.
 pub fn load_cases(text: &str) -> Result<Vec<Case>, serde_json::Error> {
     text.lines()
         .filter(|l| !l.trim().is_empty())
@@ -72,12 +83,12 @@ pub fn run(name: &str, judge: &dyn Judge, cases: &[Case], bars: Bars) -> Report 
             }
         }
     }
-    ms.sort_by(|a, b| a.total_cmp(b));
+    ms.sort_by(f64::total_cmp);
     let pct = |p: f64| {
         if ms.is_empty() {
             0.0
         } else {
-            ms[((ms.len() - 1) as f64 * p).round() as usize]
+            ms[percentile_index(ms.len(), p)]
         }
     };
     Report {
@@ -132,7 +143,7 @@ mod tests {
         let r = run("kw", &Keyword, &cases, Bars::default());
         assert_eq!((r.cases, r.acted, r.correct_when_acting), (4, 2, 1));
         assert_eq!(r.accuracy_when_acting, Some(0.5));
-        assert_eq!(r.unsure_rate, 0.5); // the low-confidence Contradicts does not act
+        assert!((r.unsure_rate - 0.5).abs() < f64::EPSILON); // the low-confidence Contradicts does not act
     }
 
     #[test]

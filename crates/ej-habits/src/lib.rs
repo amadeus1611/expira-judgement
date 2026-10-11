@@ -35,6 +35,7 @@ impl Default for Adoption {
 }
 
 impl Habit {
+    #[must_use]
     pub fn new(id: &str, rule: &str) -> Self {
         Habit {
             id: id.into(),
@@ -52,9 +53,9 @@ impl Habit {
             return;
         }
         if matched {
-            self.agree += 1
+            self.agree += 1;
         } else {
-            self.disagree += 1
+            self.disagree += 1;
         }
         if !matched {
             self.state = State::Retired; // one counter-example is enough: bad habits are never kept
@@ -93,6 +94,7 @@ pub struct Usage {
 
 impl Usage {
     /// Reads the API's `usage` object. None if it is missing.
+    #[must_use]
     pub fn from_response(
         model: &str,
         route: &str,
@@ -126,6 +128,7 @@ pub struct Price {
 
 /// Cost of one call in USD. None if the model has no price, or the call used a cache rate the price file lacks:
 /// an unknown cost is reported as unknown, not as zero.
+#[must_use]
 pub fn cost(u: &Usage, prices: &std::collections::BTreeMap<String, Price>) -> Option<f64> {
     let p = prices.get(&u.model)?;
     let per = |n: u64, rate: Option<f64>| {
@@ -144,6 +147,9 @@ pub fn cost(u: &Usage, prices: &std::collections::BTreeMap<String, Price>) -> Op
 }
 
 /// Appends any serialisable records to a JSON-lines file, creating it if needed.
+///
+/// # Errors
+/// The file cannot be opened or written, or a record cannot be serialised.
 pub fn append_jsonl<T: Serialize>(path: &std::path::Path, rows: &[T]) -> std::io::Result<()> {
     use std::io::Write;
     if rows.is_empty() {
@@ -164,6 +170,9 @@ pub fn append_jsonl<T: Serialize>(path: &std::path::Path, rows: &[T]) -> std::io
 }
 
 /// Appends pairs to a JSON-lines file (one pair per line), creating it if needed. Never rewrites earlier lines.
+///
+/// # Errors
+/// The file cannot be opened or written.
 pub fn append_pairs(path: &std::path::Path, pairs: &[TeacherPair]) -> std::io::Result<()> {
     use std::io::Write;
     if pairs.is_empty() {
@@ -184,6 +193,9 @@ pub fn append_pairs(path: &std::path::Path, pairs: &[TeacherPair]) -> std::io::R
 }
 
 /// Reads every pair from a JSON-lines file; a missing file is an empty set.
+///
+/// # Errors
+/// The file exists but cannot be read, or a line is not a valid pair.
 pub fn load_pairs(path: &std::path::Path) -> std::io::Result<Vec<TeacherPair>> {
     match std::fs::read_to_string(path) {
         Ok(s) => s

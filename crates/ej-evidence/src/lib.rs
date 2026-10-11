@@ -101,10 +101,6 @@ pub fn quantities(text: &str) -> Vec<Quantity> {
 }
 
 fn month(t: &str) -> Option<i64> {
-    let t = t.trim_matches(|c: char| !c.is_alphabetic()).to_lowercase();
-    if t.len() < 3 {
-        return None;
-    }
     const NAMES: [&str; 12] = [
         "january",
         "february",
@@ -119,10 +115,14 @@ fn month(t: &str) -> Option<i64> {
         "november",
         "december",
     ];
+    let t = t.trim_matches(|c: char| !c.is_alphabetic()).to_lowercase();
+    if t.len() < 3 {
+        return None;
+    }
     NAMES
         .iter()
         .position(|n| n.starts_with(&t) || (t == "sept" && *n == "september"))
-        .map(|i| i as i64 + 1)
+        .and_then(|i| i64::try_from(i + 1).ok())
 }
 
 fn int(t: &str, digits: std::ops::RangeInclusive<usize>) -> Option<i64> {
@@ -237,9 +237,8 @@ fn range_tokens(text: &str) -> Vec<String> {
 }
 
 fn is_length_context(toks: &[&str], i: usize) -> bool {
-    toks.get(i + 1).map_or(false, |n| {
-        n.eq_ignore_ascii_case("long") || n.eq_ignore_ascii_case("wide")
-    })
+    toks.get(i + 1)
+        .is_some_and(|n| n.eq_ignore_ascii_case("long") || n.eq_ignore_ascii_case("wide"))
 }
 
 /// Splits a currency marker glued to the number ("₱900", "$5", "US$5", "PHP1,000", "P900").
@@ -309,11 +308,13 @@ fn is_unit(s: &str) -> bool {
 
 fn same(a: &Quantity, b: &Quantity) -> bool {
     // A month in the claim is backed by any date in that month in the quote, and vice versa.
+    // Dates and months are whole numbers (YYYYMMDD, YYYYMM) held in f64, so "equal" means within half a unit.
+    let eq = |x: f64, y: f64| (x - y).abs() < 0.5;
     match (a.unit.as_str(), b.unit.as_str()) {
-        ("month", "date") => return (b.value / 100.0).floor() == a.value,
-        ("date", "month") => return (a.value / 100.0).floor() == b.value,
+        ("month", "date") => return eq((b.value / 100.0).floor(), a.value),
+        ("date", "month") => return eq((a.value / 100.0).floor(), b.value),
         ("date" | "month", _) | (_, "date" | "month") => {
-            return a.unit == b.unit && a.value == b.value
+            return a.unit == b.unit && eq(a.value, b.value)
         }
         _ => {}
     }
@@ -322,6 +323,7 @@ fn same(a: &Quantity, b: &Quantity) -> bool {
 }
 
 /// Days since 0000-03-01 for a YYYY-MM-DD string (civil calendar), or None.
+#[must_use]
 pub fn day_number(date: &str) -> Option<i64> {
     let p: Vec<i64> = date
         .get(..10)?
@@ -344,7 +346,7 @@ pub fn day_number(date: &str) -> Option<i64> {
         30,
         31,
     ];
-    if !(1..=12).contains(&m) || d < 1 || d > dim[(m - 1) as usize] {
+    if !(1..=12).contains(&m) || d < 1 || d > dim[usize::try_from(m - 1).ok()?] {
         return None;
     }
     let (y, m) = if m <= 2 { (y - 1, m + 9) } else { (y, m - 3) };
@@ -357,6 +359,7 @@ pub struct Policy {
 }
 
 /// Returns Some(finding) when layer 1 can decide; None means "grey zone, ask the judge".
+#[must_use]
 pub fn check(claim: &Claim, policy: &Policy) -> Option<Finding> {
     let f = |verdict, confidence, reason: String| {
         Some(Finding {
@@ -370,7 +373,7 @@ pub fn check(claim: &Claim, policy: &Policy) -> Option<Finding> {
     let now = day_number(&policy.today);
     // A date after `today` is a typo or a fabrication, never fresh evidence.
     let dated =
-        |e: &&ej_core::Evidence| day_number(&e.date).is_some_and(|d| now.map_or(true, |n| d <= n));
+        |e: &&ej_core::Evidence| day_number(&e.date).is_some_and(|d| now.is_none_or(|n| d <= n));
     let usable: Vec<_> = claim
         .evidence
         .iter()
@@ -387,7 +390,7 @@ pub fn check(claim: &Claim, policy: &Policy) -> Option<Finding> {
     if let (Some(max), Some(now)) = (policy.max_age_days, now) {
         if usable
             .iter()
-            .all(|e| now - day_number(&e.date).unwrap() > max)
+            .all(|e| day_number(&e.date).is_some_and(|d| now - d > max))
         {
             return f(
                 Verdict::Stale,
@@ -468,6 +471,7 @@ fn contained_unnegated(quote: &str, claim: &str) -> bool {
 }
 
 /// Checks that the listed parts add up to the stated total (tolerance for rounding to one unit).
+#[must_use]
 pub fn sum_matches(parts: &[f64], total: f64) -> bool {
     (parts.iter().sum::<f64>() - total).abs() < 0.5
 }
@@ -475,6 +479,13 @@ pub fn sum_matches(parts: &[f64], total: f64) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn ymd(y: i32, m: i32, d: i32) -> f64 {
+        f64::from(y * 10_000 + m * 100 + d)
+    }
+    fn ym(y: i32, m: i32) -> f64 {
+        f64::from(y * 100 + m)
+    }
     use ej_core::Evidence;
 
     fn claim(text: &str, quote: &str, date: &str) -> Claim {
@@ -515,7 +526,7 @@ mod tests {
                 },
             ]
         );
-        assert_eq!(quantities("about 1.2M")[0].value, 1_200_000.0);
+        assert!((quantities("about 1.2M")[0].value - 1_200_000.0).abs() < 1e-6);
     }
 
     #[test]
@@ -595,7 +606,7 @@ mod tests {
                 .map(|q| (q.value, q.unit))
                 .collect::<Vec<_>>()
         };
-        let d = vec![(20260901.0, "date".to_string())];
+        let d = vec![(ymd(2026, 9, 1), "date".to_string())];
         for t in [
             "on 2026-09-01.",
             "on 1 Sept 2026",
@@ -607,24 +618,27 @@ mod tests {
         }
         assert_eq!(
             q("in September 2026"),
-            vec![(202609.0, "month".to_string())]
+            vec![(ym(2026, 9), "month".to_string())]
         );
-        assert_eq!(q("in 2026-09"), vec![(202609.0, "month".to_string())]);
+        assert_eq!(q("in 2026-09"), vec![(ym(2026, 9), "month".to_string())]);
         assert_eq!(
             q("opened 1 Sept 2026 at PHP 900"),
-            vec![(20260901.0, "date".to_string()), (900.0, "php".to_string())]
+            vec![
+                (ymd(2026, 9, 1), "date".to_string()),
+                (900.0, "php".to_string())
+            ]
         );
         assert_eq!(q("31 Feb 2026").len(), 2); // not a date: stays two plain numbers
         assert_eq!(
             q("( May 21 , 1967 -- June 24 , 2007 )"),
             vec![
-                (19670521.0, "date".to_string()),
-                (20070624.0, "date".to_string())
+                (ymd(1967, 5, 21), "date".to_string()),
+                (ymd(2007, 6, 24), "date".to_string())
             ]
         );
         assert_eq!(
             q("born January 6th, 1924"),
-            vec![(19240106.0, "date".to_string())]
+            vec![(ymd(1924, 1, 6), "date".to_string())]
         );
         assert_eq!(q("the 1970's"), q("the early 1970s"));
     }

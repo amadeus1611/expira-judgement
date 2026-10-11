@@ -58,6 +58,7 @@ pub struct Evidence<'a> {
     pub p95_ms: Option<f64>,
 }
 
+#[must_use]
 pub fn check(judge: &str, std: &Standard, ev: &Evidence) -> Verdict {
     let t = ev.test;
     let mut gates = vec![

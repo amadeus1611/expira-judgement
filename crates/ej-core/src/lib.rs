@@ -38,6 +38,7 @@ pub enum Verdict {
 }
 
 impl Verdict {
+    #[must_use]
     pub fn passes(self) -> bool {
         matches!(self, Verdict::Backed | Verdict::Supported)
     }
@@ -67,6 +68,7 @@ pub const NEGATORS: [&str; 8] = [
 ];
 
 /// True if a lower-cased, punctuation-trimmed word negates ("not", "don't", "isn’t", ...).
+#[must_use]
 pub fn is_negator(w: &str) -> bool {
     NEGATORS.contains(&w) || w.ends_with("n't") || w.ends_with("n’t")
 }

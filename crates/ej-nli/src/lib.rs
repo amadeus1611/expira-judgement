@@ -29,6 +29,9 @@ fn ruling_for(label: &str) -> Option<Ruling> {
 }
 
 /// Reads `id2label` into a ruling per index. Errors on unknown labels rather than guessing.
+///
+/// # Errors
+/// No `id2label`, a non-numeric or out-of-range index, a gap, or a label other than entailment / neutral / contradiction.
 pub fn labels_from_config(config: &serde_json::Value) -> Result<Vec<Ruling>, String> {
     let map = config["id2label"]
         .as_object()
@@ -47,13 +50,17 @@ pub fn labels_from_config(config: &serde_json::Value) -> Result<Vec<Ruling>, Str
 }
 
 pub fn softmax(x: &[f32]) -> Vec<f32> {
-    let m = x.iter().cloned().fold(f32::NEG_INFINITY, f32::max);
+    let m = x.iter().copied().fold(f32::NEG_INFINITY, f32::max);
     let e: Vec<f32> = x.iter().map(|v| (v - m).exp()).collect();
     let s: f32 = e.iter().sum();
     e.into_iter().map(|v| v / s).collect()
 }
 
 impl NliJudge {
+    /// Loads `model.onnx`, `tokenizer.json` and `config.json` from `dir`.
+    ///
+    /// # Errors
+    /// A missing or unreadable file, a config without usable labels, or a model ONNX Runtime cannot open.
     pub fn load(dir: &Path) -> Result<Self, String> {
         let config: serde_json::Value = serde_json::from_str(
             &std::fs::read_to_string(dir.join("config.json")).map_err(|e| e.to_string())?,
@@ -82,13 +89,16 @@ impl NliJudge {
     }
 
     /// Class probabilities for (premise, hypothesis), in config order.
+    ///
+    /// # Errors
+    /// Tokenisation fails, the model asks for an input this judge does not provide, or inference fails.
     pub fn probs(&self, premise: &str, hypothesis: &str) -> Result<Vec<f32>, String> {
         let enc = self
             .tokenizer
             .encode((premise, hypothesis), true)
             .map_err(|e| e.to_string())?;
         let n = enc.get_ids().len();
-        let col = |v: &[u32]| v.iter().map(|&x| x as i64).collect::<Vec<i64>>();
+        let col = |v: &[u32]| v.iter().map(|&x| i64::from(x)).collect::<Vec<i64>>();
         let mut feed: Vec<(String, Tensor<i64>)> = Vec::new();
         for name in &self.inputs {
             let data = match name.as_str() {
@@ -102,7 +112,10 @@ impl NliJudge {
                 Tensor::from_array(([1usize, n], data)).map_err(|e| e.to_string())?,
             ));
         }
-        let mut session = self.session.lock().unwrap();
+        let mut session = self
+            .session
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let out = session.run(feed).map_err(|e| e.to_string())?;
         let (_, logits) = out[0]
             .try_extract_tensor::<f32>()

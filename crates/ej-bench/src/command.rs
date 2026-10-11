@@ -25,6 +25,9 @@ fn ruling_of(v: &Value) -> Result<Ruling, String> {
 
 impl CommandJudge {
     /// `argv[0]` is the program, the rest its arguments.
+    ///
+    /// # Errors
+    /// An empty command, or the program cannot be started.
     pub fn spawn(argv: &[String]) -> Result<Self, String> {
         let (prog, rest) = argv.split_first().ok_or("empty command")?;
         let mut child = Command::new(prog)
@@ -33,8 +36,8 @@ impl CommandJudge {
             .stdout(Stdio::piped())
             .spawn()
             .map_err(|e| format!("{prog}: {e}"))?;
-        let stdin = child.stdin.take().unwrap();
-        let stdout = BufReader::new(child.stdout.take().unwrap());
+        let stdin = child.stdin.take().ok_or("child has no stdin")?;
+        let stdout = BufReader::new(child.stdout.take().ok_or("child has no stdout")?);
         Ok(CommandJudge {
             io: Mutex::new((child, stdin, stdout)),
         })
@@ -44,7 +47,7 @@ impl CommandJudge {
         let mut io = self.io.lock().unwrap();
         let req = json!({ "claim": claim.text, "quotes": claim.evidence.iter().map(|e| &e.quote).collect::<Vec<_>>() });
         writeln!(io.1, "{req}")
-            .and_then(|_| io.1.flush())
+            .and_then(|()| io.1.flush())
             .map_err(|e| e.to_string())?;
         let mut line = String::new();
         if io.2.read_line(&mut line).map_err(|e| e.to_string())? == 0 {

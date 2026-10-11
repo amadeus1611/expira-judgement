@@ -18,3 +18,20 @@ ej-habits = { path = "crates/ej-habits" }
 ej-delegate = { path = "crates/ej-delegate" }
 ej-bench = { path = "crates/ej-bench" }
 ej-nli = { path = "crates/ej-nli" }
+
+# Engineering standard, enforced by the compiler and CI (`cargo clippy --workspace --all-targets -- -D warnings`).
+# Ratchet: lints are only ever added or tightened. Each allow carries its reason.
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unused_must_use = "deny"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "deny", priority = -1 }
+# Counts and token totals here stay far below 2^52, so usize/u64 -> f64 is exact in practice.
+cast_precision_loss = "allow"
+# Probabilities are computed in f64 and stored as f32 confidences; the precision lost is far below any threshold used.
+cast_possible_truncation = "allow"
+# Short math names (a, b, p, q, n) follow the formulas they implement.
+many_single_char_names = "allow"
+similar_names = "allow"

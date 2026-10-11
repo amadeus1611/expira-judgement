@@ -11,6 +11,7 @@ pub struct Scored {
 }
 
 /// Area under the ROC curve (probability a stated case outscores an unstated one; ties count half).
+#[must_use]
 pub fn auroc(xs: &[Scored]) -> Option<f64> {
     let (pos, neg): (Vec<&Scored>, Vec<&Scored>) = xs.iter().partition(|s| s.stated);
     if pos.is_empty() || neg.is_empty() {
@@ -19,28 +20,34 @@ pub fn auroc(xs: &[Scored]) -> Option<f64> {
     let mut wins = 0.0;
     for a in &pos {
         for b in &neg {
-            wins += if a.p > b.p {
-                1.0
-            } else if a.p == b.p {
-                0.5
-            } else {
-                0.0
+            wins += match a.p.total_cmp(&b.p) {
+                std::cmp::Ordering::Greater => 1.0,
+                std::cmp::Ordering::Equal => 0.5,
+                std::cmp::Ordering::Less => 0.0,
             };
         }
     }
     Some(wins / (pos.len() * neg.len()) as f64)
 }
 
+/// Equal-width bin for a probability. The value is clamped to [0, 1] first, so the cast cannot see a negative or NaN.
+#[allow(clippy::cast_sign_loss)]
+fn bin_index(p: f64, bins: usize) -> usize {
+    let p = if p.is_nan() { 0.0 } else { p.clamp(0.0, 1.0) };
+    ((p * bins as f64) as usize).min(bins - 1)
+}
+
 /// Expected calibration error over equal-width bins: how far stated-rates sit from the probabilities claimed.
+#[must_use]
 pub fn ece(xs: &[Scored], bins: usize) -> f64 {
     if xs.is_empty() {
         return 0.0;
     }
     let mut sum = vec![(0.0, 0.0, 0usize); bins];
     for s in xs {
-        let b = ((s.p * bins as f64) as usize).min(bins - 1);
+        let b = bin_index(s.p, bins);
         sum[b].0 += s.p;
-        sum[b].1 += s.stated as u8 as f64;
+        sum[b].1 += f64::from(u8::from(s.stated));
         sum[b].2 += 1;
     }
     sum.iter()
@@ -64,6 +71,7 @@ pub struct Platt {
     pub b: f64,
 }
 impl Platt {
+    #[must_use]
     pub fn fit(xs: &[Scored]) -> Platt {
         let (mut a, mut b) = (1.0, 0.0);
         for _ in 0..100 {
@@ -71,7 +79,7 @@ impl Platt {
             for s in xs {
                 let x = logit(s.p);
                 let q = sigmoid(a * x + b);
-                let r = q - s.stated as u8 as f64;
+                let r = q - f64::from(u8::from(s.stated));
                 let w = q * (1.0 - q);
                 ga += r * x;
                 gb += r;
@@ -109,6 +117,7 @@ impl Platt {
             })
             .sum()
     }
+    #[must_use]
     pub fn apply(&self, p: f64) -> f64 {
         sigmoid(self.a * logit(p) + self.b)
     }
@@ -123,6 +132,7 @@ pub struct Thresholds {
 
 /// Wilson score lower bound on a success rate k/n at normal quantile `z` (1.96 for a two-sided 95% interval).
 /// Used so a threshold is never chosen on a small lucky sample: the bound, not the raw rate, must clear the target.
+#[must_use]
 pub fn wilson_lower(k: usize, n: usize, z: f64) -> f64 {
     if n == 0 {
         return 0.0;
@@ -136,9 +146,10 @@ pub const Z95: f64 = 1.96;
 
 /// Widest thresholds whose acted cases on `xs` are right at a rate whose 95% Wilson lower bound is at least `target`,
 /// on each side separately. `min_acted` is a floor on sample size as well. A side that cannot reach it never acts.
+#[must_use]
 pub fn fit_thresholds(xs: &[Scored], target: f64, min_acted: usize) -> Thresholds {
     let mut ps: Vec<f64> = xs.iter().map(|s| s.p).collect();
-    ps.sort_by(|a, b| a.total_cmp(b));
+    ps.sort_by(f64::total_cmp);
     ps.dedup();
     let ok = |acted: Vec<&Scored>, want: bool| {
         acted.len() >= min_acted
@@ -183,15 +194,16 @@ pub struct Selective {
 }
 
 /// Coverage and accuracy when acting under fixed thresholds. `wrong_yes` (unstated claim passed) is the dangerous error.
+#[must_use]
 pub fn selective(xs: &[Scored], t: Thresholds) -> Selective {
     let (mut ya, mut yr, mut na, mut nr) = (0, 0, 0, 0);
     for s in xs {
         if s.p >= t.yes {
             ya += 1;
-            yr += s.stated as usize;
+            yr += usize::from(s.stated);
         } else if s.p <= t.no {
             na += 1;
-            nr += !s.stated as usize;
+            nr += usize::from(!s.stated);
         }
     }
     let (acted, right) = (ya + na, yr + nr);
@@ -254,7 +266,7 @@ mod tests {
     fn wilson_bound_is_conservative() {
         assert!((wilson_lower(10, 10, Z95) - 0.7225).abs() < 1e-3); // 10/10 right only proves ~72%
         assert!(wilson_lower(1000, 1000, Z95) > 0.996);
-        assert_eq!(wilson_lower(0, 0, Z95), 0.0);
+        assert!(wilson_lower(0, 0, Z95).abs() < f64::EPSILON);
     }
 
     #[test]
@@ -262,11 +274,11 @@ mod tests {
         // 60 clean stated cases high, 60 clean unstated low, a mixed band in the middle.
         let mut xs = Vec::new();
         for i in 0..60 {
-            xs.push(s(0.9 + i as f64 * 1e-3, true));
-            xs.push(s(0.05 + i as f64 * 1e-3, false));
+            xs.push(s(0.9 + f64::from(i) * 1e-3, true));
+            xs.push(s(0.05 + f64::from(i) * 1e-3, false));
         }
         for i in 0..20 {
-            xs.push(s(0.4 + i as f64 * 1e-2, i % 2 == 0));
+            xs.push(s(0.4 + f64::from(i) * 1e-2, i % 2 == 0));
         }
         let t = fit_thresholds(&xs, 0.9, 10);
         assert!(
@@ -278,7 +290,7 @@ mod tests {
         assert!(r.accuracy_when_acting.unwrap() >= 0.95);
         // An unreachable target never acts.
         let t = fit_thresholds(&[s(0.9, false), s(0.8, false)], 0.99, 1);
-        assert_eq!(t.yes, f64::INFINITY);
+        assert!(t.yes.is_infinite() && t.yes > 0.0);
     }
 
     #[test]
@@ -319,6 +331,7 @@ pub struct FitReport {
     pub test_current: Option<Selective>,
 }
 
+#[must_use]
 pub fn fit_report(
     judge: &str,
     cal: &[Scored],

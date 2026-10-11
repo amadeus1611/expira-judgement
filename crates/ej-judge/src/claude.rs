@@ -16,6 +16,8 @@ use std::sync::Mutex;
 
 /// Sends one Messages API request body and returns the response body.
 pub trait Transport {
+    /// # Errors
+    /// Any transport or HTTP failure, as a readable message; the judge turns it into an Unsure ruling.
     fn post(&self, body: &Value) -> Result<Value, String>;
 }
 
@@ -85,12 +87,22 @@ impl<T: Transport> ClaudeJudge<T> {
 
     /// Usage of every call made so far (one record per call, failed rulings included: they were paid for), drained.
     pub fn take_usage(&self) -> Vec<Usage> {
-        std::mem::take(&mut *self.usage.lock().unwrap())
+        std::mem::take(
+            &mut *self
+                .usage
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner),
+        )
     }
 
     /// Teacher pairs gathered so far, drained.
     pub fn take_pairs(&self) -> Vec<TeacherPair> {
-        std::mem::take(&mut *self.pairs.lock().unwrap())
+        std::mem::take(
+            &mut *self
+                .pairs
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner),
+        )
     }
 }
 
@@ -103,6 +115,7 @@ pub struct Reply {
 }
 
 /// Reads the reply's JSON object into a ruling. None if it is missing, malformed, or a refusal.
+#[must_use]
 pub fn parse_ruling(response: &Value) -> Option<Reply> {
     if response["stop_reason"] == "refusal" {
         return None;
@@ -132,6 +145,7 @@ pub fn parse_ruling(response: &Value) -> Option<Reply> {
 }
 
 /// The span appears in some quote, ignoring case and runs of whitespace.
+#[must_use]
 pub fn span_in_quotes(span: &str, claim: &Claim) -> bool {
     let norm = |s: &str| {
         s.to_lowercase()
@@ -159,7 +173,10 @@ impl<T: Transport> Judge for ClaudeJudge<T> {
             t.elapsed().as_secs_f64() * 1e3,
             &resp,
         ) {
-            self.usage.lock().unwrap().push(u);
+            self.usage
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .push(u);
         }
         let Some(Reply {
             ruling,
@@ -195,12 +212,15 @@ impl<T: Transport> Judge for ClaudeJudge<T> {
             .map(|e| e.quote.as_str())
             .collect::<Vec<_>>()
             .join("\n");
-        self.pairs.lock().unwrap().push(TeacherPair {
-            claim: claim.text.clone(),
-            quote,
-            ruling: label.into(),
-            reason: reason.clone(),
-        });
+        self.pairs
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .push(TeacherPair {
+                claim: claim.text.clone(),
+                quote,
+                ruling: label.into(),
+                reason: reason.clone(),
+            });
         (ruling, conf, reason)
     }
 }

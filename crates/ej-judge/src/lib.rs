@@ -79,6 +79,7 @@ pub struct Calibration {
 }
 
 impl Calibration {
+    #[must_use]
     pub fn apply(&self, p: f64) -> f64 {
         let p = p.clamp(1e-6, 1.0 - 1e-6);
         1.0 / (1.0 + (-(self.a * (p / (1.0 - p)).ln() + self.b)).exp())
@@ -106,7 +107,7 @@ impl<J: Judge> Judge for Calibrated<J> {
         let Some(raw) = self.inner.p_stated(claim) else {
             return (Ruling::Unsure, 0.0, "judge gave no score".into());
         };
-        let p = self.cal.apply(raw as f64);
+        let p = self.cal.apply(f64::from(raw));
         if p >= self.cal.yes {
             (
                 Ruling::Supports,

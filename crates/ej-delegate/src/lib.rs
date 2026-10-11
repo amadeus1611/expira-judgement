@@ -15,6 +15,7 @@ pub enum Tier {
 }
 
 impl Tier {
+    #[must_use]
     pub fn next(self) -> Option<Tier> {
         match self {
             Tier::Scout => Some(Tier::Worker),
@@ -46,6 +47,9 @@ pub const ALLOWED_MODELS: [&str; 3] = ["claude-haiku-5-5", "claude-sonnet-5-5", 
 
 impl Roster {
     /// Loads a roster and refuses any model outside `ALLOWED_MODELS` or any tier without a model.
+    ///
+    /// # Errors
+    /// Malformed JSON, a tier with no model, a model outside `ALLOWED_MODELS`, or an unknown tier name.
     pub fn load(json: &str) -> Result<Roster, String> {
         let r: Roster = serde_json::from_str(json).map_err(|e| e.to_string())?;
         for tier in ["scout", "worker", "builder", "reviewer"] {
@@ -71,6 +75,7 @@ impl Roster {
     }
 }
 
+#[must_use]
 pub fn start_tier(task: &Task, roster: &Roster) -> Tier {
     if task.stakes > roster.high_stakes {
         return Tier::Reviewer;
@@ -78,7 +83,7 @@ pub fn start_tier(task: &Task, roster: &Roster) -> Tier {
     match task.kind.as_str() {
         "lookup" | "extract" | "gate_run" => Tier::Scout,
         "ledger_rows" | "normalise" | "small_edit" => Tier::Worker,
-        "synthesis" | "draft" | "build" => Tier::Builder,
+        // "synthesis", "draft", "build" and any kind not listed start at Builder.
         _ => Tier::Builder,
     }
 }
@@ -115,7 +120,7 @@ mod tests {
     use super::*;
     fn roster() -> Roster {
         Roster {
-            models: Default::default(),
+            models: std::collections::BTreeMap::default(),
             high_stakes: 500_000.0,
         }
     }

@@ -1,10 +1,10 @@
-//! Cost-aware routing. The static rule (start_tier) is a prior; once attempts are logged, each task kind starts at the
+//! Cost-aware routing. The static rule (`start_tier`) is a prior; once attempts are logged, each task kind starts at the
 //! tier with the lowest expected total cost of reaching a passed gate, given the measured pass rate and the measured
 //! average cost of an attempt at each tier. Quality is not traded: every path still ends at a passed gate or the top tier.
 //!
 //! Expected cost of starting at tier s: E(s) = sum over t >= s of cost(t) * P(every tier from s to t-1 failed).
 //! Pass rates use a Beta(1,1) prior, (passes + 1) / (attempts + 2), so a kind with no history is not judged on nothing.
-//! This is the cascade idea studied in FrugalGPT and RouteLLM (see docs/research), applied to our own tier log.
+//! This is the cascade idea studied in `FrugalGPT` and `RouteLLM` (see docs/research), applied to our own tier log.
 
 use crate::{Launch, Tier};
 use std::collections::BTreeMap;
@@ -27,21 +27,23 @@ impl Stats {
         for (kind, l) in log {
             let c = m.entry((kind.to_string(), l.tier)).or_default();
             c.attempts += 1;
-            c.passes += l.gate_passed as u32;
+            c.passes += u32::from(l.gate_passed);
         }
         Stats(m)
     }
+    #[must_use]
     pub fn pass_rate(&self, kind: &str, t: Tier) -> f64 {
         let c = self
             .0
             .get(&(kind.to_string(), t))
             .copied()
             .unwrap_or_default();
-        (c.passes as f64 + 1.0) / (c.attempts as f64 + 2.0)
+        (f64::from(c.passes) + 1.0) / (f64::from(c.attempts) + 2.0)
     }
 }
 
 /// Expected cost of starting `kind` at `start`, with `cost[t]` the measured mean cost of one attempt at tier t.
+#[must_use]
 pub fn expected_cost(
     kind: &str,
     start: Tier,
@@ -61,6 +63,7 @@ pub fn expected_cost(
 
 /// The start tier with the lowest expected cost, never below `floor` (high-stakes work keeps its floor).
 /// None when a tier's cost has not been measured yet: then the static rule applies.
+#[must_use]
 pub fn best_start(
     kind: &str,
     floor: Tier,

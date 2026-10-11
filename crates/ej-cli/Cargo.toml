@@ -19,3 +19,6 @@ ej-habits.workspace = true
 ej-delegate.workspace = true
 ureq = { version = "3", default-features = false, features = ["rustls", "json", "platform-verifier"] }
 ej-nli.workspace = true
+
+[lints]
+workspace = true

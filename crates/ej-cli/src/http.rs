@@ -1,4 +1,4 @@
-//! Messages API transport over HTTPS. Key from ANTHROPIC_API_KEY; proxy from the usual env vars; system CA roots.
+//! Messages API transport over HTTPS. Key from `ANTHROPIC_API_KEY`; proxy from the usual env vars; system CA roots.
 
 use ej_judge::claude::Transport;
 use serde_json::Value;
@@ -23,7 +23,7 @@ impl Http {
             .build();
         let agent = ureq::Agent::config_builder()
             .tls_config(tls)
-            .timeout_global(Some(std::time::Duration::from_secs(60)))
+            .timeout_global(Some(std::time::Duration::from_mins(1)))
             .http_status_as_error(false)
             .build()
             .into();
