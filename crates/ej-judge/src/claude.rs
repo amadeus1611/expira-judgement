@@ -254,6 +254,69 @@ mod tests {
         }
     }
 
+    /// Answers after a fixed delay, to check that latency is recorded in milliseconds.
+    struct Slow;
+    impl Transport for Slow {
+        fn post(&self, _: &Value) -> Result<Value, String> {
+            std::thread::sleep(std::time::Duration::from_millis(20));
+            Ok(
+                json!({ "content": [{ "type": "text", "text": "{\"ruling\":\"unsure\",\"confidence\":0.1,\"evidence_span\":\"\",\"reason\":\"r\"}" }], "usage": { "input_tokens": 1, "output_tokens": 1 } }),
+            )
+        }
+    }
+
+    #[test]
+    fn usage_latency_is_in_milliseconds() {
+        let j = ClaudeJudge::new(Slow, "m");
+        let _ = j.rule(&claim());
+        let ms = j.take_usage()[0].ms;
+        assert!((15.0..900.0).contains(&ms), "{ms}");
+    }
+
+    #[test]
+    fn schema_requires_every_field_and_limits_rulings() {
+        let s = schema();
+        assert_eq!(
+            s["required"],
+            json!(["ruling", "confidence", "evidence_span", "reason"])
+        );
+        assert_eq!(
+            s["properties"]["ruling"]["enum"],
+            json!(["supports", "contradicts", "unsure"])
+        );
+        assert_eq!(s["additionalProperties"], json!(false));
+    }
+
+    #[test]
+    fn every_ruling_word_parses() {
+        for (w, r) in [
+            ("supports", Ruling::Supports),
+            ("contradicts", Ruling::Contradicts),
+            ("unsure", Ruling::Unsure),
+        ] {
+            let text = format!("{{\"ruling\":\"{w}\",\"confidence\":0.5,\"evidence_span\":\"x\",\"reason\":\"y\"}}");
+            let resp = json!({ "content": [{ "type": "text", "text": text }] });
+            assert_eq!(parse_ruling(&resp).unwrap().ruling, r);
+        }
+        let resp = json!({ "content": [{ "type": "text", "text": "{\"ruling\":\"maybe\",\"confidence\":0.5}" }] });
+        assert!(parse_ruling(&resp).is_none());
+    }
+
+    #[test]
+    fn span_check_ignores_quoting_marks_but_not_content() {
+        let cl = claim();
+        for span in [
+            "\"applies to all orders\"",
+            "'applies to all orders'",
+            "…applies to all orders.",
+            "applies to all orders",
+        ] {
+            assert!(span_in_quotes(span, &cl), "{span}");
+        }
+        assert!(!span_in_quotes("applies to some orders", &cl));
+        assert!(!span_in_quotes("\"\"", &cl));
+    }
+
     #[test]
     fn request_carries_claim_quotes_and_model() {
         let j = ClaudeJudge::new(reply(""), "m-test");

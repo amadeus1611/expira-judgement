@@ -136,6 +136,20 @@ mod tests {
     }
 
     #[test]
+    fn counts_attempts_and_passes() {
+        let log = launches(Tier::Worker, 5, 2);
+        let s = Stats::from_log(log.iter().map(|l| ("k", l)));
+        assert_eq!(
+            s.0[&("k".to_string(), Tier::Worker)],
+            Counts {
+                attempts: 5,
+                passes: 2
+            }
+        );
+        assert!((s.pass_rate("k", Tier::Worker) - 3.0 / 7.0).abs() < 1e-12);
+    }
+
+    #[test]
     fn expected_cost_formula() {
         // No history: every pass rate is 1/2. From Builder: 10 + 0.5 * 40 = 30.
         assert_eq!(

@@ -160,6 +160,34 @@ mod tests {
     }
 
     #[test]
+    fn stakes_at_the_limit_are_not_high() {
+        assert_eq!(
+            start_tier(&task("lookup", 500_000.0), &roster()),
+            Tier::Scout
+        );
+        assert_eq!(
+            start_tier(&task("lookup", 500_000.01), &roster()),
+            Tier::Reviewer
+        );
+    }
+
+    #[test]
+    fn kinds_map_to_their_tiers() {
+        for (k, t) in [
+            ("lookup", Tier::Scout),
+            ("extract", Tier::Scout),
+            ("gate_run", Tier::Scout),
+            ("ledger_rows", Tier::Worker),
+            ("normalise", Tier::Worker),
+            ("small_edit", Tier::Worker),
+            ("draft", Tier::Builder),
+            ("anything", Tier::Builder),
+        ] {
+            assert_eq!(start_tier(&task(k, 0.0), &roster()), t, "{k}");
+        }
+    }
+
+    #[test]
     fn high_stakes_start_at_reviewer() {
         assert_eq!(
             start_tier(&task("lookup", 600_000.0), &roster()),

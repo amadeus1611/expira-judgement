@@ -72,3 +72,37 @@ pub const NEGATORS: [&str; 8] = [
 pub fn is_negator(w: &str) -> bool {
     NEGATORS.contains(&w) || w.ends_with("n't") || w.ends_with("n’t")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn only_backed_and_supported_pass() {
+        for v in [Verdict::Backed, Verdict::Supported] {
+            assert!(v.passes(), "{v:?}");
+        }
+        for v in [
+            Verdict::Unbacked,
+            Verdict::Mismatch,
+            Verdict::Stale,
+            Verdict::Unsure,
+        ] {
+            assert!(!v.passes(), "{v:?}");
+        }
+    }
+
+    #[test]
+    fn negators() {
+        for w in [
+            "not", "no", "never", "without", "none", "neither", "nor", "cannot", "isn't", "don't",
+            "wasn’t",
+        ] {
+            assert!(is_negator(w), "{w}");
+        }
+        for w in ["note", "know", "nothing-like", "on", "isn", "tn't"] {
+            assert_eq!(is_negator(w), w.ends_with("n't"), "{w}");
+        }
+        assert!(!is_negator("notice"));
+    }
+}

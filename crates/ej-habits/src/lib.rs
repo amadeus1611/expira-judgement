@@ -220,11 +220,65 @@ mod tests {
         assert_eq!(h.state, State::Adopted);
     }
     #[test]
+    fn stays_candidate_until_enough_agreement() {
+        let mut h = Habit::new("h", "r");
+        let p = Adoption { min_agree: 3 };
+        h.observe(true, "", p);
+        h.observe(true, "", p);
+        assert_eq!((h.state, h.agree), (State::Candidate, 2));
+        h.observe(true, "", p);
+        assert_eq!((h.state, h.agree), (State::Adopted, 3));
+    }
+
+    #[test]
+    fn every_token_kind_is_priced() {
+        let u = Usage {
+            model: "m".into(),
+            input_tokens: 1_000_000,
+            output_tokens: 1_000_000,
+            cache_read_input_tokens: 1_000_000,
+            cache_creation_input_tokens: 1_000_000,
+            ms: 0.0,
+            route: String::new(),
+        };
+        let mut prices = std::collections::BTreeMap::new();
+        prices.insert(
+            "m".to_string(),
+            Price {
+                input: 1.0,
+                output: 2.0,
+                cache_read: Some(3.0),
+                cache_write_5m: Some(5.0),
+            },
+        );
+        assert_eq!(cost(&u, &prices), Some(11.0));
+    }
+
+    #[test]
+    fn jsonl_round_trip_and_read_errors() {
+        let dir = std::env::temp_dir().join(format!("ej-jsonl-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("u.jsonl");
+        let p = TeacherPair {
+            claim: "c".into(),
+            quote: "q".into(),
+            ruling: "unsure".into(),
+            reason: "r".into(),
+        };
+        append_jsonl(&path, &[p.clone(), p.clone()]).unwrap();
+        assert_eq!(load_pairs(&path).unwrap(), vec![p.clone(), p]);
+        // A directory is not a missing file: reading it is an error, not an empty set.
+        assert!(load_pairs(&dir).is_err());
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
     fn one_contradiction_retires() {
         let mut h = Habit::new("h2", "overlap >= 0.9 is support");
         h.observe(true, "", Adoption::default());
         h.observe(false, "negation flipped meaning", Adoption::default());
-        assert_eq!(h.state, State::Retired);
+        assert_eq!((h.state, h.disagree), (State::Retired, 1));
         h.observe(true, "", Adoption::default());
         assert_eq!(h.agree, 1);
     }

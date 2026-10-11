@@ -20,10 +20,10 @@ pub trait Judge {
     fn p_stated(&self, _claim: &Claim) -> Option<f32> {
         None
     }
-    /// Confidence this judge's acted rulings must reach, if it sets its own (a calibrated judge already gates by its
-    /// fitted thresholds). None uses the shared `Bars`.
-    fn bar(&self) -> Option<f32> {
-        None
+    /// True if this judge only ever returns a non-Unsure ruling after clearing its own fitted thresholds, so the
+    /// shared `Bars` must not gate it a second time (a calibrated judge). False for raw judges.
+    fn self_gated(&self) -> bool {
+        false
     }
 }
 
@@ -43,7 +43,7 @@ pub fn adjudicate(claim: &Claim, judges: &[&dyn Judge], bars: Bars) -> Finding {
     let mut last = String::from("no judge available");
     for j in judges {
         let (r, c, why) = j.rule(claim);
-        if r != Ruling::Unsure && c >= j.bar().unwrap_or(bars.act) {
+        if r != Ruling::Unsure && (j.self_gated() || c >= bars.act) {
             let verdict = if r == Ruling::Supports {
                 Verdict::Supported
             } else {
@@ -100,8 +100,8 @@ impl<J: Judge> Judge for Calibrated<J> {
     fn p_stated(&self, claim: &Claim) -> Option<f32> {
         self.inner.p_stated(claim)
     }
-    fn bar(&self) -> Option<f32> {
-        Some(0.0)
+    fn self_gated(&self) -> bool {
+        true
     }
     fn rule(&self, claim: &Claim) -> (Ruling, f32, String) {
         let Some(raw) = self.inner.p_stated(claim) else {
@@ -297,6 +297,81 @@ mod tests {
             Bars::default(),
         );
         assert_eq!(f.verdict, Verdict::Supported);
+    }
+
+    #[test]
+    fn default_judge_has_no_score_and_is_not_self_gated() {
+        let f = Fixed(Ruling::Supports, 0.9);
+        assert_eq!(f.p_stated(&c("x", "y")), None);
+        assert!(!f.self_gated());
+    }
+
+    #[test]
+    fn calibration_formula_and_wrapper_pass_through() {
+        // sigmoid(2 * logit(0.7) + 1) = 1 / (1 + exp(-(2 ln(7/3) + 1)))
+        let cal = Calibration {
+            a: 2.0,
+            b: 1.0,
+            yes: 0.9,
+            no: 0.1,
+        };
+        let want = 1.0 / (1.0 + (-(2.0 * (0.7f64 / 0.3).ln() + 1.0)).exp());
+        assert!((cal.apply(0.7) - want).abs() < 1e-12);
+        // Scores of exactly 0 or 1 are clamped inside (0, 1), so the result stays finite and short of certainty.
+        let id = Calibration {
+            a: 1.0,
+            b: 0.0,
+            yes: 0.9,
+            no: 0.1,
+        };
+        assert!(id.apply(1.0) < 1.0 && id.apply(1.0) > 0.999_99 && id.apply(0.0) > 0.0);
+        let w = Calibrated {
+            inner: Score(0.42),
+            cal: Calibration {
+                a: 1.0,
+                b: 0.0,
+                yes: 0.7,
+                no: 0.2,
+            },
+        };
+        assert_eq!(w.p_stated(&c("x", "y")), Some(0.42));
+        assert!(w.self_gated());
+        let (r, conf, _) = Calibrated {
+            inner: Score(0.1),
+            cal: Calibration {
+                a: 1.0,
+                b: 0.0,
+                yes: 0.7,
+                no: 0.2,
+            },
+        }
+        .rule(&c("x", "y"));
+        assert_eq!(r, Ruling::Contradicts);
+        assert!((conf - 0.9).abs() < 1e-6);
+    }
+
+    #[test]
+    fn overlap_ignores_short_words() {
+        // "is" and "ok" are too short to count; "the" and "fee" are both in the quote.
+        assert_eq!(
+            OverlapJudge.rule(&c("the fee is ok", "the fee")).0,
+            Ruling::Supports
+        );
+    }
+
+    #[test]
+    fn overlap_sees_negation_through_punctuation() {
+        for q in [
+            "it does not, the fee does apply",
+            "Not. The fee does apply",
+            "the fee does apply (isn’t it)",
+        ] {
+            assert_eq!(
+                OverlapJudge.rule(&c("the fee does apply", q)).0,
+                Ruling::Unsure,
+                "{q}"
+            );
+        }
     }
 
     #[test]
