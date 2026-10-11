@@ -147,7 +147,12 @@ fn dates(toks: &[&str]) -> (Vec<(usize, Quantity)>, Vec<bool>) {
         unit: "date".into(),
     };
     let mut i = 0;
-    while toks.get(i).is_some() {
+    // Each pass consumes at least one token, so the loop needs at most one pass per token. The explicit bound keeps a
+    // broken step (one that stops advancing) from looping forever and exhausting memory.
+    for _ in 0..toks.len() {
+        if toks.get(i).is_none() {
+            break;
+        }
         let t = |k: usize| toks.get(i + k).copied().unwrap_or("");
         let iso: Vec<&str> = t(0)
             .trim_matches(|c: char| !c.is_ascii_digit())
@@ -624,6 +629,14 @@ mod tests {
             vec![(ym(2026, 9), "month".to_string())]
         );
         assert_eq!(q("in 2026-09"), vec![(ym(2026, 9), "month".to_string())]);
+        // Two dates, the first at the very start: each is found once, in order.
+        assert_eq!(
+            q("2026-09-01 then 1 Oct 2026"),
+            vec![
+                (ymd(2026, 9, 1), "date".to_string()),
+                (ymd(2026, 10, 1), "date".to_string())
+            ]
+        );
         assert_eq!(
             q("opened 1 Sept 2026 at PHP 900"),
             vec![
