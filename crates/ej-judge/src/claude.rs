@@ -10,7 +10,7 @@
 
 use crate::{Judge, Ruling};
 use ej_core::{Claim, Layer};
-use ej_habits::TeacherPair;
+use ej_habits::{TeacherPair, Usage};
 use serde_json::{json, Value};
 use std::sync::Mutex;
 
@@ -27,6 +27,7 @@ pub struct ClaudeJudge<T: Transport> {
     /// only if a measured eval shows it pays.
     pub effort: String,
     pairs: Mutex<Vec<TeacherPair>>,
+    usage: Mutex<Vec<Usage>>,
 }
 
 const SYSTEM: &str = "You check whether quoted evidence supports a claim. Use only the quotes given; do not use outside knowledge. \
@@ -54,7 +55,7 @@ fn schema() -> Value {
 
 impl<T: Transport> ClaudeJudge<T> {
     pub fn new(transport: T, model: impl Into<String>) -> Self {
-        ClaudeJudge { transport, model: model.into(), max_tokens: 2000, effort: "low".into(), pairs: Mutex::new(Vec::new()) }
+        ClaudeJudge { transport, model: model.into(), max_tokens: 2000, effort: "low".into(), pairs: Mutex::new(Vec::new()), usage: Mutex::new(Vec::new()) }
     }
 
     pub fn request(&self, claim: &Claim) -> Value {
@@ -67,6 +68,11 @@ impl<T: Transport> ClaudeJudge<T> {
             "fallbacks": "default",
             "messages": [{ "role": "user", "content": format!("Claim: {}\n\nQuotes:\n{}", claim.text, quotes) }],
         })
+    }
+
+    /// Usage of every call made so far (one record per call, failed rulings included: they were paid for), drained.
+    pub fn take_usage(&self) -> Vec<Usage> {
+        std::mem::take(&mut *self.usage.lock().unwrap())
     }
 
     /// Teacher pairs gathered so far, drained.
@@ -101,7 +107,9 @@ pub fn span_in_quotes(span: &str, claim: &Claim) -> bool {
 impl<T: Transport> Judge for ClaudeJudge<T> {
     fn layer(&self) -> Layer { Layer::Claude }
     fn rule(&self, claim: &Claim) -> (Ruling, f32, String) {
+        let t = std::time::Instant::now();
         let resp = match self.transport.post(&self.request(claim)) { Ok(r) => r, Err(e) => return (Ruling::Unsure, 0.0, format!("claude call failed: {e}")) };
+        if let Some(u) = Usage::from_response(&self.model, "escalation", t.elapsed().as_secs_f64() * 1e3, &resp) { self.usage.lock().unwrap().push(u); }
         let Some(Reply { ruling, confidence: conf, reason, span }) = parse_ruling(&resp) else { return (Ruling::Unsure, 0.0, "claude reply not parseable or refused".into()) };
         if reason.is_empty() { return (Ruling::Unsure, 0.0, "claude gave no reason".into()); }
         if ruling != Ruling::Unsure && !span_in_quotes(&span, claim) {
@@ -122,7 +130,7 @@ mod tests {
 
     struct Canned(Result<Value, String>);
     impl Transport for Canned { fn post(&self, _: &Value) -> Result<Value, String> { self.0.clone() } }
-    fn reply(text: &str) -> Canned { Canned(Ok(json!({ "content": [{ "type": "text", "text": text }] }))) }
+    fn reply(text: &str) -> Canned { Canned(Ok(json!({ "content": [{ "type": "text", "text": text }], "usage": { "input_tokens": 120, "output_tokens": 40 } }))) }
     fn claim() -> Claim { Claim { id: "c".into(), text: "orders carry the fee".into(), evidence: vec![Evidence { source: "s".into(), date: "2026-01-01".into(), quote: "a management fee applies to all orders".into() }] } }
 
     #[test]
@@ -145,6 +153,8 @@ mod tests {
         assert_eq!(pairs.len(), 1);
         assert_eq!(pairs[0].ruling, "supports");
         assert!(j.take_pairs().is_empty());
+        let u = j.take_usage();
+        assert_eq!((u.len(), u[0].input_tokens, u[0].route.as_str()), (1, 120, "escalation"));
     }
 
     #[test]

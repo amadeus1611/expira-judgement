@@ -1,9 +1,10 @@
 //! ej check <claims.json> [--today YYYY-MM-DD] [--max-age DAYS] [--nli DIR --policy POLICY.json]
-//!          [--claude [--model ID] [--pairs FILE]]
+//!          [--claude [--model ID] [--pairs FILE] [--usage FILE] [--prices FILE]]
 //! Reads an array of claims and runs the cascade: layer 1 (deterministic), then the overlap judge, then the NLI judge
 //! under its fitted calibration (only if the policy says it passed the standard; otherwise it is skipped and its
 //! cases escalate), then, with --claude, Claude for what is still unsure, appending each ruling to the teacher-pair
-//! file. Prints findings as JSON. Exit 1 if any claim fails.
+//! file and each call's token usage to the usage log; with --prices (a sourced, dated price file such as
+//! config/prices.json) a cost summary goes to stderr. Prints findings as JSON. Exit 1 if any claim fails.
 
 mod http;
 
@@ -42,6 +43,16 @@ fn main() {
     if let Some(c) = &claude {
         let path = opt("--pairs").unwrap_or_else(|| "teacher_pairs.jsonl".into());
         ej_habits::append_pairs(std::path::Path::new(&path), &c.take_pairs()).expect("write teacher pairs");
+        let usage = c.take_usage();
+        ej_habits::append_jsonl(std::path::Path::new(&opt("--usage").unwrap_or_else(|| "usage.jsonl".into())), &usage).expect("write usage");
+        let (inp, out): (u64, u64) = usage.iter().fold((0, 0), |a, u| (a.0 + u.input_tokens, a.1 + u.output_tokens));
+        let priced = opt("--prices").map(|p| {
+            let doc: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(&p).expect("read prices")).expect("parse prices");
+            let prices: std::collections::BTreeMap<String, ej_habits::Price> = serde_json::from_value(doc["models"].clone()).expect("prices.models");
+            usage.iter().map(|u| ej_habits::cost(u, &prices)).sum::<Option<f64>>()
+        });
+        let cost = match priced { Some(Some(c)) => format!(", ${c:.4}"), Some(None) => ", cost unknown (model or cache rate not in the price file)".into(), None => String::new() };
+        eprintln!("claude: {} calls, {inp} input / {out} output tokens{cost}", usage.len());
     }
     println!("{}", serde_json::to_string_pretty(&findings).unwrap());
     if findings.iter().any(|f| !f.verdict.passes()) { std::process::exit(1); }
