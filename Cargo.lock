@@ -501,6 +501,7 @@ name = "ej-judge"
 version = "0.1.0"
 dependencies = [
  "ej-core",
+ "ej-evidence",
  "ej-habits",
  "serde",
  "serde_json",

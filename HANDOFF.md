@@ -106,3 +106,49 @@ no invented figures; one small tested change per commit.
 
 ### Next
 - Pluggable escalation transport (subscription CLI) and configurable allowed-model list; then then MiniCheck (ONNX export) and a Haiku-first escalation cascade measured on teacher pairs.
+
+## 2026-10-11 (later) General layer to 99%: VitaminC, name rule, Claude via subscription CLI
+
+Owner direction: EXPIRA only until mature (engine work parked on gssc-opp-engine branch `claude/ej-learnings`, unmerged);
+general web-text layer to a proven 99% first; owner directs, the agent analyses and executes; recommendations come only
+from adopted habits (`docs/HABITS.md`).
+
+### Done (branch `claude/general-99`)
+- `tools/fetch_general.py`: reproducible VitaminC calibration/test splits, split by case (2,905 / 3,095 rows).
+- Measured on VitaminC test: DeBERTa-v3-xsmall AUROC 0.794, best proven "stated" bound 0.9336 (298/310).
+- Exact-name rule (`ej_evidence::names_in_quotes`, enforced on local judges in `adjudicate`): bound 0.9336 -> 0.9438.
+- Negation pre-check measured and rejected (0.9336 -> 0.9327).
+- `tools/escalation_bench.py`: layer 3 through `claude -p` (no API key), schema + cited-span check, cost per call.
+  Haiku 5.5 partial: 66/68 "supports" right; ~$0.00044 per call.
+- `ej-nli` loads binary checkers via `ej_labels.json`; `tools/export_onnx.py` (MiniCheck exported; its ONNX scores
+  looked near-random on 40 rows and were being checked against the PyTorch original).
+- `docs/HABITS.md` + `ej_habits::recommendable`: only adopted habits are recommended.
+
+### Open (were running at this section; data in the session scratchpad, re-creatable with the tools above)
+- Haiku and Opus 5.5 on the same 1,000 VitaminC test rows (seed 7): decides the 99% design (Haiku "supports" confirmed
+  by Opus, both with cited spans). Needs >= 381 agreed "supports" calls with zero errors for a 0.99 bound.
+- DeBERTa-v3-large fp32 on VitaminC; MiniCheck ONNX vs PyTorch check.
+- Background agent PR: ej-bench zero mutants, cargo-deny, missing_docs (branch `claude/ej-ratchets`).
+- Mutation-test the new name rule code; integrate the name rule into `ej-bench fit` scoring.
+
+### Next
+- Fit and log round 3 in `docs/bench/2026-10-11-round3-general-99.md`; adopt the escalation design that proves 0.99.
+- Rust `CommandTransport` for `ej check` using the same CLI flags as `tools/escalation_bench.py`.
+
+## 2026-10-11 (hand-over to Codex) Round 3 stopped at the owner's usage limit
+
+### Done
+- Round 3 logged: `docs/bench/2026-10-11-round3-general-99.md` (VitaminC; xsmall 0.9336 -> 0.9438 with the name rule;
+  Haiku 277/289, Opus 185/194, agreement 164/171 on partial runs; cost per call; label-noise and cascade findings).
+- Overlap placeholder removed from the `ej check` cascade (it passed 9 of 82 unsupported claims); retired habit recorded.
+- Layer 1 reads bounds ("more than", "fewer than", "before", "at least" ...; `Cmp`, `bounded_quantities`) and bare years;
+  a bound not met by any quote figure escalates instead of being a certain mismatch. False "mismatch" on true claims in
+  the 1,000-row sample: 145 -> 33; "backed" unchanged 13/13. 100 tests pass.
+- MiniCheck ONNX export verified against PyTorch (1e-6); scores weakly on a 40-row sample.
+- All background runs stopped to save the owner's usage; agent work saved on branch `claude/ej-ratchets` (2 finished
+  commits + 1 WIP commit, unverified).
+- Cold-start prompt for Codex rewritten: `docs/handoffs/codex-start.md`.
+
+### Open / Next
+- See `docs/handoffs/codex-start.md` section 4 (ordered next steps). Mutation testing of the new layer-1 bound and
+  name-rule code was not run yet; run it first (`cargo mutants -p ej-evidence -p ej-judge`).

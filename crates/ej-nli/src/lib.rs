@@ -21,11 +21,31 @@ pub struct NliJudge {
 
 fn ruling_for(label: &str) -> Option<Ruling> {
     match label.to_lowercase().as_str() {
-        "entailment" => Some(Ruling::Supports),
-        "contradiction" => Some(Ruling::Contradicts),
-        "neutral" => Some(Ruling::Unsure),
+        "entailment" | "supports" => Some(Ruling::Supports),
+        "contradiction" | "contradicts" => Some(Ruling::Contradicts),
+        "neutral" | "unsure" => Some(Ruling::Unsure),
         _ => None,
     }
+}
+
+/// Reads an explicit label map, `ej_labels.json`: a JSON array giving the ruling for each output index, e.g.
+/// `["unsure", "supports"]` for a binary "supported / not supported" checker such as `MiniCheck`. Used instead of
+/// `id2label` when present, because binary models label their classes "0"/"1" and the meaning cannot be guessed.
+///
+/// # Errors
+/// Not a JSON array of strings, empty, or containing a word other than supports / contradicts / unsure.
+pub fn labels_from_list(list: &serde_json::Value) -> Result<Vec<Ruling>, String> {
+    let items = list.as_array().ok_or("ej_labels.json is not an array")?;
+    if items.is_empty() {
+        return Err("ej_labels.json is empty".into());
+    }
+    items
+        .iter()
+        .map(|v| {
+            let w = v.as_str().ok_or("ej_labels.json entry not a string")?;
+            ruling_for(w).ok_or(format!("unknown label {w}"))
+        })
+        .collect()
 }
 
 /// Reads `id2label` into a ruling per index. Errors on unknown labels rather than guessing.
@@ -66,7 +86,10 @@ impl NliJudge {
             &std::fs::read_to_string(dir.join("config.json")).map_err(|e| e.to_string())?,
         )
         .map_err(|e| e.to_string())?;
-        let labels = labels_from_config(&config)?;
+        let labels = match std::fs::read_to_string(dir.join("ej_labels.json")) {
+            Ok(text) => labels_from_list(&serde_json::from_str(&text).map_err(|e| e.to_string())?)?,
+            Err(_) => labels_from_config(&config)?,
+        };
         let mut tokenizer =
             Tokenizer::from_file(dir.join("tokenizer.json")).map_err(|e| e.to_string())?;
         tokenizer
@@ -177,6 +200,21 @@ mod tests {
         assert!(
             labels_from_config(&serde_json::json!({ "id2label": { "0": "LABEL_0" } })).is_err()
         );
+    }
+
+    #[test]
+    fn explicit_label_list_for_binary_checkers() {
+        let l = labels_from_list(&serde_json::json!(["unsure", "supports"])).unwrap();
+        assert_eq!(l, vec![Ruling::Unsure, Ruling::Supports]);
+        let words =
+            labels_from_list(&serde_json::json!(["contradicts", "entailment", "neutral"])).unwrap();
+        assert_eq!(
+            words,
+            vec![Ruling::Contradicts, Ruling::Supports, Ruling::Unsure]
+        );
+        assert!(labels_from_list(&serde_json::json!([])).is_err());
+        assert!(labels_from_list(&serde_json::json!(["maybe"])).is_err());
+        assert!(labels_from_list(&serde_json::json!({"0": "supports"})).is_err());
     }
 
     #[test]

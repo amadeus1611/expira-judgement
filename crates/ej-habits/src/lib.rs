@@ -66,6 +66,12 @@ impl Habit {
     }
 }
 
+/// The habits that may appear in a self-report or recommendation: adopted ones only. Candidates are unproven and
+/// retired ones are bad habits; neither is ever recommended (owner decision 2026-10-11, docs/HABITS.md).
+pub fn recommendable(habits: &[Habit]) -> impl Iterator<Item = &Habit> {
+    habits.iter().filter(|h| h.state == State::Adopted)
+}
+
 /// A teacher pair from an escalation: the claim, the quote and Claude's ruling with its reason.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct TeacherPair {
@@ -271,6 +277,21 @@ mod tests {
         // A directory is not a missing file: reading it is an error, not an empty set.
         assert!(load_pairs(&dir).is_err());
         std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn only_adopted_habits_are_recommended() {
+        let mut adopted = Habit::new("good", "fit thresholds");
+        for _ in 0..3 {
+            adopted.observe(true, "", Adoption { min_agree: 3 });
+        }
+        let candidate = Habit::new("maybe", "unproven");
+        let mut retired = Habit::new("bad", "raw bar");
+        retired.observe(false, "passed unsupported claims", Adoption::default());
+        let all = [candidate, retired, adopted];
+        let ids: Vec<&str> = recommendable(&all).map(|h| h.id.as_str()).collect();
+        assert_eq!(ids, vec!["good"]);
+        assert_eq!(recommendable(&all[..2]).count(), 0);
     }
 
     #[test]
