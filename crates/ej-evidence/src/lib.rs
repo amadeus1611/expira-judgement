@@ -478,6 +478,42 @@ fn contained_unnegated(quote: &str, claim: &str) -> bool {
     })
 }
 
+/// Words that are capitalised for grammar, not because they name something.
+const NOT_NAMES: [&str; 33] = [
+    "the", "a", "an", "of", "in", "on", "at", "to", "for", "and", "or", "but", "with", "by",
+    "from", "as", "is", "are", "was", "were", "be", "been", "his", "her", "its", "their", "this",
+    "that", "these", "those", "it", "he", "she",
+];
+
+/// Proper names in the claim (capitalised words after the first), lower-cased, without surrounding punctuation.
+#[must_use]
+pub fn names(claim: &str) -> Vec<String> {
+    claim
+        .split_whitespace()
+        .skip(1)
+        .map(|w| w.trim_matches(|c: char| !c.is_alphanumeric()))
+        .filter(|w| w.chars().next().is_some_and(char::is_uppercase))
+        .map(str::to_lowercase)
+        .filter(|w| !NOT_NAMES.contains(&w.as_str()))
+        .collect()
+}
+
+/// Every proper name in the claim appears, spelled exactly, as a word in some quote. A model must not call a claim
+/// stated when a name differs ("Russ" vs "Rush"): measured on `VitaminC`, requiring this lifted the local checker's
+/// proven "stated" accuracy (docs/bench/2026-10-11-round3-general-99.md).
+#[must_use]
+pub fn names_in_quotes(claim: &str, quotes: &[&str]) -> bool {
+    let words: Vec<String> = quotes
+        .iter()
+        .flat_map(|q| q.split_whitespace())
+        .map(|w| {
+            w.trim_matches(|c: char| !c.is_alphanumeric())
+                .to_lowercase()
+        })
+        .collect();
+    names(claim).iter().all(|n| words.contains(n))
+}
+
 /// Checks that the listed parts add up to the stated total (tolerance for rounding to one unit).
 #[must_use]
 pub fn sum_matches(parts: &[f64], total: f64) -> bool {
@@ -966,6 +1002,33 @@ mod tests {
             day_number("2000-01-01").unwrap() - day_number("1970-01-01").unwrap(),
             10_957
         );
+    }
+
+    #[test]
+    fn names_must_match_exactly() {
+        assert_eq!(
+            names("Rush Fischer said The film was good"),
+            vec!["fischer".to_string()]
+        );
+        assert!(names_in_quotes(
+            "Then Russ Fischer praised it",
+            &["In his review, Russ Fischer noted the timing."]
+        ));
+        assert!(!names_in_quotes(
+            "Then Rush Fischer praised it",
+            &["In his review, Russ Fischer noted the timing."]
+        ));
+        assert!(!names_in_quotes(
+            "Luka Mathai backed reform",
+            &["Matthai actively supported reform"]
+        ));
+        // Grammar words and the first word are not names; a name may come from any quote.
+        assert!(names_in_quotes("It was The best", &["it was the best"]));
+        assert!(names_in_quotes(
+            "Visit Iloilo and Cebu",
+            &["Iloilo is lovely", "so is Cebu."]
+        ));
+        assert!(names_in_quotes("no names here", &[]));
     }
 
     #[test]
