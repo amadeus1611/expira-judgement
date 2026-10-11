@@ -2,6 +2,8 @@
 
 Status: research specification, not an implemented runner or a successful validation. Research sources:
 `docs/research/2026-10-11-rigorous-99-validation.md`. Existing standard v1 and frozen data remain authoritative.
+The staged implementation, population/source design, label workflow and architecture experiments are in
+[`general-99-roadmap.md`](general-99-roadmap.md). That roadmap is also a plan, not a certification.
 
 ## Before fitting or running
 1. Declare the target population, sampling unit, inclusion rules, label rubric, total validation budget, sample size,
