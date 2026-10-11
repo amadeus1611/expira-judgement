@@ -217,3 +217,45 @@ from adopted habits (`docs/HABITS.md`).
   report absent cost as unknown. Reuse existing authentication; do not request a Claude key or credentials in chat.
 - Resume cold-start section 4 step 2: rebuild frozen VitaminC splits, measure the whole cascade using only proven local
   judges and small escalation runs, report raw results and observed cost, then do the label audit separately without fitting on it.
+
+## 2026-10-11 (Codex) Rigorous research for the 99% goal
+
+### Done
+- PR #3 merged after green CI at `7ce64571c688088577d930e89976254eb3538f06`. Refreshed the cold-start instructions;
+  baseline fmt/clippy/full tests passed before research. All existing bars, frozen data and labels remain unchanged.
+- Read original research abstracts and authors' source/licence files on Learn-then-Test, conformal risk control,
+  independent label audits, atomic checking and exact binomial intervals. Recorded hypotheses and limitations in
+  `docs/research/2026-10-11-rigorous-99-validation.md`; wrote `docs/validation/general-99.md` as a specification,
+  not a claim that a new runner or model has passed.
+- Hugging Face access now works. Rebuilt both VitaminC files twice byte-identically outside the checkout. Test has
+  3,095 rows but only 935 case IDs; no shared case IDs, yet 21 exact / 24 normalised claim–quote pairs cross cal/test.
+  Preserve the frozen files; grouping by case alone does not establish independence or absence of overlap.
+- Measured production layer 1 on all test rows and the historical seed-7 sample without fitting or inspecting error
+  examples. Full test: 25/25 backed, nominal pass bound 0.866804; 119 true-labelled claims blocked. Even perfect later
+  decisions give a maximal block bound of 0.914991 on these labels. Sample reproduces 13/13 backed and 33 false blocks.
+  Results, hashes, commands and independent sample-requirement calculations: `docs/bench/2026-10-11-rigorous-99-baseline.md`.
+- One bounded synthetic Codex probe now reaches the endpoint but fails HTTP 401 / refresh after logout/account change.
+  No answer or usage/cost report: cost unknown. No held-out subscription calls; no Claude calls.
+- A directed logical challenge found a false stated call on an unestablished conditional (`If the alarm is armed,
+  the gate is locked`). Positive and explicit-refutation controls behaved correctly. This disclosed engineering
+  counterexample is not a prevalence estimate or an unseen stress set; no code was fitted to it.
+- A fresh full mutation run exited 0: 856 generated, 794 caught, 62 unviable, zero missed, zero timeouts. fmt/clippy,
+  workspace tests and cargo-deny passed. Passing software tests do not establish semantic 99% accuracy.
+
+### Open
+- The general layer still has no v1 pass. Whole-cascade live scoring remains unrun: managed Codex authentication needs
+  restoration by the platform, and the tested subscription adapter is not built. Do not ask for credentials in chat.
+- Existing repeated test inspections and correlated/overlapping examples do not support a fresh 99% confirmation.
+  New validation requires a frozen candidate, untouched grouped data, declared sampling population and stopping rule.
+- The new protocol is a research specification; runner integrity, exact statistics/selection tests, live inference,
+  fresh stress, ECE, eligible local coverage, quiet latency and independent label adjudication are still outstanding.
+- Full-paper research hosts and current startup findings are saved in the environment draft, not published. The
+  reproducibility habit now distinguishes grouping from measured overlap; the case-ID-only assumption is retired.
+
+### Next
+- Continue ordered step 2: restore the managed Codex route, test the benchmark adapter and whole-cascade runner
+  failure/identity/routing behavior, then start with at most 10 calibration cases and report actual usage/cost.
+- Separate label audit after frozen predictions; raw and audited scores together, unresolved corrections provisional.
+  Do not fit on test, stress or audit. Later layer-1 changes must use independent development cases and meaningful tests.
+- Before any new 99% claim, implement and verify the protocol's untouched confirmation procedure. Broader web-text
+  claims require a representative independent deployment sample, beyond VitaminC.
