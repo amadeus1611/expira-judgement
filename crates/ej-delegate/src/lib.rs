@@ -31,6 +31,24 @@ pub struct Roster {
     pub high_stakes: f64,
 }
 
+/// The only models any tier may use (owner decision 2026-10-11: Claude only, current generation).
+pub const ALLOWED_MODELS: [&str; 3] = ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5"];
+
+impl Roster {
+    /// Loads a roster and refuses any model outside `ALLOWED_MODELS` or any tier without a model.
+    pub fn load(json: &str) -> Result<Roster, String> {
+        let r: Roster = serde_json::from_str(json).map_err(|e| e.to_string())?;
+        for tier in ["scout", "worker", "builder", "reviewer"] {
+            let m = r.models.get(tier).ok_or(format!("roster has no model for {tier}"))?;
+            if !ALLOWED_MODELS.contains(&m.as_str()) { return Err(format!("{tier}: {m} is not an allowed model ({})", ALLOWED_MODELS.join(", "))); }
+        }
+        if let Some(extra) = r.models.keys().find(|k| !["scout", "worker", "builder", "reviewer"].contains(&k.as_str())) {
+            return Err(format!("unknown tier {extra}"));
+        }
+        Ok(r)
+    }
+}
+
 pub fn start_tier(task: &Task, roster: &Roster) -> Tier {
     if task.stakes > roster.high_stakes { return Tier::Reviewer; }
     match task.kind.as_str() {
@@ -70,6 +88,15 @@ mod tests {
         assert_eq!(log.iter().map(|l| l.tier).collect::<Vec<_>>(), vec![Tier::Scout, Tier::Worker, Tier::Builder]);
         assert!(log.last().unwrap().gate_passed);
     }
+    #[test]
+    fn roster_accepts_only_claude_models() {
+        let ok = std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"), "/../../config/roster.json")).unwrap();
+        assert!(Roster::load(&ok).is_ok());
+        let gpt = ok.replace("claude-haiku-5-5", "gpt-6.1");
+        assert!(Roster::load(&gpt).unwrap_err().contains("not an allowed model"));
+        assert!(Roster::load(r#"{"models":{"scout":"claude-haiku-5-5"},"high_stakes":1}"#).is_err());
+    }
+
     #[test]
     fn high_stakes_start_at_reviewer() {
         assert_eq!(start_tier(&task("lookup", 600_000.0), &roster()), Tier::Reviewer);

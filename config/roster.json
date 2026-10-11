@@ -1,0 +1,10 @@
+{
+  "_about": "Model per delegation tier. Claude only (owner decision 2026-10-11): Haiku 5.5, Sonnet 5.5, Opus 5.5. Roster::load rejects anything else. Start tiers adapt per task kind from measured cost and pass rates (ej-delegate cost.rs).",
+  "models": {
+    "scout": "claude-haiku-5-5",
+    "worker": "claude-haiku-5-5",
+    "builder": "claude-sonnet-5-5",
+    "reviewer": "claude-opus-5-5"
+  },
+  "high_stakes": 500000
+}

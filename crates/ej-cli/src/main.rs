@@ -25,6 +25,7 @@ fn main() {
 
     let claude = args.iter().any(|a| a == "--claude").then(|| {
         let model = opt("--model").or_else(|| std::env::var("EJ_CLAUDE_MODEL").ok()).unwrap_or_else(|| "claude-opus-5-5".into());
+        if !ej_delegate::ALLOWED_MODELS.contains(&model.as_str()) { eprintln!("--claude: {model} is not an allowed model ({})", ej_delegate::ALLOWED_MODELS.join(", ")); std::process::exit(2); }
         ClaudeJudge::new(http::Http::from_env().unwrap_or_else(|e| { eprintln!("--claude: {e}"); std::process::exit(2) }), model)
     });
     let nli = opt("--nli").and_then(|dir| {
