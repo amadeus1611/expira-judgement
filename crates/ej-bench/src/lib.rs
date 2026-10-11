@@ -12,8 +12,10 @@ use serde::{Deserialize, Serialize};
 use std::time::Instant;
 
 /// One labelled case. `label` is "supports", "contradicts" or "unsure" (neither).
+/// A teacher-pair file from `ej check --claude` loads as cases too (its `ruling` is the label), so Claude's rulings
+/// become the calibration set for the local judge.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct Case { pub claim: String, pub quote: String, pub label: String }
+pub struct Case { pub claim: String, pub quote: String, #[serde(alias = "ruling")] pub label: String }
 
 pub fn load_cases(text: &str) -> Result<Vec<Case>, serde_json::Error> {
     text.lines().filter(|l| !l.trim().is_empty()).map(serde_json::from_str).collect()
@@ -89,6 +91,12 @@ mod tests {
         assert_eq!((r.cases, r.acted, r.correct_when_acting), (4, 2, 1));
         assert_eq!(r.accuracy_when_acting, Some(0.5));
         assert_eq!(r.unsure_rate, 0.5); // the low-confidence Contradicts does not act
+    }
+
+    #[test]
+    fn teacher_pairs_load_as_cases() {
+        let c = load_cases("{\"claim\":\"a\",\"quote\":\"q\",\"ruling\":\"supports\",\"reason\":\"r\"}").unwrap();
+        assert_eq!(c[0].label, "supports");
     }
 
     #[test]
