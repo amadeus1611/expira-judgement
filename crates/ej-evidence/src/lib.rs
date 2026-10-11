@@ -203,11 +203,24 @@ pub fn check(claim: &Claim, policy: &Policy) -> Option<Finding> {
         let list = missing.iter().map(|q| format!("{} {}", q.value, q.unit).trim().to_string()).collect::<Vec<_>>().join(", ");
         return f(Verdict::Mismatch, 1.0, format!("figures not in any quote: {list}"));
     }
-    let norm = |s: &str| s.to_lowercase().split_whitespace().collect::<Vec<_>>().join(" ");
-    if usable.iter().any(|e| norm(&e.quote).contains(&norm(&claim.text))) {
+    if usable.iter().any(|e| contained_unnegated(&e.quote, &claim.text)) {
         return f(Verdict::Backed, 1.0, "claim appears word for word in a quote".into());
     }
     None
+}
+
+const NEGATORS: [&str; 8] = ["no", "not", "never", "without", "none", "neither", "nor", "cannot"];
+
+/// The claim appears word for word in the quote at least once with no negator in the four words before it, within
+/// the same clause ("no fee applies" does not back "fee applies"). A negated match is left to the judge.
+fn contained_unnegated(quote: &str, claim: &str) -> bool {
+    // (word, ends a clause)
+    let words = |s: &str| s.to_lowercase().split_whitespace().map(|w| (w.trim_matches(|c: char| !c.is_alphanumeric() && c != '%' && c != '\'' && c != '’').to_string(), w.ends_with(['.', ':', ';', '!', '?']))).filter(|(w, _)| !w.is_empty()).collect::<Vec<_>>();
+    let (q, c) = (words(quote), words(claim));
+    if c.is_empty() || c.len() > q.len() { return false; }
+    let negated = |w: &str| NEGATORS.contains(&w) || w.ends_with("n't") || w.ends_with("n’t");
+    let negated_before = |i: usize| q[i.saturating_sub(4)..i].iter().rev().take_while(|(_, end)| !end).any(|(w, _)| negated(w));
+    (0..=q.len() - c.len()).any(|i| q[i..i + c.len()].iter().map(|(w, _)| w).eq(c.iter().map(|(w, _)| w)) && !negated_before(i))
 }
 
 /// Checks that the listed parts add up to the stated total (tolerance for rounding to one unit).
@@ -310,6 +323,15 @@ mod tests {
     #[test]
     fn backed_on_exact_quote() {
         let c = claim("A management fee of 35% applies", "Terms: a management fee of 35% applies to all orders.", "2026-09-01");
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Backed);
+    }
+
+    #[test]
+    fn negated_quote_does_not_back() {
+        for q in ["No management fee of 35% applies to these orders.", "It is not true that a management fee of 35% applies.", "We don't think a management fee of 35% applies", "We don’t think a management fee of 35% applies"] {
+            assert!(check(&claim("A management fee of 35% applies", q, "2026-09-01"), &pol()).is_none(), "{q}");
+        }
+        let c = claim("A management fee of 35% applies", "Not for retail: a management fee of 35% applies to bulk orders. Retail has none.", "2026-09-01");
         assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Backed);
     }
 
