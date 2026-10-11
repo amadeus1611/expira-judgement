@@ -42,6 +42,9 @@ impl Judge for OverlapJudge {
     fn layer(&self) -> Layer { Layer::LocalJudge }
     fn rule(&self, claim: &Claim) -> (Ruling, f32, String) {
         let words = |s: &str| s.to_lowercase().split(|c: char| !c.is_alphanumeric() && c != '%').filter(|w| w.len() > 2).map(String::from).collect::<std::collections::HashSet<_>>();
+        // Overlap cannot see polarity: "X is not Y" shares every word with "X is Y". Leave any negation to a real judge.
+        let negs = |s: &str| s.to_lowercase().split_whitespace().any(|w| ej_core::is_negator(w.trim_matches(|c: char| !c.is_alphanumeric() && c != '\'' && c != '’')));
+        if negs(&claim.text) || claim.evidence.iter().any(|e| negs(&e.quote)) { return (Ruling::Unsure, 0.0, "negation present: overlap cannot judge polarity".into()); }
         let want = words(&claim.text);
         if want.is_empty() { return (Ruling::Unsure, 0.0, "no content words".into()); }
         let best = claim.evidence.iter().map(|e| { let have = words(&e.quote); want.iter().filter(|w| have.contains(*w)).count() as f32 / want.len() as f32 }).fold(0.0, f32::max);
@@ -69,6 +72,13 @@ mod tests {
     fn unsure_when_nobody_confident() {
         let f = adjudicate(&c("x y z words", "other"), &[&OverlapJudge, &Fixed(Ruling::Supports, 0.5)], Bars::default());
         assert_eq!(f.verdict, Verdict::Unsure);
+    }
+
+    #[test]
+    fn overlap_never_settles_negation() {
+        for (t, q) in [("the fee does not apply to orders", "the fee does apply to orders"), ("the fee applies to orders", "the fee never applies to orders"), ("fee isn't applied to orders", "fee applied to orders")] {
+            assert_eq!(OverlapJudge.rule(&c(t, q)).0, Ruling::Unsure, "{t}");
+        }
     }
 
     #[test]

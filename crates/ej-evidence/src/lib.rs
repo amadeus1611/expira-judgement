@@ -214,8 +214,6 @@ pub fn check(claim: &Claim, policy: &Policy) -> Option<Finding> {
     None
 }
 
-const NEGATORS: [&str; 8] = ["no", "not", "never", "without", "none", "neither", "nor", "cannot"];
-
 /// The claim appears word for word in the quote at least once with no negator in the four words before it, within
 /// the same clause ("no fee applies" does not back "fee applies"). A negated match is left to the judge.
 fn contained_unnegated(quote: &str, claim: &str) -> bool {
@@ -223,7 +221,7 @@ fn contained_unnegated(quote: &str, claim: &str) -> bool {
     let words = |s: &str| s.to_lowercase().split_whitespace().map(|w| (w.trim_matches(|c: char| !c.is_alphanumeric() && c != '%' && c != '\'' && c != '’').to_string(), w.ends_with(['.', ':', ';', '!', '?']))).filter(|(w, _)| !w.is_empty()).collect::<Vec<_>>();
     let (q, c) = (words(quote), words(claim));
     if c.is_empty() || c.len() > q.len() { return false; }
-    let negated = |w: &str| NEGATORS.contains(&w) || w.ends_with("n't") || w.ends_with("n’t");
+    let negated = ej_core::is_negator;
     let negated_before = |i: usize| q[i.saturating_sub(4)..i].iter().rev().take_while(|(_, end)| !end).any(|(w, _)| negated(w));
     (0..=q.len() - c.len()).any(|i| q[i..i + c.len()].iter().map(|(w, _)| w).eq(c.iter().map(|(w, _)| w)) && !negated_before(i))
 }
