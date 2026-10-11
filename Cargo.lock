@@ -439,6 +439,7 @@ dependencies = [
  "ej-core",
  "ej-judge",
  "ej-nli",
+ "proptest",
  "serde",
  "serde_json",
 ]
@@ -471,6 +472,7 @@ name = "ej-delegate"
 version = "0.1.0"
 dependencies = [
  "ej-core",
+ "proptest",
  "serde",
  "serde_json",
 ]
