@@ -5,6 +5,7 @@
 
 pub mod calib;
 pub mod command;
+pub mod standard;
 
 use ej_core::{Claim, Evidence};
 use ej_judge::{Bars, Judge, Ruling};

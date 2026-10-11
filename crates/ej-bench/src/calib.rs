@@ -90,19 +90,27 @@ pub fn fit_thresholds(xs: &[Scored], target: f64, min_acted: usize) -> Threshold
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
-pub struct Selective { pub cases: usize, pub coverage: f64, pub acted: usize, pub right: usize, pub accuracy_when_acting: Option<f64>, pub wrong_yes: usize, pub wrong_no: usize }
+pub struct Selective {
+    pub cases: usize, pub coverage: f64, pub acted: usize, pub right: usize, pub accuracy_when_acting: Option<f64>,
+    /// "Stated" calls and how many were right; a wrong one passes an unbacked claim (the dangerous error).
+    pub yes_acted: usize, pub yes_right: usize,
+    /// "Not stated" calls and how many were right; a wrong one only costs an escalation or a needless block.
+    pub no_acted: usize, pub no_right: usize,
+    pub wrong_yes: usize, pub wrong_no: usize,
+}
 
 /// Coverage and accuracy when acting under fixed thresholds. `wrong_yes` (unstated claim passed) is the dangerous error.
 pub fn selective(xs: &[Scored], t: Thresholds) -> Selective {
-    let (mut acted, mut right, mut wy, mut wn) = (0, 0, 0, 0);
+    let (mut ya, mut yr, mut na, mut nr) = (0, 0, 0, 0);
     for s in xs {
-        let call = if s.p >= t.yes { Some(true) } else if s.p <= t.no { Some(false) } else { None };
-        if let Some(c) = call {
-            acted += 1;
-            if c == s.stated { right += 1 } else if c { wy += 1 } else { wn += 1 }
-        }
+        if s.p >= t.yes { ya += 1; yr += s.stated as usize; } else if s.p <= t.no { na += 1; nr += !s.stated as usize; }
     }
-    Selective { cases: xs.len(), coverage: if xs.is_empty() { 0.0 } else { acted as f64 / xs.len() as f64 }, acted, right, accuracy_when_acting: (acted > 0).then(|| right as f64 / acted as f64), wrong_yes: wy, wrong_no: wn }
+    let (acted, right) = (ya + na, yr + nr);
+    Selective {
+        cases: xs.len(), coverage: if xs.is_empty() { 0.0 } else { acted as f64 / xs.len() as f64 }, acted, right,
+        accuracy_when_acting: (acted > 0).then(|| right as f64 / acted as f64),
+        yes_acted: ya, yes_right: yr, no_acted: na, no_right: nr, wrong_yes: ya - yr, wrong_no: na - nr,
+    }
 }
 
 #[cfg(test)]
