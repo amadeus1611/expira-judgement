@@ -3,6 +3,8 @@
 //! Scores: accuracy when acting (the number that matters: wrong acts let errors through), unsure rate (escalation cost),
 //! and wall-clock latency per case on this machine.
 
+pub mod command;
+
 use ej_core::{Claim, Evidence};
 use ej_judge::{Bars, Judge, Ruling};
 use serde::{Deserialize, Serialize};
