@@ -31,6 +31,11 @@ rule in code for logged habits. Habits move here only with evidence; a retired h
 
 ## Retired
 
+- **Treating CLI stdout as a verdict without checking completion, or missing price as zero.** Why retired: the
+  legacy escalation script ignores process exit, omits the production confidence gate and totals unreported cost
+  as $0. Evidence: docs/bench/2026-10-11-strict-codex-adapter.md. Replaced by: strict process/turn/schema/citation
+  checks and explicit unknown costs in the offline-tested Codex diagnostic adapter. The legacy Claude script
+  remains historical and must not establish new cascade or 99% claims; whole-cascade integration is still open.
 - **Treating disjoint case IDs as proof of leak-free data.** Why retired: different cases can repeat the same text;
   grouping alone misses overlap and does not make contrastive rows independent. Evidence: 21 exact / 24 normalised
   claim–quote pairs cross calibration/test despite zero shared case IDs, and 3,095 test rows represent only 935 cases

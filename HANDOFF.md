@@ -259,3 +259,46 @@ from adopted habits (`docs/HABITS.md`).
   Do not fit on test, stress or audit. Later layer-1 changes must use independent development cases and meaningful tests.
 - Before any new 99% claim, implement and verify the protocol's untouched confirmation procedure. Broader web-text
   claims require a representative independent deployment sample, beyond VitaminC.
+
+## 2026-10-11 (Codex) Strict subscription diagnostic adapter
+
+### Done
+- PR #4 merged after all four exact-head check/mutants jobs were green, at
+  `78426f97071eb0e4470b390a333a4708a6dae6d8`. Loaded the live instructions and passed baseline fmt/clippy/tests
+  before this change. Researched the actual installed Codex release's protocol, configuration and tool emission.
+- Added `tools/codex_adapter.py`: one bounded ephemeral Codex call through the existing subscription, strict
+  process/turn/schema/final/citation checks, production binary32 confidence gate, usage retained on rejected
+  completed replies, missing prices unknown, no automatic retries. It is a diagnostic adapter, not a production judge.
+- Measured the actual legacy script on synthetic fake-process fixtures: it acted despite exit 1 and confidence
+  0.79, and reported absent price as $0. The new adapter rejects these faults. The legacy script remains historical;
+  its results cannot establish new cascade claims. Recorded the bad habit in Retired.
+- Added 22 offline tests including real fake CLI processes, public CLI invocation, timeout descendant termination,
+  type-sensitive final JSON identity, item lifecycle, independent confidence boundaries and failed-call accounting.
+  Added CI enforcement of the tests and 15 targeted Python fault injections, all caught. The first injection run
+  exposed a missing negative cache-write-token test; fixed the test gap. This is not exhaustive Python mutation coverage.
+- Full Rust mutations: 856 generated, 794 caught, 62 unviable, zero missed/timeouts. Workspace tests 117 passed;
+  fmt/clippy and cargo-deny passed. ONNX smoke still skips without model weights. Decision code, standard bars,
+  policies and frozen data are unchanged. Research/measurements: `docs/research/2026-10-11-strict-codex-adapter.md`
+  and `docs/bench/2026-10-11-strict-codex-adapter.md`. This change lands only through a PR after green CI;
+  GitHub records its current merge state.
+- Two bounded synthetic subscription attempts; final diagnostics identify managed authentication failure.
+  Neither returned completed-turn usage or usable JSON. Tokens/cost unknown, not $0; labelled subscription calls 0.
+  No further probe loop. Credentials stay in managed CODEX_HOME; do not request them in chat.
+
+### Open
+- No Codex model quality or whole-cascade v1 pass is established. The managed subscription needs platform restoration.
+  A logged-in status is insufficient; only a completed endpoint request validates it.
+- Exec omits some tool events. Supported tool disables, empty temporary CWD and read-only sandbox do not attest full
+  isolation; adapter outputs `isolation_validated: false`. Do not use them for a 99% confirmation yet.
+- Whole-cascade runner/identity manifest, production Rust subscription transport, independent label audit, local
+  eligibility/parity, fresh stress, ECE, pre-escalation coverage, quiet latency and untouched confirmation remain open.
+  The existing false blocks and conditional false pass are still unfixed; no held-out examples were used to tune here.
+
+### Next
+- Continue ordered step 2 with a tested whole-cascade runner around **actual** `ej check` decisions: hash dataset,
+  code, policy, prompt/schema and sampling identity, reject unsafe resumes/joins, retain failures and unknown costs.
+  Leave unproven local judges disabled. Build offline while platform authentication is restored.
+- After endpoint and isolation verification, start at most 10 calibration cases serially and report observed
+  usage/cost. Freeze predictions before a separate label audit; raw and audited scores together, no fitting on audit.
+- Follow `docs/validation/general-99.md` before any 99% claim. Pick model/policy only from permitted development
+  measurements, then use untouched grouped confirmation; do not declare an unmeasured model optimal.
