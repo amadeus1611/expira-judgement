@@ -1,0 +1,62 @@
+//! Shared types for EXPIRA Judgement: a claim, the evidence offered for it, and the verdict.
+
+use serde::{Deserialize, Serialize};
+
+/// One evidence row: where a fact came from, when, and the exact words relied on.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Evidence {
+    pub source: String,
+    /// ISO date (YYYY-MM-DD) the source was opened.
+    pub date: String,
+    /// Word-for-word quote from the source.
+    pub quote: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Claim {
+    pub id: String,
+    pub text: String,
+    #[serde(default)]
+    pub evidence: Vec<Evidence>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum Verdict {
+    /// Proven by a deterministic check.
+    Backed,
+    /// A judge found the evidence supports the claim (paraphrase).
+    Supported,
+    /// No usable evidence.
+    Unbacked,
+    /// Evidence exists but states different figures or units.
+    Mismatch,
+    /// Evidence older than the allowed age.
+    Stale,
+    /// Nobody could decide: escalate or leave the claim out.
+    Unsure,
+}
+
+impl Verdict {
+    pub fn passes(self) -> bool {
+        matches!(self, Verdict::Backed | Verdict::Supported)
+    }
+}
+
+/// Which layer reached the verdict; cheaper layers run first.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum Layer {
+    Deterministic,
+    LocalJudge,
+    Claude,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Finding {
+    pub claim_id: String,
+    pub verdict: Verdict,
+    pub layer: Layer,
+    pub confidence: f32,
+    pub reason: String,
+}
