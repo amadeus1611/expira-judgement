@@ -69,7 +69,9 @@ fn same(a: &Quantity, b: &Quantity) -> bool {
 pub fn day_number(date: &str) -> Option<i64> {
     let p: Vec<i64> = date.get(..10)?.split('-').map(|x| x.parse().ok()).collect::<Option<_>>()?;
     let [y, m, d] = p[..] else { return None };
-    if !(1..=12).contains(&m) || !(1..=31).contains(&d) { return None; }
+    let leap = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
+    let dim = [31, if leap { 29 } else { 28 }, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if !(1..=12).contains(&m) || d < 1 || d > dim[(m - 1) as usize] { return None; }
     let (y, m) = if m <= 2 { (y - 1, m + 9) } else { (y, m - 3) };
     Some(365 * y + y / 4 - y / 100 + y / 400 + (153 * m + 2) / 5 + d - 1)
 }
@@ -82,11 +84,14 @@ pub struct Policy {
 /// Returns Some(finding) when layer 1 can decide; None means "grey zone, ask the judge".
 pub fn check(claim: &Claim, policy: &Policy) -> Option<Finding> {
     let f = |verdict, confidence, reason: String| Some(Finding { claim_id: claim.id.clone(), verdict, layer: Layer::Deterministic, confidence, reason });
-    let usable: Vec<_> = claim.evidence.iter().filter(|e| !e.source.trim().is_empty() && !e.quote.trim().is_empty() && day_number(&e.date).is_some()).collect();
+    let now = day_number(&policy.today);
+    // A date after `today` is a typo or a fabrication, never fresh evidence.
+    let dated = |e: &&ej_core::Evidence| day_number(&e.date).is_some_and(|d| now.map_or(true, |n| d <= n));
+    let usable: Vec<_> = claim.evidence.iter().filter(|e| !e.source.trim().is_empty() && !e.quote.trim().is_empty()).filter(dated).collect();
     if usable.is_empty() {
-        return f(Verdict::Unbacked, 1.0, "no evidence row with source, valid date and quote".into());
+        return f(Verdict::Unbacked, 1.0, "no evidence row with source, valid past date and quote".into());
     }
-    if let (Some(max), Some(now)) = (policy.max_age_days, day_number(&policy.today)) {
+    if let (Some(max), Some(now)) = (policy.max_age_days, now) {
         if usable.iter().all(|e| now - day_number(&e.date).unwrap() > max) {
             return f(Verdict::Stale, 1.0, format!("all evidence older than {max} days"));
         }
@@ -165,6 +170,14 @@ mod tests {
     fn bad_date_is_unusable() {
         let c = claim("The fee is 35%", "fee is 35%", "last year");
         assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Unbacked);
+    }
+
+    #[test]
+    fn impossible_or_future_dates_are_unusable() {
+        assert!(day_number("2026-02-31").is_none() && day_number("2025-02-29").is_none() && day_number("2024-02-29").is_some());
+        for d in ["2026-02-31", "2026-12-01"] {
+            assert_eq!(check(&claim("The fee is 35%", "fee is 35%", d), &pol()).unwrap().verdict, Verdict::Unbacked, "{d}");
+        }
     }
 
     #[test]
