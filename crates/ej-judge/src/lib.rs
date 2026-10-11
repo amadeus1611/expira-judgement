@@ -5,14 +5,20 @@ pub mod claude;
 
 use ej_core::{Claim, Finding, Layer, Verdict};
 
+/// A judge's answer on whether the evidence states the claim.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Ruling {
+    /// The evidence states or directly implies the claim.
     Supports,
+    /// The evidence states something incompatible with the claim.
     Contradicts,
+    /// The judge cannot decide.
     Unsure,
 }
 
+/// A layer 2 or 3 judge for claims layer 1 could not settle.
 pub trait Judge {
+    /// The layer this judge belongs to, recorded in its findings.
     fn layer(&self) -> Layer;
     /// (ruling, confidence 0..1, reason)
     fn rule(&self, claim: &Claim) -> (Ruling, f32, String);
@@ -30,6 +36,7 @@ pub trait Judge {
 /// Bars a ruling must clear before it is acted on; anything below is Unsure and escalates.
 #[derive(Debug, Clone, Copy)]
 pub struct Bars {
+    /// Minimum confidence for a raw judge's Supports or Contradicts to be acted on.
     pub act: f32,
 }
 impl Default for Bars {
@@ -72,13 +79,18 @@ pub fn adjudicate(claim: &Claim, judges: &[&dyn Judge], bars: Bars) -> Finding {
 /// Produced by `ej-bench fit --write-policy` from labelled cases (public sets, ledger cases, Claude teacher pairs).
 #[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Calibration {
+    /// Platt slope on the logit of the raw score.
     pub a: f64,
+    /// Platt intercept.
     pub b: f64,
+    /// Calibrated score above which the judge rules Supports.
     pub yes: f64,
+    /// Calibrated score below which the judge rules Contradicts.
     pub no: f64,
 }
 
 impl Calibration {
+    /// Maps a raw P(stated) to a calibrated probability (raw score clamped away from 0 and 1 first).
     #[must_use]
     pub fn apply(&self, p: f64) -> f64 {
         let p = p.clamp(1e-6, 1.0 - 1e-6);
@@ -89,7 +101,9 @@ impl Calibration {
 /// Wraps a judge that reports `p_stated` and acts only past its fitted thresholds: Supports above `yes`,
 /// Contradicts (not stated) below `no`, Unsure in between. Confidence is the calibrated probability of the call.
 pub struct Calibrated<J: Judge> {
+    /// The raw judge whose `p_stated` is calibrated.
     pub inner: J,
+    /// The fitted calibration and thresholds.
     pub cal: Calibration,
 }
 

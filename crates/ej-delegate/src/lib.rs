@@ -5,16 +5,22 @@ pub mod cost;
 
 use serde::{Deserialize, Serialize};
 
+/// Model tier, cheapest first; escalation moves one step up.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum Tier {
+    /// Cheapest model: lookups and extraction.
     Scout,
+    /// Cheap model: routine edits and ledger rows.
     Worker,
+    /// Mid model: synthesis, drafts and builds.
     Builder,
+    /// Top model: review and high-stakes work.
     Reviewer,
 }
 
 impl Tier {
+    /// The next tier up, or `None` at the top.
     #[must_use]
     pub fn next(self) -> Option<Tier> {
         match self {
@@ -26,19 +32,25 @@ impl Tier {
     }
 }
 
+/// A unit of delegated work.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Task {
+    /// Stable task identifier, copied into each [`Launch`].
     pub id: String,
+    /// Task kind (e.g. "lookup", "draft"); picks the start tier.
     pub kind: String,
     /// Money or risk at stake in the task's currency; above `high_stakes` it starts at Reviewer.
     pub stakes: f64,
+    /// Token budget for one attempt.
     pub token_budget: u32,
 }
 
+/// Model per tier and the stakes threshold.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Roster {
     /// Model ID per tier, e.g. loaded from roster.json.
     pub models: std::collections::BTreeMap<String, String>,
+    /// Stakes above this start a task at [`Tier::Reviewer`].
     pub high_stakes: f64,
 }
 
@@ -75,6 +87,7 @@ impl Roster {
     }
 }
 
+/// The tier a task starts at: Reviewer above the stakes threshold, else by task kind (unknown kinds start at Builder).
 #[must_use]
 pub fn start_tier(task: &Task, roster: &Roster) -> Tier {
     if task.stakes > roster.high_stakes {
@@ -91,8 +104,11 @@ pub fn start_tier(task: &Task, roster: &Roster) -> Tier {
 /// A launch record, one per attempt (the tier log).
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Launch {
+    /// The task this attempt was for.
     pub task_id: String,
+    /// Tier the attempt ran at.
     pub tier: Tier,
+    /// Whether the attempt passed its gate.
     pub gate_passed: bool,
 }
 

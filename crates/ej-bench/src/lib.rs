@@ -17,8 +17,11 @@ use std::time::Instant;
 /// become the calibration set for the local judge.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Case {
+    /// The claim to check.
     pub claim: String,
+    /// The quote offered as evidence.
     pub quote: String,
+    /// The expected ruling: "supports", "contradicts" or "unsure".
     #[serde(alias = "ruling")]
     pub label: String,
 }
@@ -41,15 +44,24 @@ pub fn load_cases(text: &str) -> Result<Vec<Case>, serde_json::Error> {
         .collect()
 }
 
+/// How one judge did on a case set (see [`run`]).
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct Report {
+    /// Judge name as given to [`run`].
     pub judge: String,
+    /// Number of cases run.
     pub cases: usize,
+    /// Cases where the judge acted (not Unsure, confidence at or above the bar).
     pub acted: usize,
+    /// Acted cases whose ruling matched the label.
     pub correct_when_acting: usize,
+    /// `correct_when_acting / acted`; `None` when it never acted.
     pub accuracy_when_acting: Option<f64>,
+    /// Share of cases it did not act on (escalated).
     pub unsure_rate: f64,
+    /// Median wall-clock time per ruling, in milliseconds.
     pub latency_ms_p50: f64,
+    /// 95th-percentile wall-clock time per ruling, in milliseconds.
     pub latency_ms_p95: f64,
 }
 
@@ -61,6 +73,7 @@ fn label(r: Ruling) -> &'static str {
     }
 }
 
+/// Runs `judge` over `cases` and scores it: accuracy when acting at `bars`, unsure rate and latency.
 pub fn run(name: &str, judge: &dyn Judge, cases: &[Case], bars: Bars) -> Report {
     let (mut acted, mut correct, mut ms) = (0, 0, Vec::with_capacity(cases.len()));
     for (i, c) in cases.iter().enumerate() {

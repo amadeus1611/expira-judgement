@@ -11,9 +11,12 @@ use std::collections::BTreeMap;
 
 const TIERS: [Tier; 4] = [Tier::Scout, Tier::Worker, Tier::Builder, Tier::Reviewer];
 
+/// Attempts and gate passes at one (task kind, tier).
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub struct Counts {
+    /// Attempts launched.
     pub attempts: u32,
+    /// Attempts whose gate passed.
     pub passes: u32,
 }
 
@@ -22,6 +25,7 @@ pub struct Counts {
 pub struct Stats(pub BTreeMap<(String, Tier), Counts>);
 
 impl Stats {
+    /// Counts attempts and passes per (task kind, tier) from (kind, launch) pairs.
     pub fn from_log<'a>(log: impl IntoIterator<Item = (&'a str, &'a Launch)>) -> Stats {
         let mut m: BTreeMap<(String, Tier), Counts> = BTreeMap::new();
         for (kind, l) in log {
@@ -31,6 +35,7 @@ impl Stats {
         }
         Stats(m)
     }
+    /// Pass rate of `kind` at tier `t` with a Beta(1,1) prior: (passes + 1) / (attempts + 2).
     #[must_use]
     pub fn pass_rate(&self, kind: &str, t: Tier) -> f64 {
         let c = self

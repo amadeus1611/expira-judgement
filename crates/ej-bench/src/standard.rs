@@ -14,13 +14,20 @@
 use crate::calib::{wilson_lower, Selective, Z95};
 use serde::Serialize;
 
+/// The bars a configuration must clear on held-out data (see the module docs for why).
 #[derive(Debug, Clone, Copy, Serialize, PartialEq)]
 pub struct Standard {
+    /// Minimum 95% Wilson lower bound on the accuracy of "stated" calls.
     pub pass_lower_bound: f64,
+    /// Minimum 95% Wilson lower bound on the accuracy of "not stated" calls.
     pub block_lower_bound: f64,
+    /// Maximum wrong "stated" calls allowed on the stress set.
     pub stress_wrong_passes: usize,
+    /// Maximum expected calibration error on the test split.
     pub max_ece: f64,
+    /// Minimum share of test cases the local layer must act on.
     pub min_coverage: f64,
+    /// Maximum 95th-percentile latency per ruling, in milliseconds.
     pub max_p95_ms: f64,
 }
 
@@ -34,30 +41,44 @@ pub const V1: Standard = Standard {
     max_p95_ms: 250.0,
 };
 
+/// One gate of the standard: the measured value, its bar and whether it passed.
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct Gate {
+    /// Gate name (the [`Standard`] field it checks).
     pub name: &'static str,
+    /// The measured value (NaN when not measured).
     pub value: f64,
+    /// The bar from the [`Standard`].
     pub bar: f64,
+    /// Whether the value clears the bar.
     pub passed: bool,
 }
 
+/// The result of checking one candidate against a [`Standard`].
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct Verdict {
+    /// Candidate name.
     pub judge: String,
+    /// True only if every gate passed.
     pub passed: bool,
+    /// Every gate with its value and bar.
     pub gates: Vec<Gate>,
 }
 
 /// Measurements for one candidate on held-out data. `stress` and `p95_ms` are None when not measured;
 /// an unmeasured gate fails, because the standard cannot be met by not looking.
 pub struct Evidence<'a> {
+    /// Selective results on the test split.
     pub test: &'a Selective,
+    /// Expected calibration error on the test split.
     pub test_ece: f64,
+    /// Selective results on the stress set, if measured.
     pub stress: Option<&'a Selective>,
+    /// 95th-percentile latency in milliseconds, if measured.
     pub p95_ms: Option<f64>,
 }
 
+/// Checks one candidate's measurements against `std`; unmeasured gates fail.
 #[must_use]
 pub fn check(judge: &str, std: &Standard, ev: &Evidence) -> Verdict {
     let t = ev.test;

@@ -10,6 +10,7 @@ use std::io::{BufRead, BufReader, Write};
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
 use std::sync::Mutex;
 
+/// A [`Judge`] that talks to a long-running child process over the JSON-lines protocol above.
 pub struct CommandJudge {
     io: Mutex<(Child, ChildStdin, BufReader<ChildStdout>)>,
 }

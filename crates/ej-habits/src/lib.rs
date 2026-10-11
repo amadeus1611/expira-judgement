@@ -5,27 +5,40 @@
 
 use serde::{Deserialize, Serialize};
 
+/// Lifecycle of a habit.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum State {
+    /// Proposed; not yet trusted.
     Candidate,
+    /// Enough agreeing observations and no contradiction: in use.
     Adopted,
+    /// Contradicted once; never used again.
     Retired,
 }
 
+/// A candidate rule tracked against authoritative rulings.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Habit {
+    /// Stable identifier.
     pub id: String,
+    /// The rule in words.
     pub rule: String,
+    /// Observations where the habit's prediction matched the ruling.
     pub agree: u32,
+    /// Observations where it did not (any one retires the habit).
     pub disagree: u32,
+    /// Current lifecycle state.
     pub state: State,
+    /// The note from the observation that retired it, if retired.
     #[serde(default)]
     pub retired_because: Option<String>,
 }
 
+/// Adoption policy for habits.
 #[derive(Debug, Clone, Copy)]
 pub struct Adoption {
+    /// Agreeing observations needed before a candidate is adopted.
     pub min_agree: u32,
 }
 impl Default for Adoption {
@@ -35,6 +48,7 @@ impl Default for Adoption {
 }
 
 impl Habit {
+    /// A new candidate habit with no observations.
     #[must_use]
     pub fn new(id: &str, rule: &str) -> Self {
         Habit {
@@ -69,22 +83,32 @@ impl Habit {
 /// A teacher pair from an escalation: the claim, the quote and Claude's ruling with its reason.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct TeacherPair {
+    /// The claim text.
     pub claim: String,
+    /// The evidence quote the claim was checked against.
     pub quote: String,
+    /// Claude's ruling (a verdict name).
     pub ruling: String,
+    /// Claude's stated reason for the ruling.
     pub reason: String,
 }
 
 /// Token usage of one paid model call, as the API reported it, plus wall-clock time. One line per call in the usage log.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 pub struct Usage {
+    /// Model ID the API reported (or the requested one if absent).
     pub model: String,
+    /// Uncached input tokens.
     pub input_tokens: u64,
+    /// Output tokens.
     pub output_tokens: u64,
+    /// Input tokens read from the prompt cache.
     #[serde(default)]
     pub cache_read_input_tokens: u64,
+    /// Input tokens written to the prompt cache.
     #[serde(default)]
     pub cache_creation_input_tokens: u64,
+    /// Wall-clock time of the call in milliseconds.
     #[serde(default)]
     pub ms: f64,
     /// What the call was for (e.g. "escalation"), so cost can be split by route.
@@ -118,10 +142,14 @@ impl Usage {
 /// USD per million tokens for one model. Loaded from a price file that names its source and date; never hard-coded.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
 pub struct Price {
+    /// USD per million input tokens.
     pub input: f64,
+    /// USD per million output tokens.
     pub output: f64,
+    /// USD per million cache-read tokens, if the price file gives one.
     #[serde(default)]
     pub cache_read: Option<f64>,
+    /// USD per million 5-minute cache-write tokens, if the price file gives one.
     #[serde(default)]
     pub cache_write_5m: Option<f64>,
 }

@@ -6,7 +6,9 @@ use serde::Serialize;
 /// One scored case: the judge's raw P(stated) and whether the quote really states the claim.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Scored {
+    /// The judge's raw probability that the quote states the claim.
     pub p: f64,
+    /// The label: true if the quote really states the claim.
     pub stated: bool,
 }
 
@@ -67,10 +69,13 @@ fn sigmoid(z: f64) -> f64 {
 /// Platt scaling on the logit: calibrated p = sigmoid(a * logit(p) + b). Fitted by Newton's method on log loss.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize)]
 pub struct Platt {
+    /// Slope on the logit of the raw score.
     pub a: f64,
+    /// Intercept.
     pub b: f64,
 }
 impl Platt {
+    /// Fits `a` and `b` to `xs` by minimising log loss (damped Newton steps).
     #[must_use]
     pub fn fit(xs: &[Scored]) -> Platt {
         let (mut a, mut b) = (1.0, 0.0);
@@ -117,6 +122,7 @@ impl Platt {
             })
             .sum()
     }
+    /// The calibrated probability for a raw score `p`.
     #[must_use]
     pub fn apply(&self, p: f64) -> f64 {
         sigmoid(self.a * logit(p) + self.b)
@@ -126,7 +132,9 @@ impl Platt {
 /// Act "stated" when p >= yes, "not stated" when p <= no, otherwise escalate.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize)]
 pub struct Thresholds {
+    /// Calibrated score at or above which the judge acts "stated".
     pub yes: f64,
+    /// Calibrated score at or below which the judge acts "not stated".
     pub no: f64,
 }
 
@@ -144,6 +152,7 @@ pub fn wilson_lower(k: usize, n: usize, z: f64) -> f64 {
         .clamp(0.0, 1.0)
 }
 
+/// Normal quantile for a two-sided 95% interval.
 pub const Z95: f64 = 1.96;
 
 /// Widest thresholds whose acted cases on `xs` are right at a rate whose 95% Wilson lower bound is at least `target`,
@@ -178,20 +187,30 @@ pub fn fit_thresholds(xs: &[Scored], target: f64, min_acted: usize) -> Threshold
     Thresholds { yes, no }
 }
 
+/// Selective-prediction results under fixed thresholds (see [`selective`]).
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct Selective {
+    /// Number of cases scored.
     pub cases: usize,
+    /// Share of cases acted on.
     pub coverage: f64,
+    /// Cases acted on (either side).
     pub acted: usize,
+    /// Acted cases that were right.
     pub right: usize,
+    /// `right / acted`; `None` when nothing was acted on.
     pub accuracy_when_acting: Option<f64>,
     /// "Stated" calls and how many were right; a wrong one passes an unbacked claim (the dangerous error).
     pub yes_acted: usize,
+    /// "Stated" calls that were right.
     pub yes_right: usize,
     /// "Not stated" calls and how many were right; a wrong one only costs an escalation or a needless block.
     pub no_acted: usize,
+    /// "Not stated" calls that were right.
     pub no_right: usize,
+    /// "Stated" calls that were wrong (unstated claims passed).
     pub wrong_yes: usize,
+    /// "Not stated" calls that were wrong (stated claims blocked or escalated).
     pub wrong_no: usize,
 }
 
@@ -324,18 +343,25 @@ mod tests {
 /// What one judge (or ensemble) achieves on the test split when everything is fitted on the calibration split.
 #[derive(Debug, Clone, Serialize)]
 pub struct FitReport {
+    /// Judge (or ensemble) name.
     pub judge: String,
+    /// AUROC of the raw scores on the test split.
     pub test_auroc: Option<f64>,
+    /// Expected calibration error of the raw test scores (10 bins).
     pub test_ece_raw: f64,
+    /// Expected calibration error of the calibrated test scores (10 bins).
     pub test_ece_calibrated: f64,
+    /// The Platt fit from the calibration split, when calibration was asked for.
     pub platt: Option<Platt>,
     /// Thresholds on the calibrated score, fitted on the calibration split for `target`.
     pub fitted: Thresholds,
+    /// The fitted thresholds scored on the (calibrated) test split.
     pub test_fitted: Selective,
     /// Fixed raw thresholds in use today (if given), scored on the same test split for comparison.
     pub test_current: Option<Selective>,
 }
 
+/// Fits calibration (optional) and thresholds on `cal`, then reports on `test` alongside the `current` raw thresholds.
 #[must_use]
 pub fn fit_report(
     judge: &str,

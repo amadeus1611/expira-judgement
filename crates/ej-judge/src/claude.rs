@@ -21,9 +21,13 @@ pub trait Transport {
     fn post(&self, body: &Value) -> Result<Value, String>;
 }
 
+/// Layer 3 judge: asks Claude through a [`Transport`] and keeps its usage and teacher pairs.
 pub struct ClaudeJudge<T: Transport> {
+    /// How requests reach the Messages API.
     pub transport: T,
+    /// Model ID sent with each request.
     pub model: String,
+    /// `max_tokens` for each reply.
     pub max_tokens: u32,
     /// `output_config.effort`. Claim checking is a short classification, so the default is "low"; raise it per route
     /// only if a measured eval shows it pays.
@@ -56,6 +60,7 @@ fn schema() -> Value {
 }
 
 impl<T: Transport> ClaudeJudge<T> {
+    /// A judge for `model` with default `max_tokens` (2000) and effort ("low").
     pub fn new(transport: T, model: impl Into<String>) -> Self {
         ClaudeJudge {
             transport,
@@ -67,6 +72,7 @@ impl<T: Transport> ClaudeJudge<T> {
         }
     }
 
+    /// The Messages API request body for one claim: system prompt, quotes, JSON-schema output and fallbacks.
     pub fn request(&self, claim: &Claim) -> Value {
         let quotes = claim
             .evidence
@@ -108,9 +114,13 @@ impl<T: Transport> ClaudeJudge<T> {
 
 /// A parsed reply: ruling, confidence, reason, and the span Claude says it relied on.
 pub struct Reply {
+    /// Claude's ruling.
     pub ruling: Ruling,
+    /// Claude's stated confidence, 0 to 1.
     pub confidence: f32,
+    /// Claude's one-sentence reason.
     pub reason: String,
+    /// The `evidence_span` Claude cited, checked against the quotes.
     pub span: String,
 }
 
