@@ -49,6 +49,9 @@ rule in code for logged habits. Habits move here only with evidence; a retired h
   commit "Layer 1 date scan has a hard iteration bound". Replaced by: bounded loops.
 - **An unpinned toolchain.** Why retired: CI's newer clippy failed code that passed locally. Evidence: commit "Pin the Rust
   toolchain". Replaced by: pinned toolchain, upgraded deliberately.
+- **Leaving an unproven judge in the decision path.** Why retired: the overlap placeholder still decided in `ej check`
+  and passed 9 of 82 unsupported claims on VitaminC. Evidence: docs/bench/2026-10-11-round3-general-99.md. Replaced by:
+  only judges that passed the standard decide; everything else escalates.
 - **Stating figures or licences from memory.** Why retired: a cases-needed count was given as ~460 (computed: 381) and a
   dataset licence was written from memory (its card declares none). Evidence: docs/research/2026-10-11-general-layer-99.md,
   docs/research/2026-10-11-laya-and-the-decision-block.md. Replaced by: compute or read the source first.
