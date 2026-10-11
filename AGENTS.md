@@ -12,8 +12,9 @@ as `CLAUDE.md`; where a file below is written "for Claude", read it as written f
    `cargo clippy --workspace --all-targets -- -D warnings` (workspace lints in `Cargo.toml`), `cargo test --workspace`,
    and zero missed mutants (`cargo mutants -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits`).
    New logic ships with tests that kill its mutants. Toolchain is pinned in `rust-toolchain.toml`.
-4. Model roster: the engine itself calls Claude only (Haiku 5.5, Sonnet 5.5, Opus 5.5), enforced in
-   `config/roster.json` and `ej_delegate::ALLOWED_MODELS`. That is about the engine's runtime calls, not about which agent
-   edits the code. Do not add other vendors' models to the engine.
+4. Architecture: bring-your-own-model (`docs/ARCHITECTURE.md`). Users plug in their own models, subscriptions and keys.
+   The owner's default roster is Claude only (Haiku 5.5, Sonnet 5.5, Opus 5.5), shipped in `config/roster.json` and today
+   compiled into `ej_delegate::ALLOWED_MODELS`; making that list configurable is the next planned change. The start
+   prompt for a new agent is `docs/handoffs/codex-start.md`.
 5. Rules: private repo; fresh code only (nothing copied from gssc-system/, client data, memory or pricing); no invented
    figures; one small tested change per commit; claims about models need measured numbers from `ej-bench`.

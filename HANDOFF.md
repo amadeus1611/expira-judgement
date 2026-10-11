@@ -99,5 +99,10 @@ no invented figures; one small tested change per commit.
 - ej-bench lib not yet mutation-tested (376 mutants incl. CLI); add to the CI mutants job once at zero.
 - Standard v1 still not passed; more held-out labelled ledger cases (teacher pairs) remain the main lever.
 
+### Architecture decision (owner, end of session)
+- The repo is a bring-your-own-model architecture people plug their own subscriptions and models into
+  (`docs/ARCHITECTURE.md`). "Claude only" is the owner's default configuration, not a limit. No API key needed to develop.
+- Start prompt for Codex or any agent: `docs/handoffs/codex-start.md`. Round 2 is logged in `docs/bench/`.
+
 ### Next
-- Round 2 log and decision; then MiniCheck (ONNX export) and a Haiku-first escalation cascade measured on teacher pairs.
+- Pluggable escalation transport (subscription CLI) and configurable allowed-model list; then then MiniCheck (ONNX export) and a Haiku-first escalation cascade measured on teacher pairs.
