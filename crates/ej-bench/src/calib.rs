@@ -66,20 +66,26 @@ impl Platt {
 #[derive(Debug, Clone, Copy, PartialEq, Serialize)]
 pub struct Thresholds { pub yes: f64, pub no: f64 }
 
-/// Widest thresholds whose acted cases on `xs` are right at least `target` of the time on each side.
-/// `min_acted` keeps a side from being fitted on a handful of lucky cases. A side that cannot reach the target never acts.
+/// Wilson score lower bound on a success rate k/n at normal quantile `z` (1.96 for a two-sided 95% interval).
+/// Used so a threshold is never chosen on a small lucky sample: the bound, not the raw rate, must clear the target.
+pub fn wilson_lower(k: usize, n: usize, z: f64) -> f64 {
+    if n == 0 { return 0.0; }
+    let (n, p) = (n as f64, k as f64 / n as f64);
+    let d = 1.0 + z * z / n;
+    ((p + z * z / (2.0 * n)) - z * ((p * (1.0 - p) / n) + z * z / (4.0 * n * n)).sqrt()) / d
+}
+
+pub const Z95: f64 = 1.96;
+
+/// Widest thresholds whose acted cases on `xs` are right at a rate whose 95% Wilson lower bound is at least `target`,
+/// on each side separately. `min_acted` is a floor on sample size as well. A side that cannot reach it never acts.
 pub fn fit_thresholds(xs: &[Scored], target: f64, min_acted: usize) -> Thresholds {
     let mut ps: Vec<f64> = xs.iter().map(|s| s.p).collect();
     ps.sort_by(|a, b| a.total_cmp(b));
     ps.dedup();
-    let yes = ps.iter().copied().find(|&t| {
-        let acted: Vec<_> = xs.iter().filter(|s| s.p >= t).collect();
-        acted.len() >= min_acted && acted.iter().filter(|s| s.stated).count() as f64 >= target * acted.len() as f64
-    }).unwrap_or(f64::INFINITY);
-    let no = ps.iter().rev().copied().find(|&t| {
-        let acted: Vec<_> = xs.iter().filter(|s| s.p <= t).collect();
-        acted.len() >= min_acted && acted.iter().filter(|s| !s.stated).count() as f64 >= target * acted.len() as f64
-    }).unwrap_or(f64::NEG_INFINITY);
+    let ok = |acted: Vec<&Scored>, want: bool| acted.len() >= min_acted && wilson_lower(acted.iter().filter(|s| s.stated == want).count(), acted.len(), Z95) >= target;
+    let yes = ps.iter().copied().find(|&t| ok(xs.iter().filter(|s| s.p >= t).collect(), true)).unwrap_or(f64::INFINITY);
+    let no = ps.iter().rev().copied().find(|&t| ok(xs.iter().filter(|s| s.p <= t).collect(), false)).unwrap_or(f64::NEG_INFINITY);
     Thresholds { yes, no: if no >= yes { yes - f64::EPSILON } else { no } }
 }
 
@@ -128,12 +134,23 @@ mod tests {
     }
 
     #[test]
+    fn wilson_bound_is_conservative() {
+        assert!((wilson_lower(10, 10, Z95) - 0.7225).abs() < 1e-3); // 10/10 right only proves ~72%
+        assert!(wilson_lower(1000, 1000, Z95) > 0.996);
+        assert_eq!(wilson_lower(0, 0, Z95), 0.0);
+    }
+
+    #[test]
     fn thresholds_meet_target_and_escalate_the_middle() {
-        let xs = vec![s(0.95, true), s(0.9, true), s(0.85, true), s(0.6, false), s(0.55, true), s(0.4, false), s(0.1, false), s(0.05, false)];
-        let t = fit_thresholds(&xs, 1.0, 2);
-        assert_eq!((t.yes, t.no), (0.85, 0.4));
+        // 60 clean stated cases high, 60 clean unstated low, a mixed band in the middle.
+        let mut xs = Vec::new();
+        for i in 0..60 { xs.push(s(0.9 + i as f64 * 1e-3, true)); xs.push(s(0.05 + i as f64 * 1e-3, false)); }
+        for i in 0..20 { xs.push(s(0.4 + i as f64 * 1e-2, i % 2 == 0)); }
+        let t = fit_thresholds(&xs, 0.9, 10);
+        assert!(t.yes > 0.55 && t.yes <= 0.9 && t.no >= 0.109 && t.no < 0.45, "{t:?}");
         let r = selective(&xs, t);
-        assert_eq!((r.acted, r.right, r.wrong_yes), (6, 6, 0));
+        assert_eq!(r.wrong_yes + r.wrong_no, r.acted - r.right);
+        assert!(r.accuracy_when_acting.unwrap() >= 0.95);
         // An unreachable target never acts.
         let t = fit_thresholds(&[s(0.9, false), s(0.8, false)], 0.99, 1);
         assert_eq!(t.yes, f64::INFINITY);
@@ -143,7 +160,7 @@ mod tests {
     fn fit_report_uses_cal_for_fitting_and_test_for_scores() {
         let cal: Vec<_> = (0..40).map(|i| s(if i % 2 == 0 { 0.9 } else { 0.2 }, i % 2 == 0)).collect();
         let test = vec![s(0.9, true), s(0.2, false), s(0.9, false)];
-        let r = fit_report("j", &cal, &test, 0.95, 5, Some(Thresholds { yes: 0.6, no: 0.3 }), true);
+        let r = fit_report("j", &cal, &test, 0.8, 5, Some(Thresholds { yes: 0.6, no: 0.3 }), true);
         assert_eq!(r.test_fitted.cases, 3);
         assert_eq!(r.test_fitted.wrong_yes, 1);
         assert_eq!(r.test_current.unwrap().acted, 3);
