@@ -16,9 +16,9 @@ whole block meets a stated error bound?
 
 ## Licence
 - LAYA: Apache-2.0 (package page). The checkpoints' own licence must be checked on their model cards before shipping them.
-- cross-encoder/nli-deberta-v3-xsmall: Apache-2.0 (model card).
-- MNLI: mixed licences per genre (see dataset card); used here only for local evaluation, not redistributed.
-- FEVER: CC BY-SA 3.0 (derived from Wikipedia); local evaluation only, not redistributed.
+- cross-encoder/nli-deberta-v3-xsmall: Apache-2.0 (model card, checked via the HF API).
+- MNLI: card lists cc-by-3.0, cc-by-sa-3.0, mit and other (varies by genre); local evaluation only, not redistributed.
+- FEVER (pietrolesci/nli_fever copy): the card declares no licence; local evaluation only, not redistributed. Check the original FEVER release's terms before any other use.
 
 ## Candidates
 1. Keep LAYA with its current raw thresholds (baseline).
