@@ -82,6 +82,11 @@ impl NliJudge {
 
 impl Judge for NliJudge {
     fn layer(&self) -> Layer { Layer::LocalJudge }
+    fn p_stated(&self, claim: &Claim) -> Option<f32> {
+        let premise = claim.evidence.iter().map(|e| e.quote.as_str()).collect::<Vec<_>>().join(" ");
+        let p = self.probs(&premise, &claim.text).ok()?;
+        self.labels.iter().position(|r| *r == Ruling::Supports).map(|i| p[i])
+    }
     fn rule(&self, claim: &Claim) -> (Ruling, f32, String) {
         let premise = claim.evidence.iter().map(|e| e.quote.as_str()).collect::<Vec<_>>().join(" ");
         match self.probs(&premise, &claim.text) {

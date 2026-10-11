@@ -12,6 +12,8 @@ pub trait Judge {
     fn layer(&self) -> Layer;
     /// (ruling, confidence 0..1, reason)
     fn rule(&self, claim: &Claim) -> (Ruling, f32, String);
+    /// Raw probability that the evidence states the claim, for calibration and threshold fitting. None if the judge has no such score.
+    fn p_stated(&self, _claim: &Claim) -> Option<f32> { None }
 }
 
 /// Bars a ruling must clear before it is acted on; anything below is Unsure and escalates.
