@@ -20,7 +20,7 @@ impl Http {
 
 impl Transport for Http {
     fn post(&self, body: &Value) -> Result<Value, String> {
-        let mut resp = self.agent.post(URL).header("x-api-key", &self.key).header("anthropic-version", VERSION).send_json(body).map_err(|e| e.to_string())?;
+        let mut resp = self.agent.post(URL).header("x-api-key", &self.key).header("anthropic-version", VERSION).header("anthropic-beta", ej_judge::claude::FALLBACK_BETA).send_json(body).map_err(|e| e.to_string())?;
         let status = resp.status().as_u16();
         let v: Value = resp.body_mut().read_json().map_err(|e| e.to_string())?;
         if status != 200 { return Err(format!("HTTP {status}: {}", v["error"]["message"].as_str().unwrap_or("unknown error"))); }

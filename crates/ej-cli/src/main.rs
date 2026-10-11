@@ -20,7 +20,7 @@ fn main() {
     let claims: Vec<Claim> = serde_json::from_str(&std::fs::read_to_string(&args[2]).expect("read claims")).expect("parse claims");
 
     let claude = args.iter().any(|a| a == "--claude").then(|| {
-        let model = opt("--model").or_else(|| std::env::var("EJ_CLAUDE_MODEL").ok()).unwrap_or_else(|| "claude-sonnet-5-5".into());
+        let model = opt("--model").or_else(|| std::env::var("EJ_CLAUDE_MODEL").ok()).unwrap_or_else(|| "claude-opus-5-5".into());
         ClaudeJudge::new(http::Http::from_env().unwrap_or_else(|e| { eprintln!("--claude: {e}"); std::process::exit(2) }), model)
     });
     let mut judges: Vec<&dyn Judge> = vec![&OverlapJudge];
