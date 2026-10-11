@@ -25,6 +25,8 @@ ej-nli = { path = "crates/ej-nli" }
 [workspace.lints.rust]
 unsafe_code = "forbid"
 unused_must_use = "deny"
+# Every public item says what it is and does.
+missing_docs = "deny"
 
 [workspace.lints.clippy]
 all = { level = "deny", priority = -1 }

@@ -6,9 +6,12 @@
 
 use ej_core::{Claim, Finding, Layer, Verdict};
 
+/// A number found in text with its canonical unit (see [`quantities`]).
 #[derive(Debug, Clone, PartialEq)]
 pub struct Quantity {
+    /// The numeric value (YYYYMMDD for a date, YYYYMM for a month).
     pub value: f64,
+    /// Canonical unit ("php", "usd", "%", "mm", "date", "month", ...; empty when none).
     pub unit: String,
 }
 
@@ -462,8 +465,11 @@ pub fn day_number(date: &str) -> Option<i64> {
     Some(365 * y + y / 4 - y / 100 + y / 400 + (153 * m + 2) / 5 + d - 1)
 }
 
+/// Settings for the layer 1 check.
 pub struct Policy {
+    /// Today's date (YYYY-MM-DD), used to judge evidence age.
     pub today: String,
+    /// Evidence older than this many days is stale; `None` disables the age check.
     pub max_age_days: Option<i64>,
 }
 

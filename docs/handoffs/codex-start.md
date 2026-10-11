@@ -49,7 +49,7 @@ decides only where its accuracy is proven; everything else escalates.
 ## 5. Rules you must keep
 - Never lower a bar in `standard.rs`, delete or weaken a test, edit frozen data, or fit on test data.
 - Before every push: fmt check, clippy `-D warnings`, full tests; zero missed mutants in the decision crates
-  (`cargo mutants -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits`). Toolchain pinned
+  (`cargo mutants -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits -p ej-bench --exclude crates/ej-bench/src/main.rs`). Toolchain pinned
   (`rust-toolchain.toml`).
 - One small tested change per commit; work on a branch and open a PR with measured before/after; merge when CI is green.
 - Research open sources before a fix (note in `docs/research/`, checked by tests); licences read from the source.

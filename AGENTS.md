@@ -11,7 +11,7 @@ as `CLAUDE.md`; where a file below is written "for Claude", read it as written f
    `crates/ej-bench/src/standard.rs`, delete or weaken a test, edit frozen data, or fit on test data.
 3. Engineering standard, enforced by CI (`.github/workflows/ci.yml`): `cargo fmt --all -- --check`,
    `cargo clippy --workspace --all-targets -- -D warnings` (workspace lints in `Cargo.toml`), `cargo test --workspace`,
-   and zero missed mutants (`cargo mutants -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits`).
+   and zero missed mutants (`cargo mutants -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits -p ej-bench --exclude crates/ej-bench/src/main.rs`).
    New logic ships with tests that kill its mutants. Toolchain is pinned in `rust-toolchain.toml`.
 4. Architecture: bring-your-own-model (`docs/ARCHITECTURE.md`). Users plug in their own models, subscriptions and keys.
    The owner's default roster is Claude only (Haiku 5.5, Sonnet 5.5, Opus 5.5), shipped in `config/roster.json` and today

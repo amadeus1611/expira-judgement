@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 /// One evidence row: where a fact came from, when, and the exact words relied on.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Evidence {
+    /// Where the fact came from (URL, document name or ledger reference).
     pub source: String,
     /// ISO date (YYYY-MM-DD) the source was opened.
     pub date: String,
@@ -12,14 +13,19 @@ pub struct Evidence {
     pub quote: String,
 }
 
+/// A statement to check, with the evidence offered for it.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Claim {
+    /// Caller-chosen identifier, echoed in the [`Finding`].
     pub id: String,
+    /// The statement as written in the deliverable.
     pub text: String,
+    /// Evidence rows offered for the claim (empty when none).
     #[serde(default)]
     pub evidence: Vec<Evidence>,
 }
 
+/// The outcome of checking one claim.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum Verdict {
@@ -38,6 +44,7 @@ pub enum Verdict {
 }
 
 impl Verdict {
+    /// True only for verdicts that let a claim be stated: [`Verdict::Backed`] and [`Verdict::Supported`].
     #[must_use]
     pub fn passes(self) -> bool {
         matches!(self, Verdict::Backed | Verdict::Supported)
@@ -48,17 +55,26 @@ impl Verdict {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum Layer {
+    /// Layer 1: deterministic checks on the quoted evidence.
     Deterministic,
+    /// Layer 2: a local model judge.
     LocalJudge,
+    /// Layer 3: escalation to Claude.
     Claude,
 }
 
+/// The result for one claim: verdict, the layer that reached it, and why.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Finding {
+    /// The [`Claim::id`] this finding is for.
     pub claim_id: String,
+    /// The verdict reached.
     pub verdict: Verdict,
+    /// The layer that reached it.
     pub layer: Layer,
+    /// Confidence in the verdict, 0.0 to 1.0.
     pub confidence: f32,
+    /// Human-readable explanation of the verdict.
     pub reason: String,
 }
 

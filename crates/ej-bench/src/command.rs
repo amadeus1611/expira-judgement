@@ -10,6 +10,7 @@ use std::io::{BufRead, BufReader, Write};
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
 use std::sync::Mutex;
 
+/// A [`Judge`] that talks to a long-running child process over the JSON-lines protocol above.
 pub struct CommandJudge {
     io: Mutex<(Child, ChildStdin, BufReader<ChildStdout>)>,
 }
@@ -114,6 +115,31 @@ mod tests {
         assert_eq!(j.rule(&c), (Ruling::Supports, 0.9, "stub".into()));
         assert_eq!(j.rule(&c).0, Ruling::Supports);
         assert_eq!(j.p_stated(&c), Some(0.7));
+    }
+
+    #[test]
+    fn every_ruling_word_is_read() {
+        for (w, r) in [
+            ("supports", Ruling::Supports),
+            ("contradicts", Ruling::Contradicts),
+            ("unsure", Ruling::Unsure),
+        ] {
+            assert_eq!(ruling_of(&json!({ "ruling": w })), Ok(r));
+        }
+        assert!(ruling_of(&json!({ "ruling": "maybe" })).is_err());
+        assert!(ruling_of(&json!({})).is_err());
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn drop_stops_the_child() {
+        let j = CommandJudge::spawn(&["sleep".into(), "30".into()]).unwrap();
+        let pid = j.io.lock().unwrap().0.id();
+        let proc_dir = std::path::PathBuf::from(format!("/proc/{pid}"));
+        assert!(proc_dir.exists());
+        drop(j);
+        // Killed and reaped: the process entry is gone at once.
+        assert!(!proc_dir.exists());
     }
 
     #[test]

@@ -17,8 +17,11 @@ use std::time::Instant;
 /// become the calibration set for the local judge.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Case {
+    /// The claim to check.
     pub claim: String,
+    /// The quote offered as evidence.
     pub quote: String,
+    /// The expected ruling: "supports", "contradicts" or "unsure".
     #[serde(alias = "ruling")]
     pub label: String,
 }
@@ -41,15 +44,24 @@ pub fn load_cases(text: &str) -> Result<Vec<Case>, serde_json::Error> {
         .collect()
 }
 
+/// How one judge did on a case set (see [`run`]).
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct Report {
+    /// Judge name as given to [`run`].
     pub judge: String,
+    /// Number of cases run.
     pub cases: usize,
+    /// Cases where the judge acted (not Unsure, confidence at or above the bar).
     pub acted: usize,
+    /// Acted cases whose ruling matched the label.
     pub correct_when_acting: usize,
+    /// `correct_when_acting / acted`; `None` when it never acted.
     pub accuracy_when_acting: Option<f64>,
+    /// Share of cases it did not act on (escalated).
     pub unsure_rate: f64,
+    /// Median wall-clock time per ruling, in milliseconds.
     pub latency_ms_p50: f64,
+    /// 95th-percentile wall-clock time per ruling, in milliseconds.
     pub latency_ms_p95: f64,
 }
 
@@ -61,6 +73,7 @@ fn label(r: Ruling) -> &'static str {
     }
 }
 
+/// Runs `judge` over `cases` and scores it: accuracy when acting at `bars`, unsure rate and latency.
 pub fn run(name: &str, judge: &dyn Judge, cases: &[Case], bars: Bars) -> Report {
     let (mut acted, mut correct, mut ms) = (0, 0, Vec::with_capacity(cases.len()));
     for (i, c) in cases.iter().enumerate() {
@@ -144,6 +157,56 @@ mod tests {
         assert_eq!((r.cases, r.acted, r.correct_when_acting), (4, 2, 1));
         assert_eq!(r.accuracy_when_acting, Some(0.5));
         assert!((r.unsure_rate - 0.5).abs() < f64::EPSILON); // the low-confidence Contradicts does not act
+    }
+
+    #[test]
+    fn percentile_index_is_nearest_rank() {
+        assert_eq!(percentile_index(5, 0.5), 2);
+        assert_eq!(percentile_index(5, 0.95), 4);
+        assert_eq!(percentile_index(11, 0.2), 2);
+        assert_eq!(percentile_index(1, 0.95), 0);
+        assert_eq!(percentile_index(5, 7.0), 4);
+    }
+
+    #[test]
+    fn wrong_acts_are_not_counted_right_and_unsure_share_is_exact() {
+        // Three acted (one right), one escalated: accuracy 1/3, unsure 1/4.
+        let cases = load_cases(concat!(
+            "{\"claim\":\"a\",\"quote\":\"yes\",\"label\":\"supports\"}\n",
+            "{\"claim\":\"b\",\"quote\":\"yes\",\"label\":\"contradicts\"}\n",
+            "{\"claim\":\"c\",\"quote\":\"yes\",\"label\":\"unsure\"}\n",
+            "{\"claim\":\"d\",\"quote\":\"-\",\"label\":\"unsure\"}\n",
+        ))
+        .unwrap();
+        let r = run("kw", &Keyword, &cases, Bars::default());
+        assert_eq!((r.acted, r.correct_when_acting), (3, 1));
+        assert!((r.unsure_rate - 0.25).abs() < 1e-12);
+    }
+
+    /// Takes a fixed 5 ms per ruling.
+    struct Slow;
+    impl Judge for Slow {
+        fn layer(&self) -> Layer {
+            Layer::LocalJudge
+        }
+        fn rule(&self, _: &Claim) -> (Ruling, f32, String) {
+            std::thread::sleep(std::time::Duration::from_millis(5));
+            (Ruling::Unsure, 0.0, String::new())
+        }
+    }
+
+    #[test]
+    fn latency_is_reported_in_milliseconds() {
+        let case = Case {
+            claim: "c".into(),
+            quote: "q".into(),
+            label: "unsure".into(),
+        };
+        let r = run("slow", &Slow, &[case.clone(), case], Bars::default());
+        assert!(
+            (5.0..500.0).contains(&r.latency_ms_p50) && (5.0..500.0).contains(&r.latency_ms_p95),
+            "{r:?}"
+        );
     }
 
     #[test]

@@ -107,6 +107,27 @@ no invented figures; one small tested change per commit.
 ### Next
 - Pluggable escalation transport (subscription CLI) and configurable allowed-model list; then then MiniCheck (ONNX export) and a Haiku-first escalation cascade measured on teacher pairs.
 
+## 2026-10-11 (Claude, branch claude/ej-ratchets) Engineering ratchets
+
+### Done
+- `ej-bench` lib at zero missed mutants (CLI `main.rs` excluded): 78 missed + 1 timeout before, 0 after. `Platt::fit`
+  rewritten with bounded loops (fixed Newton iterations, step chosen from a fixed ladder including 0, so loss never rises
+  and no mutant can loop forever); new tests check the Newton direction against finite differences, the two-point
+  optimum, loss/logit/apply hand values, AUROC over all pairs, ECE bins, selective coverage, percentile ranks, latency
+  units, every command-judge ruling word, child cleanup on drop, and the block gate when a judge never blocks.
+  Added to the CI mutants job, `AGENTS.md` and `docs/handoffs/codex-start.md`.
+- Supply-chain gate: `deny.toml` + `cargo-deny-action@v2` in the CI `check` job (note: `docs/research/2026-10-11-supply-chain.md`).
+  Licences: MIT, Apache-2.0, BSD-3-Clause, ISC, Unicode-3.0, CDLA-Permissive-2.0. No vulnerabilities; RUSTSEC-2024-0436
+  (paste unmaintained, via tokenizers) ignored with its reason.
+- `missing_docs = "deny"`: every public item in every crate documented.
+
+### Open
+- The paste advisory ignore should go when tokenizers drops paste.
+- Duplicate crate versions only warn (base64, getrandom, r-efi, rand_core, smallvec, syn, windows-sys).
+
+### Next
+- Tighten `bans.multiple-versions` to deny once the duplicates are gone; consider cargo-llvm-cov as the next ratchet.
+
 ## 2026-10-11 (later) General layer to 99%: VitaminC, name rule, Claude via subscription CLI
 
 Owner direction: EXPIRA only until mature (engine work parked on gssc-opp-engine branch `claude/ej-learnings`, unmerged);
@@ -152,3 +173,47 @@ from adopted habits (`docs/HABITS.md`).
 ### Open / Next
 - See `docs/handoffs/codex-start.md` section 4 (ordered next steps). Mutation testing of the new layer-1 bound and
   name-rule code was not run yet; run it first (`cargo mutants -p ej-evidence -p ej-judge`).
+
+## 2026-10-11 (Codex) Cloud setup and ratchet verification
+
+### Done
+- Loaded the cold-start files in section 1 order; pinned-toolchain fmt/clippy/workspace tests passed before work.
+- Installed Rust 1.97.0, cargo-mutants 27.1.0 and cargo-deny 0.20.2. The default ONNX Runtime download was proxy-blocked;
+  the supported native-library override uses a SHA-256-verified ONNX Runtime 1.22.0 PyPI wheel. Setup lives outside
+  the checkout; sources and licence checks are in `docs/research/2026-10-11-cloud-runtime.md`.
+- Continued the three ratchet commits on `codex/ej-ratchets`, merging current main without losing either history.
+  Both fmt/clippy and workspace tests passed on the reconciled code (117 reported passing tests; model smoke returned
+  early without EJ_NLI_DIR). CLI smoke verified backed / mismatch / unsure and the expected failing-findings exit status.
+- Full mutation run exited 0: 856 generated, 794 caught, 62 unviable, zero missed, zero timeouts. ej-bench library:
+  292 generated, 275 caught, 17 unviable, zero missed. Current bounds and name-rule code were included.
+- cargo-deny passed all checks with the existing duplicate-version warnings. CI includes ej-bench with main.rs excluded;
+  updated the cold-start pre-push command accordingly. Results: `docs/bench/2026-10-11-codex-ratchets.md`.
+- Exercised the complete installer twice; saved install_script and start_skill in the environment draft. Saved required
+  GitHub API and Hugging Face domain additions while preserving package-manager presets. No publication is claimed.
+- Pushed `codex/ej-ratchets` and opened https://github.com/amadeus1611/expira-judgement/pull/3 through the platform
+  GitHub CLI route. That route also reads CI successfully despite native API CONNECT requests returning 403.
+  The PR carries the verified ratchets; merging requires green CI. Inspect its current state through `gh pr view 3`.
+- Owner clarification: use the in-house **Codex CLI/subscription for escalation in Claude's place**. This overrides
+  the historical Claude-only default for this workflow. Built-in codex-cli 0.159.2 reports ChatGPT authentication;
+  no new key is needed. Sources and bounded smoke results: `docs/research/2026-10-11-codex-subscription.md`.
+- Diagnosed Codex exec startup with a file-only trace: its installation_id needs a write in the read-only managed
+  home. Supported SQLite/log overrides plus an automatically approved invocation reached the subscription endpoint
+  without copying credentials or changing CODEX_HOME. Saved chatgpt.com in the network draft as well.
+
+### Open
+- Native GitHub API requests are proxy-blocked (CONNECT 403); use the working platform `gh` route for PR operations.
+- Hugging Face requests are proxy-blocked, so VitaminC rebuilding/model download and whole-cascade scoring are unrun.
+- Claude CLI is absent; ANTHROPIC_API_KEY and EJ_NLI_DIR are unset. No model inference or live escalation was validated.
+  Claude is not required for the owner's newly selected Codex route.
+- One synthetic Codex smoke invocation encountered subscription-endpoint CONNECT 403 and timed out at 120 seconds.
+  No structured reply or usage/cost report; Codex usage/cost are unreported. No held-out rows were sent. Claude calls: 0;
+  Claude cost: $0. The general-layer 99% goal remains unproven; no standard bars or frozen data changed.
+
+### Next
+- Merge PR #3 only after CI is green. Review/save the environment draft in settings and publish the prepared
+  environment; recheck actual Hugging Face access.
+- Recheck authenticated Codex exec after chatgpt.com egress is active, using the approved runtime-write route if needed.
+  Then add and test the Codex subscription adapter for tools/escalation_bench.py; retain schema/cited-span checks and
+  report absent cost as unknown. Reuse existing authentication; do not request a Claude key or credentials in chat.
+- Resume cold-start section 4 step 2: rebuild frozen VitaminC splits, measure the whole cascade using only proven local
+  judges and small escalation runs, report raw results and observed cost, then do the label audit separately without fitting on it.

@@ -11,6 +11,7 @@ use std::path::Path;
 use std::sync::Mutex;
 use tokenizers::Tokenizer;
 
+/// Layer 2 judge backed by an ONNX NLI cross-encoder and its tokenizer.
 pub struct NliJudge {
     session: Mutex<Session>,
     tokenizer: Tokenizer,
@@ -69,6 +70,7 @@ pub fn labels_from_config(config: &serde_json::Value) -> Result<Vec<Ruling>, Str
         .ok_or_else(|| "id2label has gaps".into())
 }
 
+/// Numerically stable softmax (shifted by the maximum logit) over a slice of logits.
 pub fn softmax(x: &[f32]) -> Vec<f32> {
     let m = x.iter().copied().fold(f32::NEG_INFINITY, f32::max);
     let e: Vec<f32> = x.iter().map(|v| (v - m).exp()).collect();
