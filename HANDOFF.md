@@ -193,16 +193,27 @@ from adopted habits (`docs/HABITS.md`).
 - Pushed `codex/ej-ratchets` and opened https://github.com/amadeus1611/expira-judgement/pull/3 through the platform
   GitHub CLI route. That route also reads CI successfully despite native API CONNECT requests returning 403.
   The PR carries the verified ratchets; merging requires green CI. Inspect its current state through `gh pr view 3`.
+- Owner clarification: use the in-house **Codex CLI/subscription for escalation in Claude's place**. This overrides
+  the historical Claude-only default for this workflow. Built-in codex-cli 0.159.2 reports ChatGPT authentication;
+  no new key is needed. Sources and bounded smoke results: `docs/research/2026-10-11-codex-subscription.md`.
+- Diagnosed Codex exec startup with a file-only trace: its installation_id needs a write in the read-only managed
+  home. Supported SQLite/log overrides plus an automatically approved invocation reached the subscription endpoint
+  without copying credentials or changing CODEX_HOME. Saved chatgpt.com in the network draft as well.
 
 ### Open
 - Native GitHub API requests are proxy-blocked (CONNECT 403); use the working platform `gh` route for PR operations.
 - Hugging Face requests are proxy-blocked, so VitaminC rebuilding/model download and whole-cascade scoring are unrun.
 - Claude CLI is absent; ANTHROPIC_API_KEY and EJ_NLI_DIR are unset. No model inference or live escalation was validated.
-  Escalation calls this session: 0; cost: $0. The general-layer 99% goal remains unproven; no standard bars or frozen data changed.
+  Claude is not required for the owner's newly selected Codex route.
+- One synthetic Codex smoke invocation encountered subscription-endpoint CONNECT 403 and timed out at 120 seconds.
+  No structured reply or usage/cost report; Codex usage/cost are unreported. No held-out rows were sent. Claude calls: 0;
+  Claude cost: $0. The general-layer 99% goal remains unproven; no standard bars or frozen data changed.
 
 ### Next
 - Merge PR #3 only after CI is green. Review/save the environment draft in settings and publish the prepared
   environment; recheck actual Hugging Face access.
-- Make the intended subscription CLI available and authenticated without sending credential values in chat.
+- Recheck authenticated Codex exec after chatgpt.com egress is active, using the approved runtime-write route if needed.
+  Then add and test the Codex subscription adapter for tools/escalation_bench.py; retain schema/cited-span checks and
+  report absent cost as unknown. Reuse existing authentication; do not request a Claude key or credentials in chat.
 - Resume cold-start section 4 step 2: rebuild frozen VitaminC splits, measure the whole cascade using only proven local
   judges and small escalation runs, report raw results and observed cost, then do the label audit separately without fitting on it.
