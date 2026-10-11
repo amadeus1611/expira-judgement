@@ -302,3 +302,51 @@ from adopted habits (`docs/HABITS.md`).
   usage/cost. Freeze predictions before a separate label audit; raw and audited scores together, no fitting on audit.
 - Follow `docs/validation/general-99.md` before any 99% claim. Pick model/policy only from permitted development
   measurements, then use untouched grouped confirmation; do not declare an unmeasured model optimal.
+
+## 2026-10-11 (Codex) Population, architecture and confirmation execution plan
+
+### Done
+- Owner asks the agent to make the design decisions and reinforce validation, rather than asking the owner to supply
+  domain expertise. Loaded the cold-start files and passed baseline fmt/clippy/locked workspace tests before editing.
+- Wrote `docs/validation/general-99-roadmap.md`, linked from the existing protocol: initial English supplied-evidence
+  scope, licence-cleared source frame, reference-mixture versus prospective traffic claims, explicit independent
+  sampling units/design, separate development/score/risk/final/stress partitions and independent blind labels.
+- Assigned each stage a completion gate: actual production runner, data/labels, diagnostic baseline and separate
+  audit, independent deterministic repairs, complete-original-claim/open-verifier experiments, selection-aware risk
+  calibration, fixed untouched confirmation and versioned deployment monitoring. All architecture candidates remain
+  unproven. The owner's tuning direction permits separately versioned, licence-cleared candidate artifacts using
+  development/training data; installed weights and test/stress/audit data stay untouched.
+- Read selected full Learn then Test paper passages on assumptions, selective risk and simultaneous control; re-read
+  saved source licences. Research: `docs/research/2026-10-11-general-population-plan.md`. No copied implementation,
+  new model or corpus is introduced. Licence rights to underlying texts must be checked separately from wrappers.
+- Independently calculated fixed-count power: 381 perfect stated calls have only a 68.30% chance of passing at a
+  hypothetical true 99.9% accuracy. A 2,000-independent-stated planning scenario allows 11 errors under both unchanged
+  Wilson and the exact supplement. Rational score inversion and 70-digit binomial recurrence agree with the binary64
+  calculations. These are design examples, not measured accuracy, stopping rules or authorised large paid batches.
+- Final fmt/clippy/locked workspace tests passed (117 reported Rust passes; ONNX smoke still returns early without
+  weights). Python tests: 22 passes; targeted Python faults: 15 caught, zero missed/unviable/timeouts. cargo-deny passes
+  with the existing duplicate warnings. Bench/reproduction: `docs/bench/2026-10-11-general-population-plan.md`.
+- Full Rust mutation run exited 0: 856 generated, 794 caught, 62 unviable, zero missed, zero timeouts. The change
+  follows the required PR/green-CI merge process; GitHub records its current status.
+- No new subscription/model calls. Historical authentication-failure costs remain unknown. Decision code, v1 bars,
+  policies, labels and frozen data are unchanged; this plan makes no semantic improvement or certification claim.
+
+### Open
+- General-layer 99% remains unproven; neither hard benchmarks nor passing software checks establish a general
+  population guarantee. A reference mixture does not establish representativeness of unknown production traffic.
+- Actual-cascade runner, licence/source registry, new independent development/confirmation/stress data and qualified
+  independent reference adjudication are not implemented by this documentation change. Where independent labels
+  or sampling assumptions remain unsupported, certification stays provisional/unavailable.
+- Managed subscription authentication and no-tool isolation remain unverified; no repeated connectivity probe was
+  made. Existing deterministic false blocks/conditional false pass and fit/production name parity remain open.
+- Final total-input size and call budget need a separate pilot acceptance estimate and a power calculation. Do not
+  stop on the first passing bound, keep collecting accepted calls, or extend a failed confirmation to pass.
+
+### Next
+- Implement and test the actual-cascade runner offline first: hashes/identity, complete outcomes, safe resumes,
+  production routing/eligibility, unknown-cost accounting and independent statistics. Follow the staged roadmap.
+- Prepare licensed independent development fixtures and sealed sampling/label workflow. Run at most 10 serial
+  calibration cases only after endpoint/isolation verification. Keep label audit separate; never fit on it.
+- Research and test each deterministic repair independently, then bounded complete-support/open-local experiments.
+  Freeze one candidate after separate risk calibration before resource-sized untouched confirmation. Every change
+  remains one tested commit/PR with green CI before merge.
