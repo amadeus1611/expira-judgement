@@ -363,6 +363,7 @@ version = "0.1.0"
 dependencies = [
  "ej-core",
  "ej-judge",
+ "ej-nli",
  "serde",
  "serde_json",
 ]
