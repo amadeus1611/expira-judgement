@@ -44,6 +44,24 @@ impl Habit {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct TeacherPair { pub claim: String, pub quote: String, pub ruling: String, pub reason: String }
 
+/// Appends pairs to a JSON-lines file (one pair per line), creating it if needed. Never rewrites earlier lines.
+pub fn append_pairs(path: &std::path::Path, pairs: &[TeacherPair]) -> std::io::Result<()> {
+    use std::io::Write;
+    if pairs.is_empty() { return Ok(()); }
+    let mut f = std::fs::OpenOptions::new().create(true).append(true).open(path)?;
+    for p in pairs { writeln!(f, "{}", serde_json::to_string(p).map_err(std::io::Error::other)?)?; }
+    Ok(())
+}
+
+/// Reads every pair from a JSON-lines file; a missing file is an empty set.
+pub fn load_pairs(path: &std::path::Path) -> std::io::Result<Vec<TeacherPair>> {
+    match std::fs::read_to_string(path) {
+        Ok(s) => s.lines().filter(|l| !l.trim().is_empty()).map(|l| serde_json::from_str(l).map_err(std::io::Error::other)).collect(),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(Vec::new()),
+        Err(e) => Err(e),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -61,5 +79,16 @@ mod tests {
         assert_eq!(h.state, State::Retired);
         h.observe(true, "", Adoption::default());
         assert_eq!(h.agree, 1);
+    }
+    #[test]
+    fn teacher_pairs_append_and_reload() {
+        let path = std::env::temp_dir().join(format!("ej-pairs-{}.jsonl", std::process::id()));
+        let _ = std::fs::remove_file(&path);
+        assert!(load_pairs(&path).unwrap().is_empty());
+        let p = |r: &str| TeacherPair { claim: "c".into(), quote: "q".into(), ruling: r.into(), reason: "why".into() };
+        append_pairs(&path, &[p("supports")]).unwrap();
+        append_pairs(&path, &[p("contradicts")]).unwrap();
+        assert_eq!(load_pairs(&path).unwrap(), vec![p("supports"), p("contradicts")]);
+        std::fs::remove_file(&path).unwrap();
     }
 }
