@@ -138,4 +138,54 @@ mod tests {
         let t = fit_thresholds(&[s(0.9, false), s(0.8, false)], 0.99, 1);
         assert_eq!(t.yes, f64::INFINITY);
     }
+
+    #[test]
+    fn fit_report_uses_cal_for_fitting_and_test_for_scores() {
+        let cal: Vec<_> = (0..40).map(|i| s(if i % 2 == 0 { 0.9 } else { 0.2 }, i % 2 == 0)).collect();
+        let test = vec![s(0.9, true), s(0.2, false), s(0.9, false)];
+        let r = fit_report("j", &cal, &test, 0.95, 5, Some(Thresholds { yes: 0.6, no: 0.3 }), true);
+        assert_eq!(r.test_fitted.cases, 3);
+        assert_eq!(r.test_fitted.wrong_yes, 1);
+        assert_eq!(r.test_current.unwrap().acted, 3);
+        let m = mean_ensemble(&[vec![s(0.8, true)], vec![s(0.4, true)]]);
+        assert!((m[0].p - 0.6).abs() < 1e-12);
+    }
+}
+
+/// What one judge (or ensemble) achieves on the test split when everything is fitted on the calibration split.
+#[derive(Debug, Clone, Serialize)]
+pub struct FitReport {
+    pub judge: String,
+    pub test_auroc: Option<f64>,
+    pub test_ece_raw: f64,
+    pub test_ece_calibrated: f64,
+    pub platt: Option<Platt>,
+    /// Thresholds on the calibrated score, fitted on the calibration split for `target`.
+    pub fitted: Thresholds,
+    pub test_fitted: Selective,
+    /// Fixed raw thresholds in use today (if given), scored on the same test split for comparison.
+    pub test_current: Option<Selective>,
+}
+
+pub fn fit_report(judge: &str, cal: &[Scored], test: &[Scored], target: f64, min_acted: usize, current: Option<Thresholds>, calibrate: bool) -> FitReport {
+    let platt = calibrate.then(|| Platt::fit(cal));
+    let tr = |xs: &[Scored]| -> Vec<Scored> { xs.iter().map(|s| Scored { p: platt.map_or(s.p, |f| f.apply(s.p)), stated: s.stated }).collect() };
+    let (cal_c, test_c) = (tr(cal), tr(test));
+    let fitted = fit_thresholds(&cal_c, target, min_acted);
+    FitReport {
+        judge: judge.into(),
+        test_auroc: auroc(test),
+        test_ece_raw: ece(test, 10),
+        test_ece_calibrated: ece(&test_c, 10),
+        platt,
+        fitted,
+        test_fitted: selective(&test_c, fitted),
+        test_current: current.map(|t| selective(test, t)),
+    }
+}
+
+/// Mean of each judge's calibrated score, case by case. All inputs must cover the same cases in the same order.
+pub fn mean_ensemble(parts: &[Vec<Scored>]) -> Vec<Scored> {
+    let n = parts.iter().map(Vec::len).min().unwrap_or(0);
+    (0..n).map(|i| Scored { p: parts.iter().map(|v| v[i].p).sum::<f64>() / parts.len() as f64, stated: parts[0][i].stated }).collect()
 }
