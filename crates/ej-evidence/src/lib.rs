@@ -14,9 +14,11 @@ pub struct Quantity {
 
 /// Pull numbers out of text: "PHP 1,250,000", "₱1.5M", "$500", "35%", "2,400 mm", "1.2M".
 /// Units are canonical: currencies become "php" / "usd" / "eur", "percent" becomes "%", other units lower-cased.
+/// Ranges ("1,000-2,000", "1,000 to 2,000", "between 10 and 20 days") give both ends, sharing the unit stated on either.
 pub fn quantities(text: &str) -> Vec<Quantity> {
-    let toks: Vec<&str> = text.split_whitespace().collect();
-    let mut out = Vec::new();
+    let toks = range_tokens(text);
+    let toks: Vec<&str> = toks.iter().map(String::as_str).collect();
+    let mut out: Vec<(usize, Quantity)> = Vec::new();
     for (i, raw) in toks.iter().enumerate() {
         let t = raw.trim_matches(|c: char| c == '(' || c == ')' || c == ',' || c == ';' || c == ':');
         let t = t.trim_end_matches('.');
@@ -40,7 +42,29 @@ pub fn quantities(text: &str) -> Vec<Quantity> {
         if unit.is_empty() && i > 0 {
             if let Some(c) = currency(toks[i - 1].trim_matches(|c: char| !c.is_alphanumeric() && !"$€₱".contains(c))) { unit = c.into(); }
         }
-        out.push(Quantity { value: v, unit: canonical_unit(&unit) });
+        out.push((i, Quantity { value: v, unit: canonical_unit(&unit) }));
+    }
+    for k in 1..out.len() {
+        let (i, j) = (out[k - 1].0, out[k].0);
+        let link = j == i + 2 && (matches!(toks[i + 1], "-" | "–" | "to") || (toks[i + 1].eq_ignore_ascii_case("and") && i > 0 && toks[i - 1].eq_ignore_ascii_case("between")));
+        if !link { continue; }
+        let (a, b) = (out[k - 1].1.unit.clone(), out[k].1.unit.clone());
+        if a.is_empty() { out[k - 1].1.unit = b; } else if b.is_empty() { out[k].1.unit = a; }
+    }
+    out.into_iter().map(|(_, q)| q).collect()
+}
+
+/// Whitespace tokens, with a single-dash range "A-B" / "A–B" split into "A", "-", "B" when both sides start with a figure.
+fn range_tokens(text: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    for t in text.split_whitespace() {
+        let parts: Vec<&str> = t.split(['-', '–']).collect();
+        let figure = |p: &str| { let (_, rest) = strip_currency_prefix(p); rest.starts_with(|c: char| c.is_ascii_digit()) };
+        if parts.len() == 2 && figure(parts[0]) && figure(parts[1]) {
+            out.extend([parts[0].to_string(), "-".to_string(), parts[1].to_string()]);
+        } else {
+            out.push(t.to_string());
+        }
     }
     out
 }
@@ -167,6 +191,23 @@ mod tests {
         for t in ["$500", "US$ 500", "US$500", "USD 500", "500 dollars"] { assert_eq!(q(t), vec![(500.0, "usd".to_string())], "{t}"); }
         assert_eq!(q("€20"), vec![(20.0, "eur".to_string())]);
         assert_eq!(q("35 percent"), vec![(35.0, "%".to_string())]);
+    }
+
+    #[test]
+    fn ranges_give_both_ends_with_shared_unit() {
+        let q = |t: &str| quantities(t).into_iter().map(|q| (q.value, q.unit)).collect::<Vec<_>>();
+        let php = vec![(1000.0, "php".to_string()), (2000.0, "php".to_string())];
+        for t in ["PHP 1,000-2,000", "PHP 1,000–2,000", "PHP 1,000 to 2,000", "1,000-2,000 pesos", "₱1,000-₱2,000"] { assert_eq!(q(t), php, "{t}"); }
+        assert_eq!(q("between 10 and 20 days"), vec![(10.0, "days".to_string()), (20.0, "days".to_string())]);
+        assert_eq!(q("10 units and 20 kg"), vec![(10.0, "units".to_string()), (20.0, "kg".to_string())]);
+    }
+
+    #[test]
+    fn range_claim_needs_both_ends_in_evidence() {
+        let c = claim("Rates run PHP 1,000-2,500", "rates from PHP 1,000 to 2,000 per day", "2026-09-01");
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Mismatch);
+        let c = claim("Rates run PHP 1,000-2,000", "rates from PHP 1,000 to 2,000 per day", "2026-09-01");
+        assert!(check(&c, &pol()).is_none());
     }
 
     #[test]
