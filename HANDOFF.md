@@ -173,3 +173,34 @@ from adopted habits (`docs/HABITS.md`).
 ### Open / Next
 - See `docs/handoffs/codex-start.md` section 4 (ordered next steps). Mutation testing of the new layer-1 bound and
   name-rule code was not run yet; run it first (`cargo mutants -p ej-evidence -p ej-judge`).
+
+## 2026-10-11 (Codex) Cloud setup and ratchet verification
+
+### Done
+- Loaded the cold-start files in section 1 order; pinned-toolchain fmt/clippy/workspace tests passed before work.
+- Installed Rust 1.97.0, cargo-mutants 27.1.0 and cargo-deny 0.20.2. The default ONNX Runtime download was proxy-blocked;
+  the supported native-library override uses a SHA-256-verified ONNX Runtime 1.22.0 PyPI wheel. Setup lives outside
+  the checkout; sources and licence checks are in `docs/research/2026-10-11-cloud-runtime.md`.
+- Continued the three ratchet commits on `codex/ej-ratchets`, merging current main without losing either history.
+  Both fmt/clippy and workspace tests passed on the reconciled code (117 reported passing tests; model smoke returned
+  early without EJ_NLI_DIR). CLI smoke verified backed / mismatch / unsure and the expected failing-findings exit status.
+- Full mutation run exited 0: 856 generated, 794 caught, 62 unviable, zero missed, zero timeouts. ej-bench library:
+  292 generated, 275 caught, 17 unviable, zero missed. Current bounds and name-rule code were included.
+- cargo-deny passed all checks with the existing duplicate-version warnings. CI includes ej-bench with main.rs excluded;
+  updated the cold-start pre-push command accordingly. Results: `docs/bench/2026-10-11-codex-ratchets.md`.
+- Exercised the complete installer twice; saved install_script and start_skill in the environment draft. Saved required
+  GitHub API and Hugging Face domain additions while preserving package-manager presets. No publication is claimed.
+
+### Open
+- GitHub API requests are proxy-blocked (CONNECT 403); PR creation, green CI and merge are outstanding until access works.
+  Git HTTPS read access works; API authorization is not established by that read.
+- Hugging Face requests are proxy-blocked, so VitaminC rebuilding/model download and whole-cascade scoring are unrun.
+- Claude CLI is absent; ANTHROPIC_API_KEY and EJ_NLI_DIR are unset. No model inference or live escalation was validated.
+  Escalation calls this session: 0; cost: $0. The general-layer 99% goal remains unproven; no standard bars or frozen data changed.
+
+### Next
+- Review/save the environment draft in settings and publish the prepared environment; recheck actual GitHub API and
+  Hugging Face access. Complete the ratchet PR and merge only after CI is green.
+- Make the intended subscription CLI available and authenticated without sending credential values in chat.
+- Resume cold-start section 4 step 2: rebuild frozen VitaminC splits, measure the whole cascade using only proven local
+  judges and small escalation runs, report raw results and observed cost, then do the label audit separately without fitting on it.
