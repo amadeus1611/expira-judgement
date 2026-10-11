@@ -350,3 +350,48 @@ from adopted habits (`docs/HABITS.md`).
 - Research and test each deterministic repair independently, then bounded complete-support/open-local experiments.
   Freeze one candidate after separate risk calibration before resource-sized untouched confirmation. Every change
   remains one tested commit/PR with green CI before merge.
+
+## 2026-10-11 (Codex) Offline actual production capture
+
+### Done
+- Loaded cold-start instructions in section 1 order; baseline fmt/clippy/locked workspace tests passed before work.
+  Read actual CLI/routing and primary subprocess/statistics source/licences before implementation. Research:
+  `docs/research/2026-10-11-offline-cascade-capture.md`.
+- Added `tools/cascade_capture.py`, the first actual-cascade runner component: one offline deterministic
+  pre-escalation batch, row-byte-bound companions, immutable executable/request snapshots, manifest before execution,
+  strict whole-batch identities/schema/exit consistency and atomic final report. Existing directories cannot resume
+  or overwrite. Failed batches retain every input as an operational failure; labels never enter production requests.
+- Nominal counts/Wilson diagnostics retain abstentions separately from blocks; all-input ECE, fresh stress, quiet
+  local p95, sampling independence, exact confirmation and full escalation stay unmeasured. Certification is always
+  unavailable; tracked-source hashes do not attest binary/source correspondence or untracked bytes.
+- Verified all 3,095 frozen test lines/case IDs against saved original source pages, creating a new hashed companion
+  outside Git. Preserved both frozen files. Actual capture reproduces every prior verdict/layer/confidence/reason:
+  25/25 stated, nominal bound 0.866804; 292/411 blocks, bound 0.664824; 119 false blocks; coverage 0.140872.
+  No error examples were inspected for tuning. Bench: `docs/bench/2026-10-11-offline-cascade-capture.md`.
+- All 19 new offline tests passed (41 Python tests total), including actual compiled CLI controls and proof that an unproven policy
+  skips a nonexistent model directory. An independent passing baseline plus all 20 declared targeted runner faults
+  caught; this is targeted injection, not exhaustive Python mutation coverage. CI now includes that check.
+- Final fmt/clippy/locked workspace tests passed (117 reported Rust passes; ONNX smoke still returns early),
+  cargo-deny passed with existing duplicate warnings. Full Rust mutations: 856 generated, 794 caught, 62 unviable,
+  zero missed/timeouts. All 15 existing adapter faults and 20 capture faults caught, zero missed/unviable/timeouts.
+- The initial combined Python run had one existing timeout fixture fail on its missing descendant-startup marker
+  under concurrent mutation CPU load. The quiet 41-test rerun passed with the existing test unchanged. New capture
+  timeout assertions require an actually spawned, dead descendant; interruption and repository-root checks pass.
+- Prepared next-step primary research outside Git in `/workspace/setup/conditional-next-research.md`: HANS's
+  lexical/subsequence failure taxonomy and formal/complete-claim controls support independently authored conditional
+  development cases. No external dataset/weights adoption follows; separate data permissions remain unverified.
+- No new subscription/model calls; attempts zero, component usage/cost unknown/null, historical failed-call costs
+  remain unknown. Production decisions, v1 bars, policies, labels and frozen data are unchanged.
+
+### Open
+- Whole-cascade 99% remains unproven. This component has no eligible-local inference, Rust subscription transport,
+  independent label audit, safe resume or sealed representative confirmation implementation.
+- Managed subscription endpoint authentication and complete no-tool isolation remain unverified; no probe was
+  repeated after environment startup. Independent reference labels and sampling assumptions remain prerequisites.
+
+### Next
+- This change lands only through a PR after exact-head CI is green; GitHub records its current merge status.
+- Add structured production scores/timing and eligible-artifact integrity, then the Rust Codex route after endpoint
+  and isolation verification. At most 10 serial calibration calls, no automatic retry, actual unknown-cost accounting.
+- Keep any label audit blind/separate and raw/audited scores together; never fit on test/stress/audit. Independent
+  development repairs must address conditional false passes and false blocks; untouched confirmation remains sealed.

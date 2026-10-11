@@ -1,6 +1,7 @@
 # General layer 99% validation protocol
 
-Status: research specification, not an implemented runner or a successful validation. Research sources:
+Status: research specification, not an implemented complete validation procedure or a successful validation. The
+initial [offline production capture](cascade-capture.md) records deterministic pre-escalation diagnostics only. Research sources:
 `docs/research/2026-10-11-rigorous-99-validation.md`. Existing standard v1 and frozen data remain authoritative.
 The staged implementation, population/source design, label workflow and architecture experiments are in
 [`general-99-roadmap.md`](general-99-roadmap.md). That roadmap is also a plan, not a certification.
