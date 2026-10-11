@@ -66,15 +66,14 @@ pub fn bounded_quantities(text: &str) -> Vec<(Quantity, Cmp)> {
     located(&toks)
         .into_iter()
         .map(|(i, q)| {
-            let mut j = i;
-            while j > 0
-                && currency(
-                    toks[j - 1].trim_matches(|c: char| !c.is_alphanumeric() && !"$€₱".contains(c)),
-                )
-                .is_some()
-            {
-                j -= 1;
-            }
+            // Step back over currency markers to the word that carries the comparison.
+            let j = toks[..i]
+                .iter()
+                .rposition(|t| {
+                    currency(t.trim_matches(|c: char| !c.is_alphanumeric() && !"$€₱".contains(c)))
+                        .is_none()
+                })
+                .map_or(0, |p| p + 1);
             let one = if j >= 1 { word(j - 1) } else { String::new() };
             let two = if j >= 2 {
                 format!("{} {one}", word(j - 2))
@@ -403,7 +402,7 @@ fn year_of(want: &Quantity, have: &Quantity) -> bool {
     let whole = |x: f64| x.round() as i64;
     let year = whole(want.value);
     want.unit.is_empty()
-        && (want.value - want.value.round()).abs() < f64::EPSILON
+        && want.value.to_bits() == want.value.round().to_bits()
         && (1000..=2999).contains(&year)
         && match have.unit.as_str() {
             "date" => whole(have.value) / 10_000 == year,
@@ -1161,6 +1160,7 @@ mod tests {
         assert_eq!(b("more than 64 yards"), vec![Cmp::Gt]);
         assert_eq!(b("fewer than 127 critics"), vec![Cmp::Lt]);
         assert_eq!(b("less than $ 0.4 million"), vec![Cmp::Lt]);
+        assert_eq!(b("less than ($ 0.4 million)"), vec![Cmp::Lt]);
         assert_eq!(b("at least 3 and at most 9"), vec![Cmp::Ge, Cmp::Le]);
         assert_eq!(b("born before October 19th 1984"), vec![Cmp::Lt]);
         assert_eq!(
@@ -1241,6 +1241,63 @@ mod tests {
                 unit: String::new()
             }
         ));
+    }
+
+    #[test]
+    fn comparisons_hold_exactly_as_named() {
+        assert!(Cmp::Gt.holds(5.0, 3.0) && !Cmp::Gt.holds(3.0, 5.0) && !Cmp::Gt.holds(3.0, 3.0));
+        assert!(Cmp::Eq.holds(1e6 + 1e-7, 1e6) && !Cmp::Eq.holds(1e6 + 1.0, 1e6));
+        assert!(Cmp::Lt.holds(3.0, 5.0) && Cmp::Ge.holds(3.0, 3.0) && Cmp::Le.holds(3.0, 3.0));
+    }
+
+    #[test]
+    fn a_figure_first_in_the_text_has_no_bound() {
+        let b: Vec<Cmp> = bounded_quantities("12 cats")
+            .into_iter()
+            .map(|(_, c)| c)
+            .collect();
+        assert_eq!(b, vec![Cmp::Eq]);
+    }
+
+    #[test]
+    fn bounds_compare_only_like_with_like() {
+        let q = |v: f64, u: &str| Quantity {
+            value: v,
+            unit: u.into(),
+        };
+        assert!(comparable(&q(1.0, "date"), &q(2.0, "date")));
+        assert!(!comparable(&q(1.0, "date"), &q(2.0, "month")));
+        assert!(!comparable(&q(1.0, "month"), &q(2.0, "date")));
+        assert!(!comparable(&q(1.0, "date"), &q(2.0, "")));
+        assert!(!comparable(&q(1.0, ""), &q(2.0, "date")));
+        assert!(comparable(&q(1.0, "km"), &q(2.0, "km")));
+        assert!(!comparable(&q(1.0, "km"), &q(2.0, "kg")));
+        assert!(comparable(&q(1.0, ""), &q(2.0, "km")));
+        assert!(comparable(&q(1.0, "km"), &q(2.0, "")));
+        assert!(year_of(&q(2014.0, ""), &q(201_406.0, "month")));
+        assert!(!year_of(&q(2014.5, ""), &q(201_406.0, "month")));
+    }
+
+    #[test]
+    fn an_unmet_bound_escalates_and_a_met_one_can_be_backed() {
+        let c = claim(
+            "it seats over 100 people",
+            "it seats over 100 people, about 50 people",
+            "2026-09-01",
+        );
+        assert!(check(&c, &pol()).is_none());
+        let c = claim(
+            "a kick of more than 64 yards",
+            "a kick of more than 64 yards : 65 yards",
+            "2026-09-01",
+        );
+        assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Backed);
+        let c = claim(
+            "a run of more than 5 km",
+            "a run of more than 5 km in June 2020",
+            "2026-09-01",
+        );
+        assert!(check(&c, &pol()).is_none());
     }
 
     #[test]
