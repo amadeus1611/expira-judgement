@@ -39,6 +39,9 @@ pub enum Cmp {
     Ge,
     /// At most.
     Le,
+    /// Approximately: about, around, roughly, approximately, nearly, almost. Met only by the same figure; any other
+    /// figure leaves it to the judges, since "nearly 43 million" may well describe 42.3 million.
+    About,
 }
 
 impl Cmp {
@@ -51,6 +54,7 @@ impl Cmp {
             Cmp::Lt => x < bound,
             Cmp::Ge => x >= bound,
             Cmp::Le => x <= bound,
+            Cmp::About => Cmp::Eq.holds(x, bound),
         }
     }
 }
@@ -73,7 +77,11 @@ pub fn bounded_quantities(text: &str) -> Vec<(Quantity, Cmp)> {
             let j = toks[..i]
                 .iter()
                 .rposition(|t| {
-                    currency(t.trim_matches(|c: char| !c.is_alphanumeric() && !"$€₱".contains(c)))
+                    // "US $ 789,000": the country prefix belongs to the currency marker too.
+                    !t.eq_ignore_ascii_case("us")
+                        && currency(
+                            t.trim_matches(|c: char| !c.is_alphanumeric() && !"$€₱".contains(c)),
+                        )
                         .is_none()
                 })
                 .map_or(0, |p| p + 1);
@@ -90,6 +98,9 @@ pub fn bounded_quantities(text: &str) -> Vec<(Quantity, Cmp)> {
                 | (_, "under" | "below" | "before") => Cmp::Lt,
                 ("at least", _) => Cmp::Ge,
                 ("at most", _) => Cmp::Le,
+                (_, "about" | "around" | "roughly" | "approximately" | "nearly" | "almost") => {
+                    Cmp::About
+                }
                 _ => Cmp::Eq,
             };
             (q, cmp)
@@ -1404,6 +1415,43 @@ mod tests {
         assert_eq!(
             v("He was born in 1924", "he was born in 1925"),
             Some(Verdict::Mismatch)
+        );
+    }
+
+    #[test]
+    fn approximate_figures_and_us_dollars_are_read_as_bounds() {
+        let b = |t: &str| {
+            bounded_quantities(t)
+                .into_iter()
+                .map(|(_, c)| c)
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(b("more than US $ 789,000"), vec![Cmp::Gt]);
+        assert_eq!(b("nearly $ 43 million"), vec![Cmp::About]);
+        assert_eq!(b("about 40 and almost 3"), vec![Cmp::About, Cmp::About]);
+        assert!(Cmp::About.holds(40.0, 40.0) && !Cmp::About.holds(38.0, 40.0));
+        let v = |c: &str, q: &str| check(&claim(c, q, "2026-09-01"), &pol()).map(|f| f.verdict);
+        assert_eq!(
+            v("It earned nearly $ 43 million", "It made $ 42,307,260"),
+            None
+        );
+        assert_eq!(
+            v("there were about 40 cats", "there were about 40 cats"),
+            Some(Verdict::Backed)
+        );
+        assert_eq!(
+            v(
+                "It grossed more than US $ 789,000",
+                "It grossed US $ 789,298"
+            ),
+            None
+        );
+        assert_eq!(
+            v(
+                "It grossed more than US $ 789,000",
+                "It grossed US $ 700,000"
+            ),
+            None
         );
     }
 
