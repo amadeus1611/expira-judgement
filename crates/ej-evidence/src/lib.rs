@@ -111,9 +111,14 @@ fn located(toks: &[&str]) -> Vec<(usize, Quantity)> {
         let (num, suffix) = split_number(t);
         let Some(mut v) = num else { continue };
         let mut unit = suffix.to_lowercase();
-        // A decade: "1970s", "1970's" -> 1970 with no unit.
-        if matches!(unit.as_str(), "s" | "'s" | "’s") && (1000.0..=2999.0).contains(&v) {
-            unit.clear();
+        // A decade or century ("1970s", "1970's", "1900 's"): a span, not the year itself, so it gets its own kind and
+        // is never read as an exact year ("the 1900s" is not contradicted by 1924).
+        let apostrophe_s = |t: &str| matches!(t, "s" | "'s" | "’s");
+        if (1000.0..=2999.0).contains(&v)
+            && (apostrophe_s(&unit)
+                || (unit.is_empty() && toks.get(i + 1).is_some_and(|n| apostrophe_s(n))))
+        {
+            unit = "decade".into();
         }
         match unit.as_str() {
             "k" => {
@@ -1388,6 +1393,18 @@ mod tests {
         assert_eq!(v("A fee of 5 %", "a fee of 7 %"), Some(Verdict::Mismatch));
         assert_eq!(v("A fee of 5 %", "a fee of 5 apples"), None);
         assert_eq!(v("It has 3 rooms", "It has 2 rooms"), None);
+    }
+
+    #[test]
+    fn a_decade_is_a_span_not_a_year() {
+        let v = |c: &str, q: &str| check(&claim(c, q, "2026-09-01"), &pol()).map(|f| f.verdict);
+        assert_eq!(v("He lived in the 1900s", "he died in 1924"), None);
+        assert_eq!(v("It ran in the 1980 's", "it opened in 1982"), None);
+        assert_eq!(quantities("the 1980 's")[0].unit, "decade");
+        assert_eq!(
+            v("He was born in 1924", "he was born in 1925"),
+            Some(Verdict::Mismatch)
+        );
     }
 
     #[test]
