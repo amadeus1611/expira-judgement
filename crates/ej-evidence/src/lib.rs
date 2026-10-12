@@ -399,6 +399,33 @@ fn comparable(want: &Quantity, have: &Quantity) -> bool {
     }
 }
 
+/// Is `have` a figure of the same kind as `want`, so that a different value contradicts it: the same unit (both
+/// unit-less included), dates, months and bare years with each other, or the same number in another unit?
+fn rival(want: &Quantity, have: &Quantity) -> bool {
+    let dated = |u: &str| matches!(u, "date" | "month");
+    let year = |q: &Quantity| q.unit.is_empty() && (1000.0..=2999.0).contains(&q.value);
+    // A recognised kind: a unit, a currency or a date. Leftovers such as ":28" (a clock time) or "/100" (a score)
+    // are not understood, so they never prove a contradiction.
+    let known = |u: &str| dated(u) || is_unit(u);
+    if want.unit.is_empty() || have.unit.is_empty() {
+        // Plain numbers are too often part of a name ("Fallout 76", "the 2013 film") to contradict one another;
+        // only years do, and a year contradicts a date or month in another year.
+        return (year(want) && (year(have) || dated(&have.unit)))
+            || (dated(&want.unit) && year(have))
+            || (known(&want.unit) && have.unit.is_empty() && same_value(want, have));
+    }
+    known(&want.unit)
+        && known(&have.unit)
+        && (want.unit == have.unit
+            || (dated(&want.unit) && dated(&have.unit))
+            // The same number in another unit or kind: "USD 5,000" against "PHP 5,000".
+            || same_value(want, have))
+}
+
+fn same_value(want: &Quantity, have: &Quantity) -> bool {
+    (want.value - have.value).abs() <= 1e-12 * want.value.abs().max(1.0)
+}
+
 /// A bare year in the claim ("born in 2014") is backed by a date or month in that year ("June 2014").
 fn year_of(want: &Quantity, have: &Quantity) -> bool {
     #[allow(clippy::cast_possible_truncation)]
@@ -524,7 +551,15 @@ pub fn check(claim: &Claim, policy: &Policy) -> Option<Finding> {
         .iter()
         .filter(|(q, cmp)| {
             if *cmp == Cmp::Eq {
-                return !have.iter().any(|h| same(q, h) || year_of(q, h));
+                if have.iter().any(|h| same(q, h) || year_of(q, h)) {
+                    return false;
+                }
+                // Absent is not contradicted: only a rival figure of the same kind makes it a mismatch ("$75,000,000"
+                // against "$42,307,260"). A figure the quote never addresses ("Gears of War 3", "Fallout 76" when the
+                // quote says "the game") escalates.
+                let contradicted = have.iter().any(|h| rival(q, h));
+                unproven |= !contradicted;
+                return contradicted;
             }
             let met = have
                 .iter()
@@ -1304,6 +1339,55 @@ mod tests {
             "2026-09-01",
         );
         assert!(check(&c, &pol()).is_none());
+    }
+
+    #[test]
+    fn an_absent_figure_escalates_and_only_a_rival_figure_contradicts() {
+        let v = |c: &str, q: &str| check(&claim(c, q, "2026-09-01"), &pol()).map(|f| f.verdict);
+        // Numbers in names, clock times and scores the code does not read are not contradicted by other numbers.
+        assert_eq!(
+            v(
+                "Fallout 76 received mixed reviews",
+                "Both PlayStation 4 versions received mixed reviews"
+            ),
+            None
+        );
+        assert_eq!(
+            v("The 2013 film opened weakly", "It collected 35 million"),
+            None
+        );
+        assert_eq!(
+            v(
+                "It was turned off at 8:28 am",
+                "It was turned off at 8:29 am ."
+            ),
+            None
+        );
+        assert_eq!(
+            v("Gears of War 3 is the last", "It is the final installment"),
+            None
+        );
+        // Rival figures of one kind still contradict: money, years, a date against a year, the same number in another unit.
+        assert_eq!(
+            v("It earned $ 75,000,000", "It made $ 42,307,260"),
+            Some(Verdict::Mismatch)
+        );
+        assert_eq!(
+            v("It opened in 2013", "It opened in 2012"),
+            Some(Verdict::Mismatch)
+        );
+        assert_eq!(
+            v("It opened in 2013", "It opened in June 2012"),
+            Some(Verdict::Mismatch)
+        );
+        assert_eq!(
+            v("It opened on 2026-08-01", "It opened in 2025"),
+            Some(Verdict::Mismatch)
+        );
+        assert_eq!(v("A fee of 5 %", "a fee of 5 kg"), Some(Verdict::Mismatch));
+        assert_eq!(v("A fee of 5 %", "a fee of 7 %"), Some(Verdict::Mismatch));
+        assert_eq!(v("A fee of 5 %", "a fee of 5 apples"), None);
+        assert_eq!(v("It has 3 rooms", "It has 2 rooms"), None);
     }
 
     #[test]
