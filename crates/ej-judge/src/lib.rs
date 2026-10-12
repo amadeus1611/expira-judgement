@@ -50,18 +50,19 @@ pub fn adjudicate(claim: &Claim, judges: &[&dyn Judge], bars: Bars) -> Finding {
     let mut last = String::from("no judge available");
     for j in judges {
         let (r, c, why) = j.rule(claim);
-        // A local judge may not call a claim stated when one of its names is missing from every quote (layer-1 rule,
-        // ej_evidence::names_in_quotes); the claim escalates instead. The escalation judge checks names itself.
+        // A local judge may not call a claim stated when one of its names, or any other content word, is missing from
+        // every quote (ej_evidence::names_in_quotes, ej_evidence::unstated_words); the claim escalates instead. The
+        // escalation judge checks the wording itself.
         let quotes: Vec<&str> = claim.evidence.iter().map(|e| e.quote.as_str()).collect();
-        if r == Ruling::Supports
-            && j.layer() == Layer::LocalJudge
-            && !ej_evidence::names_in_quotes(&claim.text, &quotes)
-        {
-            last = format!(
-                "{:?} said supports but a name in the claim is not in the quotes",
-                j.layer()
-            );
-            continue;
+        if r == Ruling::Supports && j.layer() == Layer::LocalJudge {
+            let missing = ej_evidence::unstated_words(&claim.text, &quotes);
+            if missing > 0 || !ej_evidence::names_in_quotes(&claim.text, &quotes) {
+                last = format!(
+                    "{:?} said supports but {missing} claim word(s) or a name are not in the quotes",
+                    j.layer()
+                );
+                continue;
+            }
         }
         if r != Ruling::Unsure && (j.self_gated() || c >= bars.act) {
             let verdict = if r == Ruling::Supports {
@@ -286,7 +287,8 @@ mod tests {
             yes: 0.7,
             no: 0.2,
         }; // identity scaling
-        let cl = c("x", "y");
+           // Claim words all in the quote, so only the thresholds decide (the wording gate is tested on its own).
+        let cl = c("x", "x");
         assert_eq!(
             Calibrated {
                 inner: Score(0.75),
@@ -399,6 +401,48 @@ mod tests {
                 "{q}"
             );
         }
+    }
+
+    #[test]
+    fn local_supports_needs_every_content_word_and_name_in_the_quotes() {
+        let cal = Calibration {
+            a: 1.0,
+            b: 0.0,
+            yes: 0.7,
+            no: 0.2,
+        };
+        let verdict = |claim: &str, quote: &str| {
+            adjudicate(
+                &c(claim, quote),
+                &[&Calibrated {
+                    inner: Score(0.99),
+                    cal,
+                }],
+                Bars::default(),
+            )
+            .verdict
+        };
+        // One word swapped against the quote: escalates.
+        assert_eq!(
+            verdict(
+                "The game got mixed reviews",
+                "The game got negative reviews"
+            ),
+            Verdict::Unsure
+        );
+        // A name that is also a function word ("May") is still checked as a name.
+        assert_eq!(
+            verdict("Then May arrived", "Then June arrived"),
+            Verdict::Unsure
+        );
+        // Every word present: the calibrated local call stands.
+        assert_eq!(
+            verdict(
+                "The game got negative reviews",
+                "The game got negative reviews"
+            ),
+            Verdict::Supported
+        );
     }
 
     #[test]

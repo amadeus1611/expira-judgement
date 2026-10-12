@@ -22,7 +22,7 @@ fn die(e: &str) -> ! {
     std::process::exit(2)
 }
 fn usage() -> ! {
-    die("usage: ej-bench <cases.jsonl> [--bar 0.8] [--overlap] [--nli DIR] [--cmd ...] | score <cases.jsonl> --out FILE ... | fit --cal FILE --test FILE")
+    die("usage: ej-bench <cases.jsonl> [--bar 0.8] [--overlap] [--nli DIR] [--cmd ...] | score <cases.jsonl> --out FILE ... | fit --cal FILE --test FILE | words <cases.jsonl>")
 }
 
 fn judges(
@@ -299,6 +299,22 @@ fn cmd_run(cli: &Cli, path: &str) {
     }
 }
 
+/// One line per case: how many claim words no quote has, and whether every name is in a quote (the wording gate a
+/// local "stated" must pass in `adjudicate`), so offline cascade measurements apply exactly the production rule.
+fn cmd_words(path: &str) {
+    for (i, c) in read_cases(path).iter().enumerate() {
+        let quotes = [c.quote.as_str()];
+        println!(
+            "{}",
+            serde_json::json!({
+                "i": i,
+                "unstated": ej_evidence::unstated_words(&c.claim, &quotes),
+                "names_ok": ej_evidence::names_in_quotes(&c.claim, &quotes),
+            })
+        );
+    }
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let cmd_at = args.iter().position(|a| a == "--cmd");
@@ -309,6 +325,7 @@ fn main() {
     match args.get(1).map(String::as_str) {
         Some("score") => cmd_score(&cli, args.get(2).unwrap_or_else(|| usage())),
         Some("fit") => cmd_fit(&cli),
+        Some("words") => cmd_words(args.get(2).unwrap_or_else(|| usage())),
         Some(path) if !path.starts_with("--") => cmd_run(&cli, path),
         _ => usage(),
     }

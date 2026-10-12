@@ -9,6 +9,7 @@ publish.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 ej-core.workspace = true
+ej-evidence.workspace = true
 ej-judge.workspace = true
 ej-nli.workspace = true
 
