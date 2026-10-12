@@ -310,6 +310,7 @@ fn cmd_words(path: &str) {
                 "i": i,
                 "unstated": ej_evidence::unstated_words(&c.claim, &quotes),
                 "names_ok": ej_evidence::names_in_quotes(&c.claim, &quotes),
+                "figures_ok": ej_evidence::figures_backed(&c.claim, &quotes),
             })
         );
     }

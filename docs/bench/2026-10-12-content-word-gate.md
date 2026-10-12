@@ -29,3 +29,21 @@ fails 226/238. Claude's remaining errors are on paraphrased claims.
 No pass yet: 0.9769 < 0.99. Coverage is the limit: at most 338 test rows pass the gate where layer 1 is unsure, and a
 0.99 bound needs 381 error-free calls. Next: grow proven coverage (escalation on gate-failing rows with agreement,
 larger held-out set), and the label audit.
+
+## Untouched confirmation and the figures gate (same day)
+Confirmation set: `python3 -I tools/fetch_general.py DATA --confirm --pages 200` (114 pages that avoid every frozen page by
+at least 200 rows; 11,400 rows, 7 sharing exact text with the frozen splits removed, 11,393 left). Scored once with
+the frozen configurations; nothing fitted on it. `python3 -I tools/local_cascade.py DATA xsmall [--gate] --confirm`.
+
+| Configuration (threshold from calibration) | Calibration | Test | Confirmation | Confirmation bound |
+|---|---:|---:|---:|---:|
+| layer 1 + xsmall, no gate (0.9898) | 195/198 | 214/220 | 828/860 (96.28%) | 0.9479 |
+| + wording gate (0.9641) | 165/166 | 240/241 | 863/892 (96.75%) | 0.9537 |
+| + figures gate (`figures_backed`) | 161/162 | 235/236 | 851/877 (97.04%) | 0.9569 |
+
+The test split overstated the gate (240/241): on 4x more untouched data the gain is real but smaller. The figures
+gate stops local "stated" on claims whose bound the quote does not meet ("born before 1950" vs "born 1951",
+"more than 870" vs 856); calibration bound dips 0.9667 -> 0.9659 (fewer calls), confirmation rises.
+
+Label audit of every remaining wrong call: docs/audit/2026-10-12-vitaminc-stated-errors.md. Audited confirmation
+864/877 (98.52%), bound 0.9748; raw 0.9569 stays the standard's number.

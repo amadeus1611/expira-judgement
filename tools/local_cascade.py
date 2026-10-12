@@ -2,10 +2,10 @@
 """Whole local cascade on VitaminC, exactly as `ej check` routes it: layer 1 (`ej check` output l1_{cal,test}.json)
 decides first; on what it leaves unsure, a local judge's score (vitc_{split}.{judge}.scores) may call the claim stated
 only past a threshold and, with --gate, only when the production wording gate passes (`ej-bench words` output
-vitc_{split}.words: zero unstated claim words and every name in the quote). The threshold is fitted on calibration
+vitc_{split}.words: zero unstated claim words, every name in the quote, every figure backed). The threshold is fitted on calibration
 (best 95% Wilson lower bound, at least 20 calls) and applied unchanged to test.
 
-    python3 -I tools/local_cascade.py DATA_DIR JUDGE [--gate]
+    python3 -I tools/local_cascade.py DATA_DIR JUDGE [--gate] [--confirm]
 """
 import json
 import math
@@ -31,7 +31,7 @@ def load(data, split, judge, gate):
     if gate:
         for line in open(f"{data}/vitc_{split}.words"):
             w = json.loads(line)
-            ok[w["i"]] = w["unstated"] == 0 and w["names_ok"]
+            ok[w["i"]] = w["unstated"] == 0 and w["names_ok"] and w.get("figures_ok", True)
     return rows, l1, scores, ok
 
 
@@ -57,8 +57,12 @@ def main(a):
             best = (wilson(k, n), t, k, n)
     lb, t, k, n = best
     tk, tn = stated(test, t)
-    print(json.dumps({"judge": judge, "gate": gate, "threshold": t, "cal": [k, n], "cal_lb": round(lb, 4),
-                      "test": [tk, tn], "test_accuracy": round(tk / tn, 4), "test_lb": round(wilson(tk, tn), 4)}))
+    out = {"judge": judge, "gate": gate, "threshold": t, "cal": [k, n], "cal_lb": round(lb, 4),
+           "test": [tk, tn], "test_accuracy": round(tk / tn, 4), "test_lb": round(wilson(tk, tn), 4)}
+    if "--confirm" in a:  # the untouched set from fetch_general.py --confirm, scored once with the frozen threshold
+        ck, cn = stated(load(data, "conf", judge, gate), t)
+        out.update(confirm=[ck, cn], confirm_accuracy=round(ck / cn, 4), confirm_lb=round(wilson(ck, cn), 4))
+    print(json.dumps(out))
 
 
 if __name__ == "__main__":

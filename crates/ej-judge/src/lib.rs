@@ -56,9 +56,12 @@ pub fn adjudicate(claim: &Claim, judges: &[&dyn Judge], bars: Bars) -> Finding {
         let quotes: Vec<&str> = claim.evidence.iter().map(|e| e.quote.as_str()).collect();
         if r == Ruling::Supports && j.layer() == Layer::LocalJudge {
             let missing = ej_evidence::unstated_words(&claim.text, &quotes);
-            if missing > 0 || !ej_evidence::names_in_quotes(&claim.text, &quotes) {
+            if missing > 0
+                || !ej_evidence::names_in_quotes(&claim.text, &quotes)
+                || !ej_evidence::figures_backed(&claim.text, &quotes)
+            {
                 last = format!(
-                    "{:?} said supports but {missing} claim word(s) or a name are not in the quotes",
+                    "{:?} said supports but {missing} claim word(s), a name or a figure are not in the quotes",
                     j.layer()
                 );
                 continue;
@@ -428,6 +431,11 @@ mod tests {
                 "The game got mixed reviews",
                 "The game got negative reviews"
             ),
+            Verdict::Unsure
+        );
+        // A bound the quote does not meet is never stated on wording alone.
+        assert_eq!(
+            verdict("He was born before 1950", "He was born 1951"),
             Verdict::Unsure
         );
         // A name that is also a function word ("May") is still checked as a name.
