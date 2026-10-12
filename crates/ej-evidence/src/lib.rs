@@ -39,6 +39,9 @@ pub enum Cmp {
     Ge,
     /// At most.
     Le,
+    /// Approximately: about, around, roughly, approximately, nearly, almost. Met only by the same figure; any other
+    /// figure leaves it to the judges, since "nearly 43 million" may well describe 42.3 million.
+    About,
 }
 
 impl Cmp {
@@ -51,6 +54,7 @@ impl Cmp {
             Cmp::Lt => x < bound,
             Cmp::Ge => x >= bound,
             Cmp::Le => x <= bound,
+            Cmp::About => Cmp::Eq.holds(x, bound),
         }
     }
 }
@@ -73,7 +77,11 @@ pub fn bounded_quantities(text: &str) -> Vec<(Quantity, Cmp)> {
             let j = toks[..i]
                 .iter()
                 .rposition(|t| {
-                    currency(t.trim_matches(|c: char| !c.is_alphanumeric() && !"$€₱".contains(c)))
+                    // "US $ 789,000": the country prefix belongs to the currency marker too.
+                    !t.eq_ignore_ascii_case("us")
+                        && currency(
+                            t.trim_matches(|c: char| !c.is_alphanumeric() && !"$€₱".contains(c)),
+                        )
                         .is_none()
                 })
                 .map_or(0, |p| p + 1);
@@ -90,6 +98,9 @@ pub fn bounded_quantities(text: &str) -> Vec<(Quantity, Cmp)> {
                 | (_, "under" | "below" | "before") => Cmp::Lt,
                 ("at least", _) => Cmp::Ge,
                 ("at most", _) => Cmp::Le,
+                (_, "about" | "around" | "roughly" | "approximately" | "nearly" | "almost") => {
+                    Cmp::About
+                }
                 _ => Cmp::Eq,
             };
             (q, cmp)
@@ -111,9 +122,14 @@ fn located(toks: &[&str]) -> Vec<(usize, Quantity)> {
         let (num, suffix) = split_number(t);
         let Some(mut v) = num else { continue };
         let mut unit = suffix.to_lowercase();
-        // A decade: "1970s", "1970's" -> 1970 with no unit.
-        if matches!(unit.as_str(), "s" | "'s" | "’s") && (1000.0..=2999.0).contains(&v) {
-            unit.clear();
+        // A decade or century ("1970s", "1970's", "1900 's"): a span, not the year itself, so it gets its own kind and
+        // is never read as an exact year ("the 1900s" is not contradicted by 1924).
+        let apostrophe_s = |t: &str| matches!(t, "s" | "'s" | "’s");
+        if (1000.0..=2999.0).contains(&v)
+            && (apostrophe_s(&unit)
+                || (unit.is_empty() && toks.get(i + 1).is_some_and(|n| apostrophe_s(n))))
+        {
+            unit = "decade".into();
         }
         match unit.as_str() {
             "k" => {
@@ -399,6 +415,33 @@ fn comparable(want: &Quantity, have: &Quantity) -> bool {
     }
 }
 
+/// Is `have` a figure of the same kind as `want`, so that a different value contradicts it: the same unit (both
+/// unit-less included), dates, months and bare years with each other, or the same number in another unit?
+fn rival(want: &Quantity, have: &Quantity) -> bool {
+    let dated = |u: &str| matches!(u, "date" | "month");
+    let year = |q: &Quantity| q.unit.is_empty() && (1000.0..=2999.0).contains(&q.value);
+    // A recognised kind: a unit, a currency or a date. Leftovers such as ":28" (a clock time) or "/100" (a score)
+    // are not understood, so they never prove a contradiction.
+    let known = |u: &str| dated(u) || is_unit(u);
+    if want.unit.is_empty() || have.unit.is_empty() {
+        // Plain numbers are too often part of a name ("Fallout 76", "the 2013 film") to contradict one another;
+        // only years do, and a year contradicts a date or month in another year.
+        return (year(want) && (year(have) || dated(&have.unit)))
+            || (dated(&want.unit) && year(have))
+            || (known(&want.unit) && have.unit.is_empty() && same_value(want, have));
+    }
+    known(&want.unit)
+        && known(&have.unit)
+        && (want.unit == have.unit
+            || (dated(&want.unit) && dated(&have.unit))
+            // The same number in another unit or kind: "USD 5,000" against "PHP 5,000".
+            || same_value(want, have))
+}
+
+fn same_value(want: &Quantity, have: &Quantity) -> bool {
+    (want.value - have.value).abs() <= 1e-12 * want.value.abs().max(1.0)
+}
+
 /// A bare year in the claim ("born in 2014") is backed by a date or month in that year ("June 2014").
 fn year_of(want: &Quantity, have: &Quantity) -> bool {
     #[allow(clippy::cast_possible_truncation)]
@@ -524,7 +567,15 @@ pub fn check(claim: &Claim, policy: &Policy) -> Option<Finding> {
         .iter()
         .filter(|(q, cmp)| {
             if *cmp == Cmp::Eq {
-                return !have.iter().any(|h| same(q, h) || year_of(q, h));
+                if have.iter().any(|h| same(q, h) || year_of(q, h)) {
+                    return false;
+                }
+                // Absent is not contradicted: only a rival figure of the same kind makes it a mismatch ("$75,000,000"
+                // against "$42,307,260"). A figure the quote never addresses ("Gears of War 3", "Fallout 76" when the
+                // quote says "the game") escalates.
+                // When nothing rivals it, the claim cannot be word for word in a quote either, so it falls through to
+                // escalation below.
+                return have.iter().any(|h| rival(q, h));
             }
             let met = have
                 .iter()
@@ -1304,6 +1355,145 @@ mod tests {
             "2026-09-01",
         );
         assert!(check(&c, &pol()).is_none());
+    }
+
+    #[test]
+    fn an_absent_figure_escalates_and_only_a_rival_figure_contradicts() {
+        let v = |c: &str, q: &str| check(&claim(c, q, "2026-09-01"), &pol()).map(|f| f.verdict);
+        // Numbers in names, clock times and scores the code does not read are not contradicted by other numbers.
+        assert_eq!(
+            v(
+                "Fallout 76 received mixed reviews",
+                "Both PlayStation 4 versions received mixed reviews"
+            ),
+            None
+        );
+        assert_eq!(
+            v("The 2013 film opened weakly", "It collected 35 million"),
+            None
+        );
+        assert_eq!(
+            v(
+                "It was turned off at 8:28 am",
+                "It was turned off at 8:29 am ."
+            ),
+            None
+        );
+        assert_eq!(
+            v("Gears of War 3 is the last", "It is the final installment"),
+            None
+        );
+        // Rival figures of one kind still contradict: money, years, a date against a year, the same number in another unit.
+        assert_eq!(
+            v("It earned $ 75,000,000", "It made $ 42,307,260"),
+            Some(Verdict::Mismatch)
+        );
+        assert_eq!(
+            v("It opened in 2013", "It opened in 2012"),
+            Some(Verdict::Mismatch)
+        );
+        assert_eq!(
+            v("It opened in 2013", "It opened in June 2012"),
+            Some(Verdict::Mismatch)
+        );
+        assert_eq!(
+            v("It opened on 2026-08-01", "It opened in 2025"),
+            Some(Verdict::Mismatch)
+        );
+        assert_eq!(v("A fee of 5 %", "a fee of 5 kg"), Some(Verdict::Mismatch));
+        assert_eq!(v("A fee of 5 %", "a fee of 7 %"), Some(Verdict::Mismatch));
+        assert_eq!(v("A fee of 5 %", "a fee of 5 apples"), None);
+        assert_eq!(v("It has 3 rooms", "It has 2 rooms"), None);
+    }
+
+    #[test]
+    fn a_decade_is_a_span_not_a_year() {
+        let v = |c: &str, q: &str| check(&claim(c, q, "2026-09-01"), &pol()).map(|f| f.verdict);
+        assert_eq!(v("He lived in the 1900s", "he died in 1924"), None);
+        assert_eq!(v("It ran in the 1980 's", "it opened in 1982"), None);
+        assert_eq!(quantities("the 1980 's")[0].unit, "decade");
+        assert_eq!(
+            v("He was born in 1924", "he was born in 1925"),
+            Some(Verdict::Mismatch)
+        );
+    }
+
+    #[test]
+    fn approximate_figures_and_us_dollars_are_read_as_bounds() {
+        let b = |t: &str| {
+            bounded_quantities(t)
+                .into_iter()
+                .map(|(_, c)| c)
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(b("more than US $ 789,000"), vec![Cmp::Gt]);
+        assert_eq!(b("nearly $ 43 million"), vec![Cmp::About]);
+        assert_eq!(b("about 40 and almost 3"), vec![Cmp::About, Cmp::About]);
+        assert!(Cmp::About.holds(40.0, 40.0) && !Cmp::About.holds(38.0, 40.0));
+        let v = |c: &str, q: &str| check(&claim(c, q, "2026-09-01"), &pol()).map(|f| f.verdict);
+        assert_eq!(
+            v("It earned nearly $ 43 million", "It made $ 42,307,260"),
+            None
+        );
+        assert_eq!(
+            v("there were about 40 cats", "there were about 40 cats"),
+            Some(Verdict::Backed)
+        );
+        assert_eq!(
+            v(
+                "It grossed more than US $ 789,000",
+                "It grossed US $ 789,298"
+            ),
+            None
+        );
+        assert_eq!(
+            v(
+                "It grossed more than US $ 789,000",
+                "It grossed US $ 700,000"
+            ),
+            None
+        );
+    }
+
+    #[test]
+    fn rivals_are_figures_of_the_same_kind() {
+        let q = |v: f64, u: &str| Quantity {
+            value: v,
+            unit: u.into(),
+        };
+        let yes = [
+            (q(2013.0, ""), q(2012.0, "")),
+            (q(2013.0, ""), q(201_206.0, "month")),
+            (q(2013.0, ""), q(20_120_601.0, "date")),
+            (q(20_260_801.0, "date"), q(2025.0, "")),
+            (q(20_260_801.0, "date"), q(20_260_801.0, "")),
+            (q(5.0, "%"), q(7.0, "%")),
+            (q(5.0, "%"), q(5.0, "kg")),
+            (q(1e6, "usd"), q(1e6 + 1e-7, "php")),
+            (q(20_260_801.0, "date"), q(202_607.0, "month")),
+        ];
+        let no = [
+            (q(76.0, ""), q(4.0, "")),
+            (q(2013.0, ""), q(35.0, "")),
+            (q(35.0, ""), q(2013.0, "")),
+            (q(5.0, ""), q(20_120_601.0, "date")),
+            (q(20_260_801.0, "date"), q(35.0, "")),
+            (q(5.0, "%"), q(6.0, "")),
+            (q(5.0, ""), q(5.0, "%")),
+            (q(5.0, "%"), q(5.0, "apples")),
+            (q(5.0, "apples"), q(5.0, "%")),
+            (q(5.0, "apples"), q(5.0, "apples")),
+            (q(5.0, "%"), q(6.0, "kg")),
+            (q(1e6, "usd"), q(1e6 + 1.0, "php")),
+            (q(20_260_801.0, "date"), q(5.0, "kg")),
+            (q(1980.0, "decade"), q(1982.0, "")),
+        ];
+        for (w, h) in &yes {
+            assert!(rival(w, h), "{w:?} {h:?}");
+        }
+        for (w, h) in &no {
+            assert!(!rival(w, h), "{w:?} {h:?}");
+        }
     }
 
     #[test]

@@ -395,3 +395,19 @@ from adopted habits (`docs/HABITS.md`).
   and isolation verification. At most 10 serial calibration calls, no automatic retry, actual unknown-cost accounting.
 - Keep any label audit blind/separate and raw/audited scores together; never fit on test/stress/audit. Independent
   development repairs must address conditional false passes and false blocks; untouched confirmation remains sealed.
+
+## 2026-10-12 (Claude) Review of the Codex rounds; layer-1 false blocks 119 -> 4
+
+### Done
+- Reviewed PRs #3-#7 (Codex): no bar, test or decision rule was weakened. The ratchets (cargo-deny, missing_docs,
+  zero missed mutants incl. ej-bench) and the cross-split text-overlap finding are kept. Its Platt rewrite re-measured:
+  identical to 1e-10. Its rounds made no measured accuracy gain (documents and a Codex adapter only).
+- Layer 1 (`ej-evidence`): an absent figure escalates and only a rival figure of the same kind is a mismatch (`rival`);
+  decades are spans; approximate wording is `Cmp::About`; "US $" read as currency. VitaminC test: true claims blocked
+  119 -> 4, block lower bound 0.66 -> 0.88, backed 25/25. Zero missed mutants on the changed functions.
+- Whole local cascade measured (`tools/local_cascade.py`): test "stated" 214/220, lower bound 0.9418.
+  Bench: docs/bench/2026-10-12-layer1-false-blocks.md.
+
+### Next
+- Label audit (blind, separate file, raw and audited scores side by side) on the cascade's disagreements.
+- Small escalation run on the cascade's uncertain middle only (report cost); then the Rust subscription transport.

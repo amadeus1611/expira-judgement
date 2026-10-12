@@ -15,7 +15,7 @@ from unittest.mock import patch
 import cascade_capture as capture
 
 ROWS = [dict(claim="The violet lamp glows.", quote="The violet lamp glows.", label="supports"),
-        dict(claim="The rack holds 8 trays.", quote="The rack holds 7 trays.", label="contradicts"),
+        dict(claim="The rack holds 8 kg.", quote="The rack holds 7 kg.", label="contradicts"),
         dict(claim="The crane moves swiftly.", quote="The crane has moved.", label="unsure")]
 
 
