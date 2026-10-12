@@ -573,9 +573,9 @@ pub fn check(claim: &Claim, policy: &Policy) -> Option<Finding> {
                 // Absent is not contradicted: only a rival figure of the same kind makes it a mismatch ("$75,000,000"
                 // against "$42,307,260"). A figure the quote never addresses ("Gears of War 3", "Fallout 76" when the
                 // quote says "the game") escalates.
-                let contradicted = have.iter().any(|h| rival(q, h));
-                unproven |= !contradicted;
-                return contradicted;
+                // When nothing rivals it, the claim cannot be word for word in a quote either, so it falls through to
+                // escalation below.
+                return have.iter().any(|h| rival(q, h));
             }
             let met = have
                 .iter()
@@ -1453,6 +1453,47 @@ mod tests {
             ),
             None
         );
+    }
+
+    #[test]
+    fn rivals_are_figures_of_the_same_kind() {
+        let q = |v: f64, u: &str| Quantity {
+            value: v,
+            unit: u.into(),
+        };
+        let yes = [
+            (q(2013.0, ""), q(2012.0, "")),
+            (q(2013.0, ""), q(201_206.0, "month")),
+            (q(2013.0, ""), q(20_120_601.0, "date")),
+            (q(20_260_801.0, "date"), q(2025.0, "")),
+            (q(20_260_801.0, "date"), q(20_260_801.0, "")),
+            (q(5.0, "%"), q(7.0, "%")),
+            (q(5.0, "%"), q(5.0, "kg")),
+            (q(1e6, "usd"), q(1e6 + 1e-7, "php")),
+            (q(20_260_801.0, "date"), q(202_607.0, "month")),
+        ];
+        let no = [
+            (q(76.0, ""), q(4.0, "")),
+            (q(2013.0, ""), q(35.0, "")),
+            (q(35.0, ""), q(2013.0, "")),
+            (q(5.0, ""), q(20_120_601.0, "date")),
+            (q(20_260_801.0, "date"), q(35.0, "")),
+            (q(5.0, "%"), q(6.0, "")),
+            (q(5.0, ""), q(5.0, "%")),
+            (q(5.0, "%"), q(5.0, "apples")),
+            (q(5.0, "apples"), q(5.0, "%")),
+            (q(5.0, "apples"), q(5.0, "apples")),
+            (q(5.0, "%"), q(6.0, "kg")),
+            (q(1e6, "usd"), q(1e6 + 1.0, "php")),
+            (q(20_260_801.0, "date"), q(5.0, "kg")),
+            (q(1980.0, "decade"), q(1982.0, "")),
+        ];
+        for (w, h) in &yes {
+            assert!(rival(w, h), "{w:?} {h:?}");
+        }
+        for (w, h) in &no {
+            assert!(!rival(w, h), "{w:?} {h:?}");
+        }
     }
 
     #[test]
