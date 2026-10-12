@@ -407,6 +407,13 @@ mod tests {
     }
 
     #[test]
+    fn overlap_scores_the_share_of_claim_words_found() {
+        let (r, c, _) = OverlapJudge.rule(&c("violet lamp glows brightly", "the violet lamp"));
+        assert_eq!(r, Ruling::Unsure);
+        assert!((c - 0.5).abs() < 1e-6, "{c}");
+    }
+
+    #[test]
     fn local_supports_needs_every_content_word_and_name_in_the_quotes() {
         let cal = Calibration {
             a: 1.0,
