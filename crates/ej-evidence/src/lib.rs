@@ -689,6 +689,71 @@ pub fn names_in_quotes(claim: &str, quotes: &[&str]) -> bool {
     names(claim).iter().all(|n| words.contains(n))
 }
 
+/// Is every figure in the claim backed by the quotes: an exact figure found (a bare year by a date or month in it),
+/// a bound met by a comparable figure? Layer 1 escalates a figure it cannot settle; a local model must then not call
+/// the claim stated on wording alone ("born before 1950" against "born 1951" read as stated on `VitaminC`).
+#[must_use]
+pub fn figures_backed(claim: &str, quotes: &[&str]) -> bool {
+    let have: Vec<Quantity> = quotes.iter().flat_map(|q| quantities(q)).collect();
+    bounded_quantities(claim).iter().all(|(q, cmp)| {
+        have.iter().any(|h| {
+            if *cmp == Cmp::Eq {
+                same(q, h) || year_of(q, h)
+            } else {
+                comparable(q, h) && cmp.holds(h.value, q.value)
+            }
+        })
+    })
+}
+
+/// Function words that carry no claim of their own; every other word of a claim must be found in a quote before a local
+/// model may call it stated.
+const FUNCTION_WORDS: &[&str] = &[
+    "the", "a", "an", "of", "in", "on", "at", "to", "for", "and", "or", "but", "with", "by",
+    "from", "as", "is", "are", "was", "were", "be", "been", "being", "his", "her", "its", "their",
+    "this", "that", "these", "those", "it", "he", "she", "they", "them", "has", "have", "had",
+    "do", "does", "did", "will", "would", "can", "could", "should", "may", "might", "must", "not",
+    "no", "than", "then", "also", "into", "over", "under", "about", "after", "before", "during",
+    "while", "which", "who", "whom", "whose", "what", "when", "where", "why", "how", "all", "any",
+    "both", "each", "few", "more", "most", "other", "some", "such", "only", "own", "same", "so",
+    "too", "very", "just", "there", "here", "up", "down", "out", "off", "again", "further", "once",
+    "s", "i", "we", "you", "him", "our", "your",
+];
+
+/// A crude suffix stem ("reviewed", "reviews" -> "review") so inflection alone does not count as a new word.
+fn stem(w: &str) -> &str {
+    ["ing", "ed", "es", "s", "ly"]
+        .iter()
+        .find_map(|suf| w.strip_suffix(suf).filter(|r| r.chars().count() > 3))
+        .unwrap_or(w)
+}
+
+fn words(text: &str) -> impl Iterator<Item = String> + '_ {
+    text.split_whitespace()
+        .map(|w| {
+            w.trim_matches(|c: char| !c.is_alphanumeric())
+                .to_lowercase()
+        })
+        .filter(|w| !w.is_empty())
+}
+
+/// How many content words of the claim appear in no quote (function words and plain numbers aside; figures are
+/// layer 1's job). A local model's "stated" is accepted only at zero: on `VitaminC` the claims it wrongly accepted
+/// changed one word against the quote ("mixed" for "negative" reviews, "Rush" for "Russ"), and requiring every word
+/// lifted the local cascade's proven accuracy (docs/bench/2026-10-12-content-word-gate.md).
+#[must_use]
+pub fn unstated_words(claim: &str, quotes: &[&str]) -> usize {
+    let have: std::collections::HashSet<String> = quotes
+        .iter()
+        .flat_map(|q| words(q))
+        .map(|w| stem(&w).to_string())
+        .collect();
+    words(claim)
+        .filter(|w| !FUNCTION_WORDS.contains(&w.as_str()) && !w.chars().all(|c| c.is_ascii_digit()))
+        .filter(|w| !have.contains(stem(w)))
+        .count()
+}
+
 /// Checks that the listed parts add up to the stated total (tolerance for rounding to one unit).
 #[must_use]
 pub fn sum_matches(parts: &[f64], total: f64) -> bool {
@@ -1494,6 +1559,50 @@ mod tests {
         for (w, h) in &no {
             assert!(!rival(w, h), "{w:?} {h:?}");
         }
+    }
+
+    #[test]
+    fn unstated_words_counts_claim_words_no_quote_has() {
+        let q = ["Fallout 76 was released to generally negative reviews from critics ."];
+        assert_eq!(
+            unstated_words("Fallout 76 received negative reviews", &q),
+            1
+        ); // received
+        assert_eq!(
+            unstated_words("Fallout 76 was released to negative reviews", &q),
+            0
+        );
+        assert_eq!(
+            unstated_words("Fallout 76 was released to mixed reviews", &q),
+            1
+        );
+        assert_eq!(unstated_words("The critics reviewed it", &q), 0); // inflection, function words
+        assert_eq!(unstated_words("Fallout 77 was released", &q), 0); // figures are layer 1's job
+        assert_eq!(
+            unstated_words("Rush Fischer reviewed", &["Russ Fischer reviewed it"]),
+            1
+        );
+        assert_eq!(unstated_words("Mixed reviews", &["mixed", "reviews"]), 0); // any quote counts
+        assert_eq!(unstated_words("cats sing", &["cat", "sing"]), 1); // short words are not stemmed
+        assert_eq!(stem("reviewing"), "review");
+        assert_eq!(stem("dogs"), "dogs");
+        assert_eq!(stem("quickly"), "quick");
+    }
+
+    #[test]
+    fn figures_are_backed_only_when_found_or_met() {
+        assert!(figures_backed("born before 1952", &["born 1951"]));
+        assert!(!figures_backed("born before 1950", &["born 1951"]));
+        assert!(!figures_backed("more than 870 cases", &["856 cases"]));
+        assert!(figures_backed("more than 850 cases", &["856 cases"]));
+        assert!(figures_backed("born in 2014", &["born in June 2014"]));
+        assert!(figures_backed("It cost $ 5", &["it cost $ 5"]));
+        assert!(!figures_backed(
+            "Gears of War 3 is last",
+            &["It is the final game"]
+        ));
+        assert!(!figures_backed("more than 5 km", &["in June 2020"])); // a figure of another kind meets no bound
+        assert!(figures_backed("No figures here", &["none"]));
     }
 
     #[test]

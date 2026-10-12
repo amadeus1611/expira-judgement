@@ -411,3 +411,21 @@ from adopted habits (`docs/HABITS.md`).
 ### Next
 - Label audit (blind, separate file, raw and audited scores side by side) on the cascade's disagreements.
 - Small escalation run on the cascade's uncertain middle only (report cost); then the Rust subscription transport.
+
+## 2026-10-12 (Claude, later) Wording and figures gates; untouched confirmation; label audit
+
+### Done
+- `ej_evidence::unstated_words` and `figures_backed`: a local judge's "stated" needs every claim content word and
+  every figure in the quotes (enforced in `adjudicate`; exported per row by `ej-bench words`).
+- Untouched confirmation set: `tools/fetch_general.py --confirm --pages 200` (11,393 rows after removing 7 shared
+  with the frozen splits). `tools/local_cascade.py --gate --confirm` measures the frozen configuration on it.
+- Raw-label results, threshold fitted on calibration only: confirmation 828/860 (lb 0.9479) -> 851/877 (lb 0.9569);
+  test 214/220 (0.9418) -> 235/236 (0.9764). Bench: docs/bench/2026-10-12-content-word-gate.md.
+- Label audit of every remaining wrong call (docs/audit/2026-10-12-vitaminc-stated-errors.md): 14 labels changed,
+  0 of 40 sampled correct calls changed; audited confirmation 864/877 (98.52%), lb 0.9748.
+
+### Next
+- Remaining real errors: role swaps ("Catalonia is the capital of Barcelona"), negation-like words in garbled quotes
+  ("immunity", "rejected"), near-synonyms ("nut"/"peanut"). Research a deterministic role-order check first.
+- Score DeBERTa-v3-large on calibration + confirmation (about 90 min CPU) and compare under the same gates.
+- Escalate the gate-failing middle to Haiku in a small paid run; report cost and the combined bound.

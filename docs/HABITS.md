@@ -29,6 +29,12 @@ rule in code for logged habits. Habits move here only with evidence; a retired h
   it is researched and restructured in small tested steps, not worked around (owner, 2026-10-11).
 - **Latency is measured on a quiet machine,** and figures taken under load are labelled as such.
 
+- **A local model's "stated" needs every claim word in the evidence.** Contrastive one-word swaps fool small
+  cross-encoders; a deterministic wording gate removes them and only ever escalates. Evidence: local cascade 214/220
+  -> 240/241 on VitaminC test (docs/bench/2026-10-12-content-word-gate.md).
+- **An absent figure escalates; only a rival figure contradicts.** Evidence: layer-1 false blocks 119 -> 4
+  (docs/bench/2026-10-12-layer1-false-blocks.md).
+
 ## Retired
 
 - **Treating CLI stdout as a verdict without checking completion, or missing price as zero.** Why retired: the

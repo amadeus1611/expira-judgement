@@ -437,6 +437,7 @@ name = "ej-bench"
 version = "0.1.0"
 dependencies = [
  "ej-core",
+ "ej-evidence",
  "ej-judge",
  "ej-nli",
  "proptest",
