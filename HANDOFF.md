@@ -427,5 +427,24 @@ from adopted habits (`docs/HABITS.md`).
 ### Next
 - Remaining real errors: role swaps ("Catalonia is the capital of Barcelona"), negation-like words in garbled quotes
   ("immunity", "rejected"), near-synonyms ("nut"/"peanut"). Research a deterministic role-order check first.
-- Score DeBERTa-v3-large on calibration + confirmation (about 90 min CPU) and compare under the same gates.
 - Escalate the gate-failing middle to Haiku in a small paid run; report cost and the combined bound.
+
+## 2026-10-13 (Claude): DeBERTa-v3-large vs xsmall under the same gates
+
+### Done
+- Scored DeBERTa-v3-large (`models/ml-large-fp32`) on calibration, test and confirmation; ran
+  `tools/local_cascade.py DATA {xsmall,large} --gate --confirm` (raw labels, threshold fitted on calibration only,
+  4-vCPU cloud container):
+
+| Judge | Threshold | Cal | Test (lb) | Confirmation (lb) |
+|---|---|---|---|---|
+| xsmall | 0.9641 | 161/162 | 235/236 (0.9764) | 851/877 (0.9569) |
+| large | 0.9866 | 143/144 | 206/208 (0.9656) | 748/763 (0.9678) |
+
+- Large: better on the larger untouched confirmation set (15 vs 26 wrong), worse on test (2 vs 1 wrong), fewer
+  stated calls. Owner decision 2026-10-13: adopt large as the default judge for high-accuracy use (legal, research).
+
+### Next
+- Next week's build: switch the default local judge to large, bench log with both splits, measure latency on a
+  quiet machine. Scores lived in the session scratchpad and must be regenerated (`ej-bench score`).
+- Then the role-swap check and the small Haiku escalation run (owner approves cost).
