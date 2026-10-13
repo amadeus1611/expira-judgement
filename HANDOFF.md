@@ -448,3 +448,34 @@ from adopted habits (`docs/HABITS.md`).
 - Next week's build: switch the default local judge to large, bench log with both splits, measure latency on a
   quiet machine. Scores lived in the session scratchpad and must be regenerated (`ej-bench score`).
 - Then the role-swap check and the small Haiku escalation run (owner approves cost).
+
+## 2026-10-13 (Claude, later): next week's build plan (owner-approved order)
+
+### Done
+- Planning only, no code change. This section replaces the "Next" bullets of the section above as the work order.
+
+### Open
+- Scores, `l1_*.json` and `*.words` from earlier sessions lived in a scratchpad; regenerate them before anything else.
+- Task #10 (label audit) is done for the stated errors (docs/audit/2026-10-12-vitaminc-stated-errors.md); keep raw and
+  audited scores side by side in every new bench log.
+
+### Next (in this order; each step is one change, re-measured on the same frozen splits, logged in docs/bench/)
+1. Rebuild the inputs (free): fetch splits and confirmation with `tools/fetch_general.py` (frozen settings, see
+   docs/bench/2026-10-12-content-word-gate.md), `ej check` for `l1_{split}.json`, `ej-bench words` for
+   `vitc_{split}.words`, `ej-bench score ... --nli models/ml-large-fp32 --out vitc_{split}.large.scores` and the same
+   for xsmall. Check that `local_cascade.py DATA {xsmall,large} --gate --confirm` reproduces the 2026-10-13 table
+   exactly before changing anything; if not, stop and find why.
+2. Switch the default local judge to DeBERTa-v3-large (owner decision 2026-10-13): policy threshold 0.9866 (fitted on
+   calibration), docs and `ej check --nli` examples. Bench log with test and confirmation; latency per claim on a quiet
+   machine (state the CPU).
+3. Role-swap check in `ej-evidence` (research note first in docs/research/): a claim whose named entities appear in
+   the quote in reversed roles ("Catalonia is the capital of Barcelona") cannot be "stated". Keep only if the stated
+   lower bound improves on test and confirmation.
+4. Second judge, independence test (free): export one open NLI model from a different family
+   (e.g. a RoBERTa- or BART-large MNLI checkpoint) with `tools/export_onnx.py`, score the same splits, and report
+   agreement with large, and who is right where they disagree (raw and audited labels). It becomes the auditor of
+   the self-improvement loop only if it catches large's errors more often than it adds its own.
+5. Haiku escalation on the gate-failing middle (paid: only after the owner approves the cost; report cost and the
+   combined bound).
+- Order of the larger roadmap: proven 0.99 on general text, then per domain (legal, research), then automated
+  self-improvement with the standard in `standard.rs` as owner-controlled referee and fresh held-out data never tuned on.
