@@ -16,6 +16,10 @@ Supporting systems:
 
 Verdicts: `backed`, `supported` (pass); `unbacked`, `mismatch`, `stale`, `unsure` (fail; escalate or leave out).
 
+For study notes or generated explanations against a supplied source document, use
+the separate [`ej-study` integration](crates/ej-study/README.md). It calls the existing
+`ej check` binary and returns original findings with note locations and review flags.
+
 ## Roadmap
 1. ~~Claude escalation client, rulings written as teacher pairs.~~ Done; not yet run against the live API.
 2. Bake-off: harness and DeBERTa NLI done (first numbers on public MNLI); still LAYA via `--cmd`, a small constrained model, and ledger cases.

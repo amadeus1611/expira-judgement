@@ -479,3 +479,76 @@ from adopted habits (`docs/HABITS.md`).
    combined bound).
 - Order of the larger roadmap: proven 0.99 on general text, then per domain (legal, research), then automated
   self-improvement with the standard in `standard.rs` as owner-controlled referee and fresh held-out data never tuned on.
+
+## 2026-10-14 (Codex) Separate study-note/source integration
+
+Owner direction for this session: decision-block tuning is Claude's exclusive scope.
+Do not modify `ej-evidence`, local judges/thresholds, `ej-bench/src/standard.rs` or
+calibration data, and do not propose decision-block changes.
+
+### Done
+- Loaded the handoff, repository rules and current evidence/benchmark/production
+  interfaces; baseline formatting, clippy and locked workspace tests passed.
+- Added `crates/ej-study`: separate CLI and library that segments supplied UTF-8 study
+  text, attaches the complete dated source snapshot verbatim, calls the existing
+  `ej check` binary, and preserves original findings with input byte spans and flags
+  from `Verdict::passes()`. No judgement logic is duplicated. Sentence candidates
+  retain all non-whitespace content; `--lines` supports reviewed claim boundaries.
+- Existing `--nli`/`--policy` eligibility and optional evidence age limits are forwarded
+  to the original binary. Empty/stale evidence, model skip diagnostics and unresolved
+  verdicts remain visible. Failed processes, partial/invalid output, bad IDs and
+  inconsistent exit codes cannot produce a successful report. No paid escalation
+  or diagnostic Codex adapter is enabled by the wrapper.
+- Added 10 offline integration tests and an optional real-binary parity test; CI now
+  runs the latter explicitly and includes the integration in mutation checks.
+  Initial-checkout workspace tests report 127 passing, zero failed; after rebasing
+  onto current main `d208133`, 135 pass. Explicit real-engine parity passes on both
+  bases. Formatting, workspace clippy and cargo-deny pass. No existing decision tests
+  were edited. See the bench log for Python and mutation verification on each base.
+- Real CLI smoke on fresh synthetic text gives `backed`, `mismatch`, `unsure` and
+  flags only the latter two. The parity test compares identical original findings
+  against direct `ej check` for ordinary, stale and empty evidence and a synthetic
+  non-passing local policy. This is integration verification, not model accuracy.
+- Invocation, API, source-pulling study workflow and limitations:
+  `crates/ej-study/README.md`. Research and observed checks:
+  `docs/research/2026-10-14-study-integration.md` and
+  `docs/bench/2026-10-14-study-integration.md`. Activate the existing external
+  `/workspace/setup/activate.sh` helper before using the cloud binaries.
+- Verified existing `crates/ej-evidence`, `crates/ej-judge`, `crates/ej-nli`,
+  `crates/ej-bench` and `config` tracked files against HEAD: identical bytes.
+  The lockfile only adds the new workspace package; no calibration data changes.
+- Focused final integration mutations pass: 48 generated, 45 caught, 3 unviable,
+  zero missed and zero timeouts. Mutation testing exposed and closed an integration
+  test gap for successful CLI local-model option forwarding; no judge code changed.
+- Initial full mutations needed disk-error recovery: after rerunning 104 affected
+  cases and one unattempted case, all 904 listed mutations have valid results
+  (839 caught, 65 compiler-unviable, zero missed/timeouts). Original failure logs are
+  retained. Use a `TMPDIR` on the larger workspace disk for full mutation runs.
+- Synced the integration with current main `d208133`, preserving Claude's changes
+  and all existing CI steps. No wrapper implementation changes were needed. The
+  integration commit changes no existing decision-block files relative to this base.
+- Full current-base mutations exit 0: 961 generated, 896 caught, 65 compiler-unviable,
+  zero missed and zero timeouts, with no disk errors. Source/test files in decision
+  crates are identical to current main; all mutation edits were in disposable copies.
+- Final quiet Python checks pass: 41 tests, 15 adapter faults caught and 20 capture
+  faults caught, after a passing baseline. The earlier capture fault-check baseline
+  failed under concurrent mutation load; it was rerun unchanged after workers stopped.
+  Pre-push workspace tests remain green (135). All 25 tracked core/CLI/evidence/judge/
+  NLI/benchmark/config files are byte-identical to current main.
+
+### Open
+- No actual study notes or source document were supplied this session. No Security+
+  accuracy or model inference measurement is claimed. No local weights or eligible
+  production policy are installed by this integration; unresolved paraphrases can
+  remain `unsure` with the default route.
+- Sentence splitting is mechanical, not semantic atomic-claim extraction. Review
+  compound statements and use one complete factual claim per line when needed.
+  PDF/HTML text extraction, source retrieval and source authority checks happen
+  before invoking the wrapper; the original model's context limits still apply.
+
+### Next
+- For studies, save the inspected source snapshot, URL/document/section and real
+  date opened; save the draft explanation, run `ej-study`, review every flagged
+  finding, and recheck corrections against the source before using them to learn.
+- Keep decision-block tuning with Claude. This wrapper consumes whichever existing
+  production binary and eligible policy the owner selects without altering them.
