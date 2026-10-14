@@ -18,6 +18,10 @@ jobs:
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Tests
         run: cargo test --workspace --locked
+      - name: Study integration parity with the production binary (offline)
+        run: |
+          cargo build --locked -p ej-cli -p ej-study
+          EJ_STUDY_ENGINE="$PWD/target/debug/ej" cargo test --locked -p ej-study --test real_engine -- --ignored
       - name: Adapter and production capture tests (offline; includes real model-free CLI)
         run: python3 -I -m unittest discover -s tools -p 'test_*.py'
       - name: Subscription adapter targeted fault injection (offline; zero surviving faults)
@@ -27,7 +31,7 @@ jobs:
       - name: Supply chain (licences, advisories, bans, sources; deny.toml)
         uses: EmbarkStudios/cargo-deny-action@v2
   mutants:
-    # Every injected fault in the decision-critical crates must be caught by a test (zero missed).
+    # Every injected fault in the decision crates and study integration must be caught (zero missed).
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,7 +44,7 @@ jobs:
           PROPTEST_CASES: "256"
         # Parallel copies; the test suite takes ~2 s, so 60 s only ever trips on mutants that loop forever (counted as caught).
         # ej-bench: the library only; main.rs is the CLI wrapper (argument parsing and file IO), not decision logic.
-        run: cargo mutants -j 4 --timeout 60 -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits -p ej-bench --exclude crates/ej-bench/src/main.rs
+        run: cargo mutants -j 4 --timeout 60 -p ej-core -p ej-evidence -p ej-judge -p ej-delegate -p ej-habits -p ej-bench -p ej-study --exclude crates/ej-bench/src/main.rs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

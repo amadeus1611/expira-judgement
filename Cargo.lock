@@ -520,6 +520,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "ej-study"
+version = "0.1.0"
+dependencies = [
+ "ej-core",
+ "ej-evidence",
+ "serde",
+ "serde_json",
+ "tempfile",
+]
+
+[[package]]
 name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
