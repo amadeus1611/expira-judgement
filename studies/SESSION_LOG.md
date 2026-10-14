@@ -67,3 +67,22 @@ learner's actual responses before advancing. Resume through `README.md` and `STA
 ### Next
 Record actual answers to `Q-FOUND-001-01` through `03`, explain gaps and continue
 the lesson. Save subsequent substantive exchanges through `PROCEDURES.md`.
+
+## 2026-10-14 — FOUND-001 diagnostic feedback
+
+### Recorded
+- Saved the actual initial answers against lesson v1: six valid three-bit patterns
+  with `000`/`111` missing; correct 16-bit conversion for two bytes; correct roles
+  for input, instructions and output in the addition example.
+- Explained eight patterns and independent choices; learner replied that they
+  forgot `2^3`. Recorded that acknowledgement without inferring independent mastery.
+- Prepared unscored `Q-FOUND-001-04` to apply the rule to four independent bits.
+  Its response is pending. Preserved lesson v1 and original source/verdict files.
+- Previous lesson PR #13 is merged; all four reported CI jobs were successful when
+  inspected this session. Updated the subject/hub state and teacher resume point.
+
+### Open
+- Independent application of the counting rule, platform constraints and exam version/date.
+
+### Next
+Review the four-bit response before advancing or assigning further counting practice.

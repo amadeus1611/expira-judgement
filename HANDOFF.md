@@ -617,3 +617,26 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - Review actual `FOUND-001` responses before progressing. Save and merge substantive
   study updates following applicable validation and the owner's standing authorization.
+
+## 2026-10-14 (Codex) First learner responses and counting correction
+
+### Done
+- Saved actual `FOUND-001` v1 responses in the subject's assessments folder. Two-byte
+  conversion and program roles are correct in the given examples; the initial three-bit
+  count/list missed `000` and `111`. Explained `2^3 = 8` and retained the learner's
+  subsequent recognition of that rule without assuming independent transfer/mastery.
+- Prepared unscored four-bit transfer prompt `Q-FOUND-001-04`; updated subject/hub
+  state, registry, log and teacher handoff. Existing lesson/evidence/reports preserved.
+- PR #13 merged, with all reported CI jobs successful at this session's inspection.
+  This update is learner records/documentation only; no decision code or tests changed.
+- Verification: formatting, workspace clippy and locked workspace tests pass
+  (135 passed, zero failed); links resolve across 23 study documents and feedback
+  arithmetic is checked. Original lesson/evidence/reports and all code/config/test
+  files are unchanged; no further source mutation run needed for these records.
+
+### Open
+- Four-bit transfer response, platform constraints and official exam version/date.
+
+### Next
+- Review the actual transfer response; resolve remaining counting gaps before the
+  next concept. Continue saving tested study updates under standing merge authorization.
