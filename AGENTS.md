@@ -19,3 +19,7 @@ as `CLAUDE.md`; where a file below is written "for Claude", read it as written f
    prompt for a new agent is `docs/handoffs/codex-start.md`.
 5. Rules: private repo; fresh code only (nothing copied from gssc-system/, client data, memory or pricing); no invented
    figures; one small tested change per commit; claims about models need measured numbers from `ej-bench`.
+6. For study, tutoring or exam-preparation work, read `studies/README.md` and its resume files before teaching or
+   generating material. Follow `studies/AGENTS.md`; update the affected subject's STATE,
+   `studies/STATE.md` and `studies/SESSION_LOG.md` at session end.
+   The owner's study workflow leaves decision-block tuning exclusively to Claude; do not redirect it into engine tuning.

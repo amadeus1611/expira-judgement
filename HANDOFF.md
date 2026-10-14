@@ -552,3 +552,40 @@ calibration data, and do not propose decision-block changes.
   finding, and recheck corrections against the source before using them to learn.
 - Keep decision-block tuning with Claude. This wrapper consumes whichever existing
   production binary and eligible policy the owner selects without altering them.
+
+## 2026-10-14 (Codex) Persistent study workspace
+
+### Done
+- Owner authorized a separate repository folder for a consistent, persistent study workflow.
+- Added `studies/` with the stated learner profile, current state, proposed roadmap,
+  source catalogue, dated session log and study-specific agent instructions. Root
+  `AGENTS.md` and README point future study sessions to those resume files.
+- Recorded the beginner self-report, full-time availability, Security+ goal, intended
+  EE/manufacturing/semiconductor direction and defensive technology goal for the Philippines.
+- Kept source inspection, evidence verdicts, question review and learner mastery distinct.
+  No lessons, question bank, scores or readiness are invented. Sources retain their
+  inspected dates and pending checks; current exam objectives remain unconfirmed.
+- Owner additionally requested teaching code from scratch, building sandbox labs
+  progressively and retaining procedural memory for Claude takeover. Added
+  `studies/PROCEDURES.md`, `studies/LABS.md` and a concise `studies/HANDOFF.md`.
+  Recorded the later Claude/GPT-assisted vulnerability/exploit-checking system goal;
+  production readiness is a separate evaluation from exam readiness.
+- Owner requested a labelled multi-subject tutor workspace. Added stable `FOUND`,
+  `SECPLUS` and `EE` IDs, separate subject resume states/plans and subject-switching
+  procedures. Shared foundations have one canonical record; no other courses or
+  learner achievements are inferred.
+- Documentation-only change: no engine, judge, threshold, standard, calibration,
+  dependency, CI or existing test files changed.
+- Verification: formatting, workspace clippy and locked workspace tests pass
+  (135 passed, zero failed). All local Markdown links across 19 study documents
+  resolve. Existing decision-crate/config files remain identical to integration
+  base `d208133`; this update adds no code needing another mutation run.
+
+### Open
+- Exam version/date, exact schedule and lab setup remain unspecified or unconfirmed.
+- No first lesson or learner assessment is completed. Follow `studies/STATE.md` for the live state.
+
+### Next
+- Prepare `FOUND-001` with independent sources, an exercise and an unscored diagnostic;
+  check its claims, teach it, then save observed responses and the next resume point.
+- Maintain the study records at session end; decision-block tuning remains Claude's scope.
