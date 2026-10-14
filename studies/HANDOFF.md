@@ -17,11 +17,14 @@ instructions still apply. Use the current session's user direction over older pl
 
 ## Current resume point
 
-- `FOUND-001` v1 is in progress: first segment presented, unscored responses pending.
+- `FOUND-001` v1 is in progress: first diagnostic reviewed; four-bit transfer response pending.
   Sources/reports/manual review are in the lesson folder; three paraphrases remain
   engine-`unsure`, and one quotation is `backed`. No mastery is recorded.
-- Next: collect and review the three diagnostic responses, then continue information
-  interpretation and communication. No lab or production system is completed.
+- Read the [first response record](subjects/computing-foundations/assessments/FOUND-001-v1-response-01.md):
+  byte conversion/program roles correct in the given examples; six three-bit patterns
+  listed, omitting `000` and `111`; learner recognized `2^3` after correction.
+- Next: collect `Q-FOUND-001-04`, review counting-rule application, then continue
+  information interpretation and communication. No lab or production system is completed.
 - Exam version/date and workstation/lab constraints remain unconfirmed or unspecified.
 - Available checking tool: `crates/ej-study`, around production `ej check`. Read its
   README for setup, input boundaries and flags. An eligible model/policy is not installed

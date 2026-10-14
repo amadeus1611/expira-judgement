@@ -7,11 +7,12 @@ Last updated: 2026-10-14 (Asia/Manila).
 - Learner: beginner by self-report, available full time.
 - Primary goal: `SECPLUS`; next teaching subject: `FOUND`. Subject labels and entry
   points are in [SUBJECTS.md](SUBJECTS.md).
-- Phase: `FOUND-001` started; first teaching segment presented, learner responses
-  pending. No lesson mastery or completed assessment is recorded.
+- Phase: `FOUND-001` in progress; first diagnostic responses reviewed and saved.
+  Counting-rule transfer check is pending; no whole-lesson mastery is recorded.
 - Current lesson resume: [FOUND state](subjects/computing-foundations/STATE.md),
   current [FOUND-001 v1](subjects/computing-foundations/lessons/FOUND-001-v1/README.md).
-  No demonstrated foundation skills recorded.
+  [Actual responses and feedback](subjects/computing-foundations/assessments/FOUND-001-v1-response-01.md)
+  record correct byte conversion/program roles and an acknowledged counting correction.
 - Exam track: [SECPLUS state](subjects/security-plus/STATE.md); version/objectives
   and date unconfirmed, no scored practice or readiness assessment.
 - Future degree: [EE state](subjects/electrical-engineering/STATE.md); specific
@@ -43,8 +44,8 @@ Last updated: 2026-10-14 (Asia/Manila).
 
 ## Next action
 
-Collect the first lesson's unscored responses and explanations, save actual gaps,
-then continue the next segment. Establish device/lab constraints before choosing
+Collect the four-bit transfer response (`Q-FOUND-001-04`), review any remaining
+counting gap, then continue the next segment. Establish device/lab constraints before choosing
 installation exercises. Follow the saving/merge preference in `PROCEDURES.md`.
 
 ## Progress recording

@@ -6,7 +6,7 @@ from each track that uses them.
 
 | ID | Subject | Resume entry | Current role |
 |---|---|---|---|
-| `FOUND` | Computing foundations | [Computing foundations](subjects/computing-foundations/README.md) | Shared beginner track; `FOUND-001` started, diagnostic responses pending |
+| `FOUND` | Computing foundations | [Computing foundations](subjects/computing-foundations/README.md) | `FOUND-001` in progress; first diagnostic reviewed, transfer response pending |
 | `SECPLUS` | CompTIA Security+ preparation | [Security+](subjects/security-plus/README.md) | Primary near-term goal; prerequisites first, exam version unconfirmed |
 | `EE` | Electrical engineering | [Electrical engineering](subjects/electrical-engineering/README.md) | Intended future degree; specific courses not selected |
 
