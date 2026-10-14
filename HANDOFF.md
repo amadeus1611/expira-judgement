@@ -589,3 +589,31 @@ calibration data, and do not propose decision-block changes.
 - Prepare `FOUND-001` with independent sources, an exercise and an unscored diagnostic;
   check its claims, teach it, then save observed responses and the next resume point.
 - Maintain the study records at session end; decision-block tuning remains Claude's scope.
+
+## 2026-10-14 (Codex) First foundation lesson and saving preference
+
+### Done
+- Owner authorized prompt saving and merging study-work changes after validation.
+  Added the persistent procedure and explicit labelling of assumptions/conjectures.
+- PR #12 merged at `944c64e` into `d5fad5b`: check jobs and one full mutation job
+  successful, duplicate mutation job still running at merge. Server auto-merge setting
+  disabled; enabling it denied HTTP 403. `--auto` merged immediately, so future agents
+  must verify applicable gates explicitly; no background watcher is installed.
+- Prepared `studies/subjects/computing-foundations/lessons/FOUND-001-v1/`: independent
+  short source excerpts, reviewed first segment, three unscored questions, original
+  pipeline reports and actual tutor-side arithmetic output. Three paraphrases remain
+  `unsure`, manually reviewed; one quotation is `backed`. No judgement code changed.
+- Updated subject/hub state, catalogue, log and teacher handoff. Learner responses
+  are pending; no mastery, scores, labs or production readiness are invented.
+- Verification: formatting, workspace clippy and locked workspace tests pass
+  (135 passed, zero failed). Links resolve across 22 study documents, original
+  reports match saved evidence/verdicts, and code/config/CI/dependency/test files
+  remain unchanged from the merged integration. Prior source mutation gate applies.
+
+### Open
+- Diagnostic responses, platform constraints and official exam version/date.
+- Local judge/policy absent; source review is separate from an engine pass.
+
+### Next
+- Review actual `FOUND-001` responses before progressing. Save and merge substantive
+  study updates following applicable validation and the owner's standing authorization.

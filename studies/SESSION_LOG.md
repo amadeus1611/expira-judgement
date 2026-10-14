@@ -38,3 +38,32 @@ Use Asia/Manila for user-facing dates. Keep assessment results tied to material 
 ### Next
 Prepare and teach `FOUND-001`, save its evidence and review status, and record the
 learner's actual responses before advancing. Resume through `README.md` and `STATE.md`.
+
+## 2026-10-14 — FOUND-001 first segment and saving preference
+
+### Recorded
+- Owner requested beginning the first lesson, prompt/output saving and automatic
+  merging, then asked to use proper conjecture so learning can start. Recorded
+  standing merge authorization and explicit assumptions/analogy labelling.
+- GitHub auto-merge setting was disabled; changing it and reading branch protection
+  were denied HTTP 403. Marked PR #12 ready and `gh pr merge --auto` merged it immediately
+  at head `944c64e`, with check jobs and one full mutation job successful; a duplicate
+  mutation job was still running. Future merges must inspect applicable validation
+  explicitly instead of relying on `--auto` to wait. No background watcher installed.
+- Prepared `FOUND-001` v1, with independently inspected CS50 and Think Python
+  excerpts. Saved exact pipeline commands/reports: three paraphrases `unsure`
+  (no judge available), one quotation `backed`. Reviewed flags without changing them.
+- Ran tutor-side Python enumeration/arithmetic and saved actual output. Prepared
+  and presented the bit/byte segment and three unscored exercises. No learner answers,
+  grades or mastery inferred from agreement to start.
+- Saving checks pass: formatting, workspace clippy, locked workspace tests
+  (135 passed, zero failed), local links and report/evidence consistency. All
+  code, existing tests, configuration, dependencies and CI remain unchanged.
+
+### Open
+- Diagnostic responses, learner platform constraints and official exam version/date.
+- No local model/policy installed; manually reviewed facts retain unresolved engine findings.
+
+### Next
+Record actual answers to `Q-FOUND-001-01` through `03`, explain gaps and continue
+the lesson. Save subsequent substantive exchanges through `PROCEDURES.md`.

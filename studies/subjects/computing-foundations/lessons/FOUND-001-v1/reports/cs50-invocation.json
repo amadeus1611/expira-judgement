@@ -1,0 +1,20 @@
+{
+  "command": [
+    "./target/debug/ej-study",
+    "--text",
+    "studies/subjects/computing-foundations/lessons/FOUND-001-v1/cs50-claims.txt",
+    "--source",
+    "studies/subjects/computing-foundations/lessons/FOUND-001-v1/sources/cs50-excerpt.txt",
+    "--source-date",
+    "2026-10-14",
+    "--today",
+    "2026-10-14",
+    "--source-id",
+    "https://cs50.harvard.edu/x/notes/0/#computer-science-and-problem-solving",
+    "--lines",
+    "--ej",
+    "./target/debug/ej"
+  ],
+  "exit_code": 1,
+  "stderr": ""
+}

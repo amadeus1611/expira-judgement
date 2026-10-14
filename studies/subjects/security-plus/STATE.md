@@ -10,6 +10,6 @@ Last updated: 2026-10-14 (Asia/Manila).
 - Objective coverage, demonstrated exam skills and readiness: not assessed.
 - Shared prerequisite progress: [FOUND state](../computing-foundations/STATE.md).
 
-Next: begin `FOUND-001`. Confirm the official exam/objectives before mapping
+Next: continue `FOUND-001` and collect its diagnostic responses. Confirm the official exam/objectives before mapping
 exam-specific lessons or questions. Build and review the question bank progressively;
 record real responses with question versions and review actions.

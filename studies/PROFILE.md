@@ -28,6 +28,11 @@ preferences, not assessed qualifications or guaranteed outcomes.
   building with a clear resume point, artifacts, observed results and next steps.
 - Persistence: the owner explicitly authorized a separate repository folder for
   study memory and a consistent workflow across sessions.
+- Saving preference (2026-10-14): save substantive exchanges promptly and merge
+  study-work updates after validation without asking again. No guarantee of instant
+  GitHub CI completion or continuous background saving is established.
+- Teaching preference (2026-10-14): apply clearly labelled conjectures/assumptions
+  where useful so learning can begin while uncertainty is kept explicit.
 - Scope boundary: decision-block tuning belongs exclusively to Claude. This study
   workflow must consume the existing engine without changing its judgement logic.
 

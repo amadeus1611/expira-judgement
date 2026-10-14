@@ -2,7 +2,8 @@
 
 This records pages inspected during the 2026-10-14 planning conversation. It is
 not a ranking of all available material or a record of EXPIRA-verified lessons.
-No local source snapshots or educational claim-check reports are saved yet.
+The first lesson now retains selected excerpts and original claim-check reports;
+earlier catalogue entries are not automatically verified lesson material.
 Reinspect the relevant passages, version and licence when using an asset.
 
 ## SRC-PYTHON-MIT-01
@@ -49,6 +50,26 @@ Reinspect the relevant passages, version and licence when using an asset.
 - Retrieval attempted: 2026-10-14; live pages could not be opened by the browsing tool.
 - Status: exam version, current objective document and exam dates remain unconfirmed.
   Third-party search snippets are not the basis for locking the exam plan.
+
+## SRC-CS50-FOUND-01
+
+- Subject tag: `FOUND`.
+- David J. Malan / Harvard CS50x Lecture 0, Computer Science and Problem Solving.
+- URL inspected 2026-10-14: https://cs50.harvard.edu/x/2026/notes/0/
+  Redirected to https://cs50.harvard.edu/x/notes/0/
+- Licence inspected: https://cs50.harvard.edu/x/license/ — CC BY-NC-SA 4.0.
+- Selected original excerpts and attribution: [FOUND-001 sources](subjects/computing-foundations/lessons/FOUND-001-v1/sources/README.md).
+- Three definition paraphrases are manually reviewed; original EXPIRA verdicts
+  remain `unsure` (no judge available). See the [review](subjects/computing-foundations/lessons/FOUND-001-v1/REVIEW.md).
+
+## SRC-PROGRAM-THINKPYTHON-01
+
+- Subject tag: `FOUND`.
+- Allen B. Downey, Think Python, second edition, section 1.1, What is a program?
+- URL inspected 2026-10-14: https://greenteapress.com/thinkpython2/html/thinkpython2002.html
+- Reuse: brief attributed quotation retained; exact edition licence not yet inspected.
+- Snapshot/report: same [lesson source record](subjects/computing-foundations/lessons/FOUND-001-v1/sources/README.md).
+  Original program-definition quotation returned `backed` by exact-text matching.
 
 ## Adding sources
 

@@ -1,0 +1,3 @@
+A bit can take the value 0 or 1.
+Binary is also called base-2.
+A byte contains eight bits.

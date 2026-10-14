@@ -1,0 +1,20 @@
+{
+  "command": [
+    "./target/debug/ej-study",
+    "--text",
+    "studies/subjects/computing-foundations/lessons/FOUND-001-v1/program-claims.txt",
+    "--source",
+    "studies/subjects/computing-foundations/lessons/FOUND-001-v1/sources/thinkpython-excerpt.txt",
+    "--source-date",
+    "2026-10-14",
+    "--today",
+    "2026-10-14",
+    "--source-id",
+    "https://greenteapress.com/thinkpython2/html/thinkpython2002.html",
+    "--lines",
+    "--ej",
+    "./target/debug/ej"
+  ],
+  "exit_code": 0,
+  "stderr": ""
+}
