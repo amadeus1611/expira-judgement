@@ -1,0 +1,59 @@
+{
+  "source": {
+    "source": "https://cs50.harvard.edu/x/notes/0/#computer-science-and-problem-solving",
+    "date": "2026-10-14",
+    "quote": "A bit is a zero or one: on or off.\nbinary (also called base-2)\neight bits (also known as a byte)\n"
+  },
+  "today": "2026-10-14",
+  "segmentation": "lines",
+  "claims": [
+    {
+      "candidate": {
+        "id": "claim-1",
+        "start": 0,
+        "end": 32,
+        "text": "A bit can take the value 0 or 1."
+      },
+      "finding": {
+        "claim_id": "claim-1",
+        "verdict": "unsure",
+        "layer": "deterministic",
+        "confidence": 0.0,
+        "reason": "no judge available"
+      },
+      "flagged": true
+    },
+    {
+      "candidate": {
+        "id": "claim-2",
+        "start": 33,
+        "end": 62,
+        "text": "Binary is also called base-2."
+      },
+      "finding": {
+        "claim_id": "claim-2",
+        "verdict": "unsure",
+        "layer": "deterministic",
+        "confidence": 0.0,
+        "reason": "no judge available"
+      },
+      "flagged": true
+    },
+    {
+      "candidate": {
+        "id": "claim-3",
+        "start": 63,
+        "end": 90,
+        "text": "A byte contains eight bits."
+      },
+      "finding": {
+        "claim_id": "claim-3",
+        "verdict": "unsure",
+        "layer": "deterministic",
+        "confidence": 0.0,
+        "reason": "no judge available"
+      },
+      "flagged": true
+    }
+  ]
+}

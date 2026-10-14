@@ -1,0 +1,7 @@
+{
+  "python_version": "3.12.14",
+  "code": "from itertools import product\nfor width in (1, 2, 3):\n    patterns = [''.join(p) for p in product('01', repeat=width)]\n    print(f'{width} bits: {len(patterns)} patterns: {\", \".join(patterns)}')\nprint(f'8 bits: {2 ** 8} patterns')\nprint(f'2 bytes: {2 * 8} bits')\n",
+  "exit_code": 0,
+  "stdout": "1 bits: 2 patterns: 0, 1\n2 bits: 4 patterns: 00, 01, 10, 11\n3 bits: 8 patterns: 000, 001, 010, 011, 100, 101, 110, 111\n8 bits: 256 patterns\n2 bytes: 16 bits\n",
+  "stderr": ""
+}

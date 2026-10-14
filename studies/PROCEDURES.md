@@ -68,6 +68,18 @@ the workflow; they are not a record that any lesson, lab or assessment has occur
 
 ## End a session or hand off to another agent
 
+- Owner preference (2026-10-14): save substantive study exchanges promptly in Git,
+  including actual learner responses and the presented lesson version. Summarize
+  the relevant exchange faithfully; do not imply these files capture every UI event.
+  Commit one coherent tested change, run the required Cargo checks before pushing,
+  and merge the corresponding PR after applicable validation passes. This is standing
+  authorization to merge this owner's study-work changes, not unrelated agent work.
+  Do not bypass required reviews/checks or weaken CI to speed up saving.
+- GitHub server auto-merge was disabled when inspected on 2026-10-14; enabling it
+  was denied HTTP 403. `gh pr merge --auto` can merge immediately when no required
+  gate prevents it, so it is not proof of a pending-check queue. Inspect the exact
+  head and validation before merging; preserve unmerged work on its pushed branch
+  if a required gate or permissions prevent merging. No background watcher is installed.
 - Save the material and relevant source/report references. Preserve existing results
   with their versions when explanations or questions are corrected.
 - Update the affected subject's STATE: observed progress, unresolved issues and next action.

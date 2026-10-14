@@ -17,15 +17,18 @@ instructions still apply. Use the current session's user direction over older pl
 
 ## Current resume point
 
-- Orientation/persistence setup only. No lesson, learner assessment, lab, scored
-  question bank or production security system has been completed in this workflow.
-- Next: prepare and teach `FOUND-001`, with independently sourced material, a simple
-  demonstration and an unscored diagnostic. Record actual learner responses.
+- `FOUND-001` v1 is in progress: first segment presented, unscored responses pending.
+  Sources/reports/manual review are in the lesson folder; three paraphrases remain
+  engine-`unsure`, and one quotation is `backed`. No mastery is recorded.
+- Next: collect and review the three diagnostic responses, then continue information
+  interpretation and communication. No lab or production system is completed.
 - Exam version/date and workstation/lab constraints remain unconfirmed or unspecified.
 - Available checking tool: `crates/ej-study`, around production `ej check`. Read its
   README for setup, input boundaries and flags. An eligible model/policy is not installed
   by the integration; unresolved paraphrases can remain `unsure`.
-- Initial sources are catalogue entries, not completed EXPIRA-checked lesson artifacts.
+- The initial integration/memory PR #12 is merged. Save substantive exchanges promptly
+  under the owner's merge preference in `PROCEDURES.md`; server auto-merge remains
+  disabled and the connection cannot enable it. Do not assume `--auto` queues a merge.
 
 ## Maintain continuity
 

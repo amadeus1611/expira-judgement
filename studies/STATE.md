@@ -7,10 +7,11 @@ Last updated: 2026-10-14 (Asia/Manila).
 - Learner: beginner by self-report, available full time.
 - Primary goal: `SECPLUS`; next teaching subject: `FOUND`. Subject labels and entry
   points are in [SUBJECTS.md](SUBJECTS.md).
-- Phase: orientation and foundation planning; no lesson or learner assessment has
-  been completed in this workflow.
+- Phase: `FOUND-001` started; first teaching segment presented, learner responses
+  pending. No lesson mastery or completed assessment is recorded.
 - Current lesson resume: [FOUND state](subjects/computing-foundations/STATE.md),
-  next proposed `FOUND-001`. No demonstrated foundation skills recorded.
+  current [FOUND-001 v1](subjects/computing-foundations/lessons/FOUND-001-v1/README.md).
+  No demonstrated foundation skills recorded.
 - Exam track: [SECPLUS state](subjects/security-plus/STATE.md); version/objectives
   and date unconfirmed, no scored practice or readiness assessment.
 - Future degree: [EE state](subjects/electrical-engineering/STATE.md); specific
@@ -18,16 +19,18 @@ Last updated: 2026-10-14 (Asia/Manila).
 - Labs and production security system: none built in this workflow. Teach code from
   scratch and build labs progressively using `PROCEDURES.md` and `LABS.md`; evaluate
   exam readiness and deployment readiness separately.
-- Initial source catalogue: inspected page references in `SOURCES.md`; no lesson
-  source snapshots or educational EXPIRA reports have been saved yet.
+- Source catalogue: `SOURCES.md`; the first lesson now has selected source excerpts,
+  original EXPIRA reports and manual review. Three definition paraphrases remain
+  engine-`unsure` without a local judge; they are not labelled engine-verified.
 
 ## Available checking system
 
 - `crates/ej-study` provides a separate CLI/library around production `ej check`.
 - Integration PR: https://github.com/amadeus1611/expira-judgement/pull/12
-  Last inspected 2026-10-14: open draft, integration commit `a21c196` had all
-  reported CI checks successful; later pushes have their own checks.
-  Do not assume it is merged; recheck when repository status matters.
+  Merged 2026-10-14, merge commit `d5fad5b`. Integration/memory head `944c64e`
+  had both check jobs and one full mutation job successful at merge; a duplicate
+  mutation job remained running. Prior local full mutation gate also passed.
+  Recheck status when relevant; subsequent study updates have separate PRs/checks.
 - Current recorded integration verification: 135 passing Rust tests, explicit
   real-engine parity, and a full mutation run with zero missed/timeouts. These are
   software checks, not measurements of Security+ question quality or learner ability.
@@ -40,12 +43,9 @@ Last updated: 2026-10-14 (Asia/Manila).
 
 ## Next action
 
-Prepare `FOUND-001` with selected independent sources, a simple demonstration and
-a short unscored diagnostic. Save its claims and evidence, run available checks,
-review unresolved material, then teach and record the learner's actual responses.
-Use the source catalogue as a starting point; it is not a substitute for inspecting
-the passages used in the lesson. Establish the learner's device/lab constraints
-before choosing installation exercises.
+Collect the first lesson's unscored responses and explanations, save actual gaps,
+then continue the next segment. Establish device/lab constraints before choosing
+installation exercises. Follow the saving/merge preference in `PROCEDURES.md`.
 
 ## Progress recording
 

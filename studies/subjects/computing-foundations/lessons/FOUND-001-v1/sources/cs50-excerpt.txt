@@ -1,0 +1,3 @@
+A bit is a zero or one: on or off.
+binary (also called base-2)
+eight bits (also known as a byte)

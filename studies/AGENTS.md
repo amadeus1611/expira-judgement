@@ -19,6 +19,11 @@ repository plans. This workflow is for sourced learning and exam preparation.
 - Cite independent sources with version/section and actual access date. Record
   source authority, licence inspection and EXPIRA outcome as separate facts.
 - Never invent learner results, scores, mastery, source inspections or verdicts.
+- Label assumptions, conjectures, analogies and established source-supported facts
+  distinctly. Use simplified models to teach, stating their limits; do not treat an
+  engine `unsure` as permission to invent a factual explanation.
+- Save substantive study exchanges promptly and follow the owner's standing merge
+  preference in `PROCEDURES.md`, retaining required validation and access checks.
 - Validate stems, answer keys, explanations and distractor reasoning before using
   questions in scored practice. Label ambiguity and unresolved evidence explicitly.
 - Update the affected subject's STATE, hub `STATE.md` and `SESSION_LOG.md` before finishing a study session.
