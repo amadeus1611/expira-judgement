@@ -703,3 +703,16 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - A small hand-verified held-out set (VitaminC label noise is ~half of all measured errors), before any more model runs.
 - No subscription runs without owner approval.
+
+## 2026-10-16: Haiku second check on local approvals
+
+### Done
+- `haiku_escalate.py --verify` on every local "stated" call (cal 156, test 199, conf 799; 24 subscription calls,
+  owner-approved). Local AND Haiku: confirmation LB 0.9724 -> 0.9790 raw, 0.9854 -> 0.9883 audited; drops 22% of
+  correct approvals. Not adopted (docs/bench/2026-10-16-haiku-verify.md).
+
+### Open
+- Haiku misses 2914 (genus/species) and 3598 (ungrammatical claim); `pass_lower_bound` still binds.
+
+### Next
+- Hand-verified clean test set (no model calls). No subscription runs without owner approval.
