@@ -693,3 +693,13 @@ calibration data, and do not propose decision-block changes.
 
 ### Next
 - Haiku escalation estimate for the unsure middle; owner approval before any spend.
+
+## 2026-10-16 (Claude) Haiku escalation pilot
+
+### Done
+- Haiku via `claude -p` (subscription) on unsure rows: 96.8% raw, ~98.5% audited precision; not adopted
+  (docs/bench/2026-10-16-haiku-escalation.md). Run stopped at owner's usage concern.
+
+### Next
+- A small hand-verified held-out set (VitaminC label noise is ~half of all measured errors), before any more model runs.
+- No subscription runs without owner approval.
