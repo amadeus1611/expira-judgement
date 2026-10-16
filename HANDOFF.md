@@ -673,3 +673,13 @@ calibration data, and do not propose decision-block changes.
 - Reported/planned cue in the wording gate: prototyped and rejected (docs/bench/2026-10-16-reported-modality.md).
 - Of the 13 large+roberta confirmation errors about 8 look like label errors; the binding need is clean held-out data
   or escalation. Next free step: BART-large-MNLI as a third family; then ask the owner about Haiku escalation cost.
+
+## 2026-10-16 (Claude) BART third family
+
+### Done
+- BART-large-MNLI scored on cal/test/confirmation; alone 0.9597, large+bart 0.9638, roberta+bart 0.9724 (tie).
+  Rejected (docs/bench/2026-10-16-bart-third-family.md). Best stays large+roberta, confirmation lower bound 0.9724.
+
+### Next
+- Free judge-family options are exhausted. Cost-estimate Haiku escalation of the unsure middle and ask the owner;
+  or build cleaner held-out data (about 8 of 13 large+roberta confirmation errors look like label errors).
