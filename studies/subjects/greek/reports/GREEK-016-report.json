@@ -1,0 +1,171 @@
+{
+  "source": {
+    "source": "Mounce BBG 2nd ed. ch.16 §16.10 + summary",
+    "date": "2026-10-16",
+    "quote": "The present tense verb is composed of three parts: present verbal stem, connecting vowel, and primary personal ending.\nIn the indicative mood, if the personal ending begins with mu or nu, the connecting vowel is omicron; otherwise the connecting vowel is epsilon.\nA verb must agree with its subject in person and number.\nThe present active tense uses the primary active endings: ω, εις, ει, ομεν, ετε, ουσι(ν). The real personal endings are -, ς, ι, μεν, τε, νσι.\nA movable nu can be added to the third person plural personal ending.\nIf the subject is \"we\" (ημείς) the verb would end in ομεν.\nλύομεν means We are loosing. λύετε means You are loosing. λύουσι(ν) means They are loosing.\n"
+  },
+  "today": "2026-10-16",
+  "segmentation": "lines",
+  "claims": [
+    {
+      "candidate": {
+        "id": "claim-1",
+        "start": 0,
+        "end": 107,
+        "text": "The present active tense uses the primary active endings: ω, εις, ει, ομεν, ετε, ουσι(ν)."
+      },
+      "finding": {
+        "claim_id": "claim-1",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-2",
+        "start": 108,
+        "end": 170,
+        "text": "The real personal endings are -, ς, ι, μεν, τε, νσι."
+      },
+      "finding": {
+        "claim_id": "claim-2",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-3",
+        "start": 171,
+        "end": 289,
+        "text": "The present tense verb is composed of three parts: present verbal stem, connecting vowel, and primary personal ending."
+      },
+      "finding": {
+        "claim_id": "claim-3",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-4",
+        "start": 290,
+        "end": 391,
+        "text": "In the indicative mood, if the personal ending begins with mu or nu, the connecting vowel is omicron."
+      },
+      "finding": {
+        "claim_id": "claim-4",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-5",
+        "start": 392,
+        "end": 434,
+        "text": "Otherwise the connecting vowel is epsilon."
+      },
+      "finding": {
+        "claim_id": "claim-5",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-6",
+        "start": 435,
+        "end": 491,
+        "text": "A verb must agree with its subject in person and number."
+      },
+      "finding": {
+        "claim_id": "claim-6",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-7",
+        "start": 492,
+        "end": 561,
+        "text": "A movable nu can be added to the third person plural personal ending."
+      },
+      "finding": {
+        "claim_id": "claim-7",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-8",
+        "start": 562,
+        "end": 616,
+        "text": "If the subject is \"we\" the verb would end in ομεν."
+      },
+      "finding": {
+        "claim_id": "claim-8",
+        "verdict": "unsure",
+        "layer": "deterministic",
+        "confidence": 0.0,
+        "reason": "no judge available"
+      },
+      "flagged": true
+    },
+    {
+      "candidate": {
+        "id": "claim-9",
+        "start": 617,
+        "end": 650,
+        "text": "λύετε means you are loosing."
+      },
+      "finding": {
+        "claim_id": "claim-9",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-10",
+        "start": 651,
+        "end": 692,
+        "text": "The ending ετε is first person plural."
+      },
+      "finding": {
+        "claim_id": "claim-10",
+        "verdict": "unsure",
+        "layer": "deterministic",
+        "confidence": 0.0,
+        "reason": "no judge available"
+      },
+      "flagged": true
+    }
+  ]
+}

@@ -86,3 +86,27 @@ the lesson. Save subsequent substantive exchanges through `PROCEDURES.md`.
 
 ### Next
 Review the four-bit response before advancing or assigning further counting practice.
+
+## 2026-10-16 — GREEK added; ch. 16 and present infinitive `-ειν`
+
+### Recorded
+- Added subject `GREEK` (Mounce BBG 2nd ed.) with README, STATE, ROADMAP and a
+  chapter-by-chapter TRACKER. Owner works on Track Two (verbs early).
+- Per the owner, lessons completed in Codex are assumed done: ch. 1–9 and 15.
+  Codex "lesson 4c" mapped to ch. 16 Present Active Indicative (owner confirmed).
+- ch. 16: 10 claims checked with ej-study `--lines`: 8 backed; 1 paraphrase unsure
+  (restated in the book's wording); 1 deliberate false test claim (ετε as first
+  plural) came back `unsure`, not `mismatch`, and was dropped.
+- `-ειν` (from ch. 32): 11 claims checked: 10 backed; 1 deliberate false test claim
+  unsure and dropped. Reports in `subjects/greek/reports/`.
+- No local judge model or policy installed in this session.
+
+- Re-taught `-ειν` in mentor style at the owner's request. Lesson test (10 questions),
+  observed answers: 9/10. Ch. 16 and `-ειν` now `demonstrated`; missed the
+  connecting-vowel rule (ο before μ/ν, else ε), marked `needs review`.
+
+### Open
+- Connecting-vowel rule: restated correctly after correction, not yet recalled cold.
+
+### Next
+Recall the connecting-vowel rule, then ch. 17 Contract Verbs.

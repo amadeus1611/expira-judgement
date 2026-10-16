@@ -77,3 +77,15 @@ Record a stable ID, title/author, original URL, version/section, actual access d
 inspection status, licence/reuse status and local excerpt/snapshot path when saved.
 Record EXPIRA report paths and verdicts separately. Preserve uncertainty and conflicting
 sources; resolve them before using affected questions in scored practice.
+
+## SRC-GREEK-MOUNCE-BBG2
+
+- Subject tags: `GREEK`.
+- Resource: William D. Mounce, *Basics of Biblical Greek Grammar*, 2nd ed.
+  (Zondervan, 2003), ISBN 0-310-25087-0.
+- Access: owner's own PDF copy, shared by private link for the session and kept
+  only in the session's temporary space. Opened 2026-10-16.
+- Reuse: copyrighted. Store no scans or extended excerpts; only short claim lines
+  and ej-study reports in `subjects/greek/reports/`.
+- Sections inspected: table of contents; "Track One or Track Two?" (p. 73);
+  ch. 16 §16.10 paradigm and summary; ch. 32 overview and §32.1–32.8.
