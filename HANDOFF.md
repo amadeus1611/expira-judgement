@@ -640,3 +640,20 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - Review the actual transfer response; resolve remaining counting gaps before the
   next concept. Continue saving tested study updates under standing merge authorization.
+
+## 2026-10-16 (Claude) Reproduction from scratch and two-judge agreement
+
+### Done
+- Audited Codex's work: clean. Fixed the cargo-deny rustls advisory (`cargo update -p rustls`).
+- `tools/rebuild_inputs.sh` rebuilds every bench input (splits, confirmation set, pinned models, layer 1, wording gate,
+  scores) in one resumable command. `fetch_general.py --confirm` dedupes against cal/test (11,393 rows).
+- xsmall and large reproduce exactly; `local_cascade.py` gained `JUDGE+JUDGE2` agreement mode. large+xsmall was
+  rejected (confirmation lower bound 0.9614 vs 0.9678). See docs/bench/2026-10-16-reproduction-and-agreement.md.
+
+### Open
+- Standard v1 not passed: best local confirmation lower bound 0.9678 (large), bar 0.99.
+
+### Next
+- Second judge from a different family (RoBERTa/BART MNLI ONNX), tried alone and paired via `JUDGE+JUDGE2`.
+- Large-model latency on a quiet machine; role-swap layer-1 check (research note first).
+- Haiku escalation of the unsure middle only after the owner approves the cost.
