@@ -106,7 +106,7 @@ Review the four-bit response before advancing or assigning further counting prac
   connecting-vowel rule (ο before μ/ν, else ε), marked `needs review`.
 
 ### Open
-- Connecting-vowel rule not yet recalled.
+- Connecting-vowel rule: restated correctly after correction, not yet recalled cold.
 
 ### Next
 Recall the connecting-vowel rule, then ch. 17 Contract Verbs.

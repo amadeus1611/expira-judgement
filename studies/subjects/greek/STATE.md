@@ -15,7 +15,7 @@ Last updated: 2026-10-16.
   paradigm correct; parsed βλέπομεν, γράφουσιν, λέγετε, ἀκούεις correctly; produced
   πιστεύουσι(ν). Missed Q10: could not state the connecting-vowel rule (ο before μ/ν,
   else ε). Wrote ν as "v" in transliteration (should be "n"). Status: `demonstrated`
-  for endings; connecting-vowel rule `needs review`.
+  for endings; connecting-vowel rule `needs review` (restated it correctly right after the correction; recheck from cold next session).
 - `GREEK-032A` present active infinitive `-ειν`: `in progress`. Owner said this is
   the next lesson ("the ein"). Taught 2026-10-16; 10 claims backed, 1 deliberate
   false test claim left unsure and dropped. See `reports/GREEK-032A-*`. Observed:
