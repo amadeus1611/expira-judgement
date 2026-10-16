@@ -21,6 +21,7 @@ mkdir -p "$data" "$models"
 declare -A hub=(
   [xsmall]="cross-encoder/nli-deberta-v3-xsmall@a150876415327c80daeff35ca6f68f5ed8cf5c24"
   [large]="MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli@b3546ea6b0346eb6f8d5d68b13c7dc6d0376b3d7"
+  [roberta]="Xenova/roberta-large-mnli@f44e410851308d901c324c31af38793f50205e91"
 )
 
 step() { printf '[rebuild] %s\n' "$*" >&2; }
