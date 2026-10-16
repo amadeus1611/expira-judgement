@@ -10,9 +10,8 @@ per the owner (2026-10-16), not re-tested here. `demonstrated` needs observed qu
 
 ## Where you are
 
-**Now:** ch. 16 Present Active Indicative and the present active infinitive `-ειν`.
-**Next:** ch. 17 Contract Verbs (after the quiz).
-**Done:** ch. 1–9 and 15 (in Codex, assumed). Observed here: none yet.
+**Now:** ch. 17 Contract Verbs (review the connecting-vowel rule first).
+**Done:** ch. 1–9 and 15 (in Codex, assumed). Observed here: ch. 16 and `-ειν` (test 9/10, 2026-10-16).
 
 ## Chapters
 
@@ -28,8 +27,8 @@ per the owner (2026-10-16), not re-tested here. `demonstrated` needs observed qu
 | 8 | 8 | Prepositions and εἰμί | 54 | done (Codex) | — | assumed from Codex |
 | 9 | 9 | Adjectives | 63 | done (Codex) | — | assumed from Codex |
 | 15 | 10 | Introduction to Verbs | 121 | done (Codex) | — | assumed from Codex |
-| 16 | 11 | Present Active Indicative | 129 | in progress | 2026-10-16 | endings taught and checked; quiz pending |
-| 32A | 12 | Present active infinitive `-ειν` (part of ch. 32) | 299 | in progress | 2026-10-16 | taught and checked; quiz pending |
+| 16 | 11 | Present Active Indicative | 129 | demonstrated | 2026-10-16 | test 9/10; connecting-vowel rule needs review |
+| 32A | 12 | Present active infinitive `-ειν` (part of ch. 32) | 299 | demonstrated | 2026-10-16 | produced γράφειν, ἀκούειν |
 | 17 | 13 | Contract Verbs | 138 | not started | — | |
 | 18 | 14 | Present Middle/Passive Indicative (+ `-εσθαι`) | 147 | not started | — | |
 | 21 | 15 | Imperfect Indicative | 180 | not started | — | |
@@ -61,8 +60,8 @@ Tick a set only after it is produced correctly from memory in a session.
 
 | Set | Source | Status |
 |---|---|---|
-| Primary active endings ω, εις, ει, ομεν, ετε, ουσι(ν) | ch. 16 | taught 2026-10-16, not yet recalled |
-| Present active infinitive ειν | ch. 32 | taught 2026-10-16, not yet recalled |
+| Primary active endings ω, εις, ει, ομεν, ετε, ουσι(ν) | ch. 16 | recalled 2026-10-16 ✓ |
+| Present active infinitive ειν | ch. 32 | recalled 2026-10-16 ✓ |
 | Noun case endings (1st/2nd declension) | ch. 6–7 | done (Codex) |
 
 ## How each session runs

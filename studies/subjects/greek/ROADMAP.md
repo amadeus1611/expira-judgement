@@ -18,8 +18,8 @@ Two?" page (after chapter 9). A proposal, not a commitment; revise from observed
 | Step | Book chapter(s) | Status |
 |---|---|---|
 | 1 | 1–9 (alphabet through adjectives) | done in Codex (assumed) |
-| 2 | 15 Introduction to Verbs (done in Codex), 16 Present Active Indicative | in progress |
-| 3 | `GREEK-032A`: present active infinitive `-ειν` (from ch. 32) | in progress |
+| 2 | 15 Introduction to Verbs (done in Codex), 16 Present Active Indicative | demonstrated |
+| 3 | `GREEK-032A`: present active infinitive `-ειν` (from ch. 32) | demonstrated |
 | 4 | 17 Contract Verbs | not started |
 | 5 | 18 Present Middle/Passive Indicative (+ present middle/passive infinitive `-εσθαι`) | not started |
 | 6 | 21 Imperfect Indicative | not started |

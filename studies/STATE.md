@@ -27,7 +27,7 @@ Last updated: 2026-10-16 (Greek added; FOUND/SECPLUS unchanged since 2026-10-14)
 ## Greek track (added 2026-10-16)
 
 - `GREEK`: Mounce BBG 2nd ed., Track Two. Ch. 1–9 and 15 assumed done in Codex;
-  ch. 16 and the present active infinitive `-ειν` in progress, quizzes pending.
+  ch. 16 and `-ειν` demonstrated 2026-10-16 (test 9/10); next ch. 17 Contract Verbs.
   Resume: [Greek tracker](subjects/greek/TRACKER.md), [Greek state](subjects/greek/STATE.md).
   Greek sessions run in their own chat; `FOUND`/`SECPLUS` next action below is unchanged.
 

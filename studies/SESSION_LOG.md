@@ -101,8 +101,12 @@ Review the four-bit response before advancing or assigning further counting prac
   unsure and dropped. Reports in `subjects/greek/reports/`.
 - No local judge model or policy installed in this session.
 
+- Re-taught `-ειν` in mentor style at the owner's request. Lesson test (10 questions),
+  observed answers: 9/10. Ch. 16 and `-ειν` now `demonstrated`; missed the
+  connecting-vowel rule (ο before μ/ν, else ε), marked `needs review`.
+
 ### Open
-- Quiz answers for ch. 16 and `-ειν` not yet received; nothing `demonstrated`.
+- Connecting-vowel rule not yet recalled.
 
 ### Next
-Collect quiz answers, correct gaps, then ch. 17 Contract Verbs.
+Recall the connecting-vowel rule, then ch. 17 Contract Verbs.
