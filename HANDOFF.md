@@ -670,5 +670,6 @@ calibration data, and do not propose decision-block changes.
 - Confirm CI runs green on the public repo.
 
 ### Next
-- Layer-1 check for reported or planned statements ("announced ... would be titled") read as fact, the clearest real
-  error class among the 13 confirmation errors of large+roberta; research note first.
+- Reported/planned cue in the wording gate: prototyped and rejected (docs/bench/2026-10-16-reported-modality.md).
+- Of the 13 large+roberta confirmation errors about 8 look like label errors; the binding need is clean held-out data
+  or escalation. Next free step: BART-large-MNLI as a third family; then ask the owner about Haiku escalation cost.
