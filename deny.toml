@@ -27,6 +27,7 @@ allow = [
 ]
 confidence-threshold = 0.93
 
+[licenses.private]
 # Workspace crates are MIT OR Apache-2.0 (public since 2026-10-16) and are checked against the list like any dependency.
 ignore = false
 
