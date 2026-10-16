@@ -3,7 +3,10 @@
 the owner's subscription; no API key), 50 claims per call. Writes DATA/vitc_{split}.haiku.jsonl, one line per row:
 {"i": row, "stated": bool or null}. Rows already in the output are skipped, so a rerun resumes.
 
-    python3 -I tools/haiku_escalate.py DATA_DIR SPLIT [--limit N]
+    python3 -I tools/haiku_escalate.py DATA_DIR SPLIT [--limit N] [--verify]
+
+--verify sends the rows the local cascade approves instead (layer-1 backed or large+roberta past the gate), as a
+second check; output DATA/vitc_{split}.haiku_verify.jsonl.
 
 Unsure = layer 1 unsure and not passed by large+roberta behind the wording gate (thresholds of
 docs/bench/2026-10-16-roberta-second-family.md). Labels are never sent.
@@ -31,10 +34,12 @@ Items:
 """
 
 
-def unsure_rows(data, split):
+def select_rows(data, split, verify):
     rows, l1, sc, ok = lc.load(data, split, "large+roberta", True)
     passed = lambda i: ok[i] and all(p >= x for p, x in zip(sc[i], THRESHOLDS))  # noqa: E731
-    return rows, [i for i in range(len(rows)) if l1[i] == "unsure" and not passed(i)]
+    approved = lambda i: l1[i] == "backed" or (l1[i] == "unsure" and passed(i))  # noqa: E731
+    pick = approved if verify else (lambda i: l1[i] == "unsure" and not passed(i))
+    return rows, [i for i in range(len(rows)) if pick(i)]
 
 
 def ask(items, cwd):
@@ -52,9 +57,10 @@ def ask(items, cwd):
 def main(a):
     data, split = a[1], a[2]
     limit = int(a[a.index("--limit") + 1]) if "--limit" in a else None
-    out = f"{data}/vitc_{split}.haiku.jsonl"
+    verify = "--verify" in a
+    out = f"{data}/vitc_{split}.haiku{'_verify' if verify else ''}.jsonl"
     done = {json.loads(l)["i"] for l in open(out)} if os.path.exists(out) else set()
-    rows, todo = unsure_rows(data, split)
+    rows, todo = select_rows(data, split, verify)
     todo = [i for i in todo if i not in done][:limit]
     with tempfile.TemporaryDirectory() as cwd, open(out, "a") as f:
         for b in range(0, len(todo), BATCH):
