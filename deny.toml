@@ -29,7 +29,6 @@ confidence-threshold = 0.93
 
 # Workspace crates are MIT OR Apache-2.0 (public since 2026-10-16) and are checked against the list like any dependency.
 ignore = false
-ignore = true
 
 [bans]
 multiple-versions = "warn"
