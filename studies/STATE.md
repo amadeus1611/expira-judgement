@@ -1,6 +1,6 @@
 # Current study state
 
-Last updated: 2026-10-14 (Asia/Manila).
+Last updated: 2026-10-16 (Greek added; FOUND/SECPLUS unchanged since 2026-10-14).
 
 ## Current position
 
@@ -23,6 +23,13 @@ Last updated: 2026-10-14 (Asia/Manila).
 - Source catalogue: `SOURCES.md`; the first lesson now has selected source excerpts,
   original EXPIRA reports and manual review. Three definition paraphrases remain
   engine-`unsure` without a local judge; they are not labelled engine-verified.
+
+## Greek track (added 2026-10-16)
+
+- `GREEK`: Mounce BBG 2nd ed., Track Two. Ch. 1–9 and 15 assumed done in Codex;
+  ch. 16 and the present active infinitive `-ειν` in progress, quizzes pending.
+  Resume: [Greek tracker](subjects/greek/TRACKER.md), [Greek state](subjects/greek/STATE.md).
+  Greek sessions run in their own chat; `FOUND`/`SECPLUS` next action below is unchanged.
 
 ## Available checking system
 
