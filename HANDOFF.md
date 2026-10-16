@@ -657,3 +657,18 @@ calibration data, and do not propose decision-block changes.
 - RoBERTa-large-MNLI done: alone 0.9698, large+roberta 0.9724 (kept). Next: inspect the 13 confirmation errors; try BART-large-MNLI the same way.
 - Large-model latency on a quiet machine; role-swap layer-1 check (research note first).
 - Haiku escalation of the unsure middle only after the owner approves the cost.
+
+## 2026-10-16 (Claude) Repository made public
+
+### Done
+- Owner made the repo public (CI on private repos had run out of Actions runner minutes: jobs ended in 2-3 s with
+  no runner). Added `LICENSE-MIT` and `LICENSE-APACHE`; workspace licence `MIT OR Apache-2.0`; cargo-deny now checks
+  the workspace crates too (`[licenses.private] ignore = false`). CLAUDE.md, AGENTS.md and README updated.
+- Pre-publication scan of the full history: no keys, tokens or private keys. `studies/` kept in place (owner: fine).
+
+### Open
+- Confirm CI runs green on the public repo.
+
+### Next
+- Layer-1 check for reported or planned statements ("announced ... would be titled") read as fact, the clearest real
+  error class among the 13 confirmation errors of large+roberta; research note first.
