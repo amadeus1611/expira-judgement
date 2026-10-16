@@ -6,7 +6,8 @@
 
 --confirm builds an untouched confirmation set instead: pages at the midpoints between the 60 frozen offsets (and,
 with more pages, further evenly spaced offsets that avoid every frozen page by at least 100 rows), all rows kept, written
-to OUT_DIR/vitc_confirm.jsonl. It is never used to fit anything; it only confirms a configuration fitted on calibration.
+to OUT_DIR/vitc_confirm.jsonl, minus rows whose exact claim and quote appear in the frozen splits (which must already
+be in OUT_DIR). It is never used to fit anything; it only confirms a configuration fitted on calibration.
 
 Source: VitaminC test split (tals/vitaminc on Hugging Face, CC BY-SA 3.0), fetched through the public datasets-server API
 in fixed pages at evenly spaced offsets, so every run gets the same rows. Labels: SUPPORTS -> supports, REFUTES ->
@@ -68,6 +69,16 @@ def confirm(out, pages):
             label = LABELS.get(row["label"])
             if label and row["claim"].strip() and row["evidence"].strip():
                 rows.append({"claim": row["claim"], "quote": row["evidence"], "label": label})
+    # Drop rows whose exact (claim, quote) text is in a frozen split (7 rows in the 200-page set), so the set stays untouched.
+    frozen_pairs = set()
+    for half in ("cal", "test"):
+        path = os.path.join(out, f"vitc_{half}.jsonl")
+        if not os.path.exists(path):
+            raise SystemExit(f"--confirm needs the frozen splits in {out}; run without --confirm first")
+        for line in open(path):
+            r = json.loads(line)
+            frozen_pairs.add((r["claim"], r["quote"]))
+    rows = [r for r in rows if (r["claim"], r["quote"]) not in frozen_pairs]
     with open(os.path.join(out, "vitc_confirm.jsonl"), "w") as f:
         for row in rows:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
