@@ -651,9 +651,9 @@ calibration data, and do not propose decision-block changes.
   rejected (confirmation lower bound 0.9614 vs 0.9678). See docs/bench/2026-10-16-reproduction-and-agreement.md.
 
 ### Open
-- Standard v1 not passed: best local confirmation lower bound 0.9678 (large), bar 0.99.
+- Standard v1 not passed: best local confirmation lower bound 0.9724 (large+roberta, docs/bench/2026-10-16-roberta-second-family.md), bar 0.99.
 
 ### Next
-- Second judge from a different family (RoBERTa/BART MNLI ONNX), tried alone and paired via `JUDGE+JUDGE2`.
+- RoBERTa-large-MNLI done: alone 0.9698, large+roberta 0.9724 (kept). Next: inspect the 13 confirmation errors; try BART-large-MNLI the same way.
 - Large-model latency on a quiet machine; role-swap layer-1 check (research note first).
 - Haiku escalation of the unsure middle only after the owner approves the cost.
