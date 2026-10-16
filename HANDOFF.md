@@ -683,3 +683,13 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - Free judge-family options are exhausted. Cost-estimate Haiku escalation of the unsure middle and ask the owner;
   or build cleaner held-out data (about 8 of 13 large+roberta confirmation errors look like label errors).
+
+## 2026-10-16 (Claude) Label audit of large+roberta
+
+### Done
+- Audited large+roberta's 14 disagreements (docs/audit/2026-10-16-large-roberta-stated-errors.md): confirmation
+  786/799 raw (0.9724) -> 794/799 audited (0.9854). Still below 0.99; label cleaning alone cannot pass.
+- large+roberta's fitted large threshold is ~0.0002: effectively RoBERTa alone behind the wording gate.
+
+### Next
+- Haiku escalation estimate for the unsure middle; owner approval before any spend.
