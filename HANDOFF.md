@@ -760,4 +760,17 @@ calibration data, and do not propose decision-block changes.
 - Nearest-figure picks the wrong referent when a closer figure belongs to something else (val2 1511).
 
 ### Next
-- Audit the 24 val2 errors to get its audited LB, then pick the next real error class (time scope "in" vs "by").
+- Done below.
+
+## 2026-10-17: val2 audit
+
+### Done
+- All 28 non-supports val2 approvals read (docs/audit/2026-10-17-val2-stated-errors.md): 3 real, 4 arguable, 21 label
+  errors. Audited 1685/1692, LB 0.9915 (arguable as errors). First audited set past 0.99.
+
+### Open
+- Real classes left: time scope ("the night before" vs "the night", "in" vs "by"), quantifier scope ("most of X"
+  vs "most of Y and one X"), "is a Y" vs a part of Y. Confirmation and val audited LBs are still under 0.99.
+
+### Next
+- Re-audit confirmation and val under the new gate and pool all three audited sets; then a time-scope check.
