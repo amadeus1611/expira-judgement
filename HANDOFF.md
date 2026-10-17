@@ -773,4 +773,17 @@ calibration data, and do not propose decision-block changes.
   vs "most of Y and one X"), "is a Y" vs a part of Y. Confirmation and val audited LBs are still under 0.99.
 
 ### Next
-- Re-audit confirmation and val under the new gate and pool all three audited sets; then a time-scope check.
+- Done below.
+
+## 2026-10-17: audited pool across confirmation, val, val2
+
+### Done
+- Diffed approvals old vs new gate: the gate added only correct approvals and removed val's real errors 7363 and
+  19216, so earlier audits carry over (docs/bench/2026-10-17-audited-pool.md).
+- Audited: confirmation 796/801 (0.9855), val 1688/1697 (0.98995), val2 1685/1692 (0.9915), pooled 4169/4190 (0.9923).
+
+### Open
+- Pooled audited LB passes 0.99; single sets do not all pass. Supports-labelled approvals were never read.
+
+### Next
+- Spot-read a random sample of supports-labelled approvals to bound hidden errors; then the time-scope check.
