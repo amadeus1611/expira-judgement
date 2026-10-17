@@ -5,13 +5,14 @@ only past a threshold and, with --gate, only when the production wording gate pa
 vitc_{split}.words: zero unstated claim words, every name in the quote, every figure backed). The threshold is fitted on calibration
 (best 95% Wilson lower bound, at least 20 calls) and applied unchanged to test.
 
-    python3 -I tools/local_cascade.py DATA_DIR JUDGE[+JUDGE2] [--gate] [--confirm] [--val] [--val2]
+    python3 -I tools/local_cascade.py DATA_DIR JUDGE[+JUDGE2] [--gate] [--confirm] [--val] [--val2] [--fresh]
 
 JUDGE+JUDGE2 (e.g. large+xsmall): both judges must pass their own threshold; the pair of thresholds is fitted jointly
 on calibration (best Wilson lower bound, at least 20 calls), over each judge's calibration score quantiles.
 
 --val also scores the second untouched set (fetch_general.py --validation, split "val") with the same frozen threshold.
---val2 does the same for the third set (fetch_general.py --validation2, split "val2").
+--val2 does the same for the third set (fetch_general.py --validation2, split "val2"), and --fresh for the fourth
+(fetch_general.py --fresh, split "fresh").
 Only rows layer 1 leaves unsure and the gate passes need judge scores; a missing score counts as 0.
 """
 import json
@@ -91,6 +92,9 @@ def main(a):
     if "--val2" in a:  # the third untouched set from fetch_general.py --validation2, same frozen threshold
         wk, wn = stated(load(data, "val2", judge, gate), t)
         out.update(val2=[wk, wn], val2_accuracy=round(wk / wn, 4), val2_lb=round(wilson(wk, wn), 4))
+    if "--fresh" in a:  # the fourth untouched set from fetch_general.py --fresh, same frozen threshold
+        fk, fn = stated(load(data, "fresh", judge, gate), t)
+        out.update(fresh=[fk, fn], fresh_accuracy=round(fk / fn, 4), fresh_lb=round(wilson(fk, fn), 4))
     print(json.dumps(out))
 
 

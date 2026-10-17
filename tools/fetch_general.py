@@ -5,6 +5,7 @@
     python3 -I tools/fetch_general.py OUT_DIR --confirm [--pages 120]
     python3 -I tools/fetch_general.py OUT_DIR --validation [--pages 300]
     python3 -I tools/fetch_general.py OUT_DIR --validation2 [--pages 300]
+    python3 -I tools/fetch_general.py OUT_DIR --fresh
 
 --confirm builds an untouched confirmation set instead: pages at the midpoints between the 60 frozen offsets (and,
 with more pages, further evenly spaced offsets that avoid every frozen page by at least 100 rows), all rows kept, written
@@ -17,6 +18,9 @@ the cal, test or confirmation sets.
 
 --validation2 builds a third untouched set for checks written after reading the first: the pages halfway between the
 --validation pages (offset +105, so no row overlaps), written to OUT_DIR/vitc_val2.jsonl, minus rows in any earlier set.
+--fresh builds a fourth untouched set once the validation split is used up: every 100-row page of the test split that
+overlaps no frozen page (60) and no --confirm page (200), written to OUT_DIR/vitc_fresh.jsonl, minus rows in any
+earlier set.
 
 Source: VitaminC test split (tals/vitaminc on Hugging Face, CC BY-SA 3.0), fetched through the public datasets-server API
 in fixed pages at evenly spaced offsets, so every run gets the same rows. Labels: SUPPORTS -> supports, REFUTES ->
@@ -50,6 +54,8 @@ def main(argv):
     os.makedirs(out, exist_ok=True)
     if "--confirm" in argv:
         return confirm(out, pages)
+    if "--fresh" in argv:
+        return fresh(out)
     if "--validation2" in argv:
         return validation(out, pages, shift=105, name="val2")
     if "--validation" in argv:
@@ -97,6 +103,29 @@ def confirm(out, pages):
         for row in rows:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
     print("confirm", len(offsets), "pages", len(rows), {l: sum(1 for x in rows if x["label"] == l) for l in LABELS.values()})
+
+
+def fresh(out):
+    frozen = [k * ((TOTAL - 100) // 59) for k in range(60)]
+    step = (TOTAL - 100) // 199
+    used = frozen + [o for o in (k * step for k in range(200)) if all(abs(o - f) >= 200 for f in frozen)]
+    offsets = [o for o in range(0, TOTAL - 99, 100) if all(abs(o - u) >= 100 for u in used)]
+    rows = [x for o in offsets for x in labelled(fetch(o))]
+    seen = set()
+    for earlier in ("cal", "test", "confirm", "val", "val2"):
+        path = os.path.join(out, f"vitc_{earlier}.jsonl")
+        if not os.path.exists(path):
+            raise SystemExit(f"--fresh needs {path}; build the other sets first")
+        for line in open(path):
+            r = json.loads(line)
+            seen.add((r["claim"], r["quote"]))
+    dropped = sum(1 for r in rows if (r["claim"], r["quote"]) in seen)
+    rows = [r for r in rows if (r["claim"], r["quote"]) not in seen]
+    with open(os.path.join(out, "vitc_fresh.jsonl"), "w") as f:
+        for row in rows:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    counts = {l: sum(1 for x in rows if x["label"] == l) for l in LABELS.values()}
+    print("fresh", len(offsets), "pages", len(rows), "dropped", dropped, counts)
 
 
 def labelled(raw):
