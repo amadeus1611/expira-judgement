@@ -816,3 +816,18 @@ calibration data, and do not propose decision-block changes.
 
 ### Next
 - Feed the audited labels into `ej-bench fit` as corrected held-out cases so the standard verdict reflects them.
+
+## 2026-10-17: every gate on the frozen cascade
+
+### Done
+- Measured block accuracy and coverage on all five sets (docs/bench/2026-10-17-all-gates.md): block LB 0.82-0.88
+  raw, coverage 0.09-0.11. Hand-checked 25 wrong blocks: 8 real, 7 arguable, 10 right; real ones are layer-1 figure
+  misses (year carried in the sentence, season spelling, comparisons, ranges).
+
+### Open
+- Binding gate is min_coverage (0.10 vs 0.50), then block_lower_bound. pass_lower_bound is no longer the gap.
+
+### Next
+- Layer-1 figure check: inherit the year from the same sentence and accept "2000-01" = "2000-2001" (research note
+  first, measure blocks and approvals on all sets). Coverage needs the escalation layer measured, which costs
+  subscription calls: ask the owner first.
