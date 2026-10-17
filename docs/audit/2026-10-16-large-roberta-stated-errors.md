@@ -48,3 +48,11 @@ the raw column stays the standard's number. Next: escalate the gated-unsure midd
 ## Limits
 As in the 2026-10-12 audit: reading only disagreements can only raise the score; the 40-row sample bounds that
 bias. The auditor is not independent of the system.
+
+## Second sample (2026-10-17)
+A further 100 confirmation rows called "stated" with label "supports" (seed 17, drawn after removing the seed-16
+40) were read the same way. 0 of 100 plainly wrong. 1 arguable: row 9347 ("Musala is a place for prayer"; the
+quote says the name means "place for prayer", and Musala is a peak). Closest calls kept: 1032 ("he" resolved to
+Billy Duffy from context), 3088 (cover recorded 1986, single release year not stated). Over 140 sampled
+agreements: 0 plain, 1 arguable. Audited precision on approvals stays about 794/799; the remaining errors are
+the system's, not the labels'.
