@@ -35,7 +35,7 @@ Items:
 
 
 def select_rows(data, split, verify):
-    rows, l1, sc, ok = lc.load(data, split, "large+roberta", True)
+    rows, l1, sc, ok, _ = lc.load(data, split, "large+roberta", True)
     passed = lambda i: ok[i] and all(p >= x for p, x in zip(sc[i], THRESHOLDS))  # noqa: E731
     approved = lambda i: l1[i] == "backed" or (l1[i] == "unsure" and passed(i))  # noqa: E731
     pick = approved if verify else (lambda i: l1[i] == "unsure" and not passed(i))

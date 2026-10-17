@@ -851,3 +851,19 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - Wrong blocks left are mostly label noise and yearless quotes; block accuracy is ~0.85-0.87 raw against 0.95. The
   binding gate stays coverage (~0.10 vs 0.50), which needs the escalation layer measured (subscription: ask first).
+
+## 2026-10-17: judge blocks (kept in the bench tool)
+
+### Done
+- `local_cascade.py --block`: unsure rows with every judge score <= 0.02065 (fit on cal) are blocked, except claims
+  whose figures layer 1 backs. Test coverage 0.09 -> 0.27, block LB 0.88 -> 0.93; confirmation 0.11 -> 0.29,
+  0.87 -> 0.94; approvals unchanged (docs/bench/2026-10-17-judge-blocks.md).
+- Corrected a wrong claim of mine: Claude escalation does not count toward min_coverage (local layer only).
+
+### Open
+- `ej check` does not block on judge scores yet. min_coverage 0.50 and block LB 0.95 cannot both be met on VitaminC by
+  thresholds alone; whether the coverage bar fits this data is the owner's call (bars change only by deliberate commit).
+
+### Next
+- Port judge blocks to `ej check --nli` (policy file block threshold) with tests; score val/val2/fresh on all unsure
+  rows (~13 CPU hours) to confirm on more data.
