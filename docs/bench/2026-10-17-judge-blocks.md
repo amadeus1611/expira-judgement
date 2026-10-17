@@ -11,7 +11,7 @@ Stated calls unchanged (test 198/199, confirmation 788/801).
 
 | set | blocks before | block LB | coverage | blocks after | block LB | coverage |
 |---|---:|---:|---:|---:|---:|---:|
-| cal (fit) | 99/107 | 0.8689 | 0.0909 | 563/585 | 0.9437 | 0.2554 |
+| cal (fit) | 99/107 | 0.8594 | 0.0909 | 563/585 | 0.9437 | 0.2554 |
 | test | 80/84 | 0.8839 | 0.0914 | 602/633 | 0.9313 | 0.2688 |
 | confirmation | 445/493 | 0.8733 | 0.1136 | 2414/2538 | 0.9421 | 0.2931 |
 
