@@ -17,7 +17,7 @@ as `CLAUDE.md`; where a file below is written "for Claude", read it as written f
    The owner's default roster is Claude only (Haiku 5.5, Sonnet 5.5, Opus 5.5), shipped in `config/roster.json` and today
    compiled into `ej_delegate::ALLOWED_MODELS`; making that list configurable is the next planned change. The start
    prompt for a new agent is `docs/handoffs/codex-start.md`.
-5. Rules: private repo; fresh code only (nothing copied from gssc-system/, client data, memory or pricing); no invented
+5. Rules: public repo (owner decision 2026-10-16), never commit secrets or client data; fresh code only (nothing copied from gssc-system/, client data, memory or pricing); no invented
    figures; one small tested change per commit; claims about models need measured numbers from `ej-bench`.
 6. For study, tutoring or exam-preparation work, read `studies/README.md` and its resume files before teaching or
    generating material. Follow `studies/AGENTS.md`; update the affected subject's STATE,

@@ -32,4 +32,4 @@ learning progress, sources and teaching/lab procedures for Codex or Claude to re
 
 Later, separate: EXPIRA Design (palette, type and derivative solver under rules).
 
-Private. Not for publication without the owner's decision.
+Dual-licensed under MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`), at your option.
