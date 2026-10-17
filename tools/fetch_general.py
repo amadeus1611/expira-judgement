@@ -3,11 +3,16 @@
 
     python3 -I tools/fetch_general.py OUT_DIR [--pages 60]
     python3 -I tools/fetch_general.py OUT_DIR --confirm [--pages 120]
+    python3 -I tools/fetch_general.py OUT_DIR --validation [--pages 300]
 
 --confirm builds an untouched confirmation set instead: pages at the midpoints between the 60 frozen offsets (and,
 with more pages, further evenly spaced offsets that avoid every frozen page by at least 100 rows), all rows kept, written
 to OUT_DIR/vitc_confirm.jsonl, minus rows whose exact claim and quote appear in the frozen splits (which must already
 be in OUT_DIR). It is never used to fit anything; it only confirms a configuration fitted on calibration.
+
+--validation builds a second untouched set from the VitaminC validation split, which no earlier split draws from:
+evenly spaced pages, all rows kept, written to OUT_DIR/vitc_val.jsonl, minus rows whose exact claim and quote appear in
+the cal, test or confirmation sets.
 
 Source: VitaminC test split (tals/vitaminc on Hugging Face, CC BY-SA 3.0), fetched through the public datasets-server API
 in fixed pages at evenly spaced offsets, so every run gets the same rows. Labels: SUPPORTS -> supports, REFUTES ->
@@ -18,15 +23,16 @@ Writes OUT_DIR/vitc_cal.jsonl and OUT_DIR/vitc_test.jsonl ({"claim","quote","lab
 Standard library only."""
 import hashlib, json, os, sys, time, urllib.request
 
-API = "https://datasets-server.huggingface.co/rows?dataset=tals/vitaminc&config=default&split=test&offset={}&length=100"
+API = "https://datasets-server.huggingface.co/rows?dataset=tals/vitaminc&config=default&split={}&offset={}&length=100"
 TOTAL = 55197  # rows in the VitaminC test split (datasets-server num_rows_total, 2026-10-11)
+VAL_TOTAL = 63054  # rows in the VitaminC validation split (datasets-server /size, 2026-10-17)
 LABELS = {"SUPPORTS": "supports", "REFUTES": "contradicts", "NOT ENOUGH INFO": "unsure"}
 
 
-def fetch(offset):
+def fetch(offset, split="test"):
     for attempt in range(5):
         try:
-            with urllib.request.urlopen(API.format(offset), timeout=60) as r:
+            with urllib.request.urlopen(API.format(split, offset), timeout=60) as r:
                 return json.load(r)["rows"]
         except Exception:  # transient network or rate limit: back off and retry
             time.sleep(2 ** attempt)
@@ -40,6 +46,8 @@ def main(argv):
     os.makedirs(out, exist_ok=True)
     if "--confirm" in argv:
         return confirm(out, pages)
+    if "--validation" in argv:
+        return validation(out, pages)
     step = (TOTAL - 100) // (pages - 1)
     halves = {"cal": [], "test": []}
     for k in range(pages):
@@ -83,6 +91,36 @@ def confirm(out, pages):
         for row in rows:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
     print("confirm", len(offsets), "pages", len(rows), {l: sum(1 for x in rows if x["label"] == l) for l in LABELS.values()})
+
+
+def labelled(raw):
+    rows = []
+    for r in raw:
+        row = r["row"]
+        label = LABELS.get(row["label"])
+        if label and row["claim"].strip() and row["evidence"].strip():
+            rows.append({"claim": row["claim"], "quote": row["evidence"], "label": label})
+    return rows
+
+
+def validation(out, pages):
+    step = (VAL_TOTAL - 100) // (pages - 1)
+    rows = [x for k in range(pages) for x in labelled(fetch(k * step, "validation"))]
+    seen = set()
+    for name in ("cal", "test", "confirm"):
+        path = os.path.join(out, f"vitc_{name}.jsonl")
+        if not os.path.exists(path):
+            raise SystemExit(f"--validation needs {path}; build the other sets first")
+        for line in open(path):
+            r = json.loads(line)
+            seen.add((r["claim"], r["quote"]))
+    dropped = sum(1 for r in rows if (r["claim"], r["quote"]) in seen)
+    rows = [r for r in rows if (r["claim"], r["quote"]) not in seen]
+    with open(os.path.join(out, "vitc_val.jsonl"), "w") as f:
+        for row in rows:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    counts = {l: sum(1 for x in rows if x["label"] == l) for l in LABELS.values()}
+    print("validation", pages, "pages", len(rows), "dropped", dropped, counts)
 
 
 if __name__ == "__main__":
