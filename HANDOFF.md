@@ -788,3 +788,16 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - Spot check done (60 val2 supports approvals: 0 real errors, 1 arguable scope drop). Next: time-scope check in the
   gate ("the night before" vs "the night", "in" vs "by"), then scope drops ("sea travel" vs "sea travel from X").
+
+## 2026-10-17: time-order words in the gate (reverted)
+
+### Done
+- Required "after"/"before"/"during" to appear in a quote: 1 real error blocked, 18 correct approvals lost to
+  paraphrases. Reverted (docs/research/2026-10-17-time-order-words.md, docs/bench/2026-10-17-time-order-words.md).
+
+### Open
+- Pooled audited LB 0.9923 (4169/4190). Remaining real errors are one-offs (time order, quantifier scope, part-of).
+
+### Next
+- The binding gap is set size, not an error class: confirmation alone (801) can't clear 0.99 with 5 errors. Next lever
+  is more held-out data (another unread validation slice) or putting the audited pool through `ej-bench fit`.
