@@ -716,3 +716,17 @@ calibration data, and do not propose decision-block changes.
 
 ### Next
 - Hand-verified clean test set (no model calls). No subscription runs without owner approval.
+
+## 2026-10-17: genus vs species layer-1 rule
+
+### Done
+- Prototyped a rule for error 2914 (genus vs species). It fires on 1 of 17,393 rows, the row it was built from.
+  Rejected as fitted to n=1 (docs/bench/2026-10-17-genus-species-check.md,
+  docs/research/2026-10-17-genus-species-check.md). No code change.
+
+### Open
+- 3598 (garbled role swap) has no deterministic candidate. Confirmation still 786/799 raw, 794/799 audited.
+
+### Next
+- A hand-verified clean held-out set (no model calls) so `pass_lower_bound` measures the system, not label noise;
+  new rules should be judged on rows they were not written from.
