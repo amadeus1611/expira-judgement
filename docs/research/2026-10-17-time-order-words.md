@@ -10,8 +10,7 @@ quote does not state: "the night before he was fired" against "the night he was 
 
 - Vashishtha et al., "Temporal Reasoning in Natural Language Inference", Findings of EMNLP 2020. NLI models are weak
   on event order and duration. https://aclanthology.org/2020.findings-emnlp.363/
-- Thukral et al., "Probing Language Models' Understanding of Temporal Reasoning in NLI" (TRACIE line of work), and
-  Zhou et al., "Temporal Reasoning on Implicit Events from Distant Supervision", NAACL 2021. Order relations are often
+- Zhou et al., "Temporal Reasoning on Implicit Events from Distant Supervision", NAACL 2021. Order relations are often
   paraphrased ("following", "prior to", "when ... later"). https://aclanthology.org/2021.naacl-main.107/
 
 ## Licence
