@@ -786,4 +786,5 @@ calibration data, and do not propose decision-block changes.
 - Pooled audited LB passes 0.99; single sets do not all pass. Supports-labelled approvals were never read.
 
 ### Next
-- Spot-read a random sample of supports-labelled approvals to bound hidden errors; then the time-scope check.
+- Spot check done (60 val2 supports approvals: 0 real errors, 1 arguable scope drop). Next: time-scope check in the
+  gate ("the night before" vs "the night", "in" vs "by"), then scope drops ("sea travel" vs "sea travel from X").

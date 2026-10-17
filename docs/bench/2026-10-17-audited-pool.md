@@ -25,3 +25,10 @@ Pooled over 4,190 held-out approvals, the audited lower bound passes `pass_lower
 near the bar: val misses by 0.00005, and confirmation is too small to clear 0.99 with 5 errors. Caveats: approvals
 labelled supports were not read (label noise there would only lower the figure), and the audit relabels by hand, so
 this is evidence for the standard, not the `ej-bench fit` verdict itself.
+
+## Spot check of supports-labelled approvals
+60 val2 approvals labelled supports, drawn at random (Python `random.seed(20261017)`, `random.sample`), read against the
+quote: 59 stated, 1 arguable (8689, "Sea travel was prohibited" against "Sea travel from Greece and Italy was
+prohibited except for freight vessels", a dropped scope). No real error. With 0 real errors in 60, the hidden error
+rate is under about 5% of supports approvals at 95% (rule of three); the sample is too small to confirm the pooled
+figure, but it found no sign that the supports labels hide errors.
