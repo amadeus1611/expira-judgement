@@ -730,3 +730,18 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - A hand-verified clean held-out set (no model calls) so `pass_lower_bound` measures the system, not label noise;
   new rules should be judged on rows they were not written from.
+
+## 2026-10-17: second untouched set (VitaminC validation split)
+
+### Done
+- `fetch_general.py --validation` (30,000 rows, a split no other set uses) and `local_cascade.py --val`.
+- Frozen large+roberta: 1628/1664 raw (LB 0.9702); audited 1653/1664 (LB 0.9882); pooled with confirmation
+  2447/2463 (LB 0.9895). docs/bench/2026-10-17-validation-set.md, docs/audit/2026-10-17-validation-stated-errors.md.
+
+### Open
+- `pass_lower_bound` binds at about 0.989 audited. Real error classes: comparative figures, time scope, "is a Y" vs
+  "is about / in a Y", swaps.
+
+### Next
+- Layer-1 comparative-figure check ("more than N" against an exact or smaller figure); measure on fresh validation
+  pages not in the 300 used, since this set has now been read.
