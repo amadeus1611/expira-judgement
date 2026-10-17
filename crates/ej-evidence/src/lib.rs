@@ -1618,6 +1618,9 @@ mod tests {
             "They have won more than 65 titles",
             &["they have won 65 titles , the most recent in 2018"]
         ));
+        assert!(figures_backed("more than 100 cases", &["50 cases , then 101 cases"]));
+        assert!(figures_backed("more than 100 cases", &["101 cases , then 50 cases"]));
+        assert!(!figures_backed("more than 100 cases", &["99 cases , then 300 cases"]));
         assert!(figures_backed(
             "It grossed more than $ 100 million",
             &["a total gross of $ 101.7 million , against a budget of $ 208 million"]
