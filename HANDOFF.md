@@ -841,3 +841,13 @@ calibration data, and do not propose decision-block changes.
 
 ### Next
 - "later than" / "earlier than" as bounds, and "2000-01" read as the season 2000-2001, each measured the same way.
+
+## 2026-10-17: bounds and seasons (reverted)
+
+### Done
+- "later/earlier than" as bounds: 2 wrong blocks fixed, 2 right blocks lost. Seasons "2000-01" as two years: 3 fixed,
+  2 new wrong blocks. Both reverted (docs/bench/2026-10-17-bounds-and-seasons.md).
+
+### Next
+- Wrong blocks left are mostly label noise and yearless quotes; block accuracy is ~0.85-0.87 raw against 0.95. The
+  binding gate stays coverage (~0.10 vs 0.50), which needs the escalation layer measured (subscription: ask first).
