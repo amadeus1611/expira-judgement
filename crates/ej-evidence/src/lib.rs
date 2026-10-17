@@ -690,19 +690,25 @@ pub fn names_in_quotes(claim: &str, quotes: &[&str]) -> bool {
 }
 
 /// Is every figure in the claim backed by the quotes: an exact figure found (a bare year by a date or month in it),
-/// a bound met by a comparable figure? Layer 1 escalates a figure it cannot settle; a local model must then not call
-/// the claim stated on wording alone ("born before 1950" against "born 1951" read as stated on `VitaminC`).
+/// a bound met by the comparable figure nearest to it? Layer 1 escalates a figure it cannot settle; a local model must
+/// then not call the claim stated on wording alone ("born before 1950" against "born 1951" read as stated on
+/// `VitaminC`). The nearest figure is the one the bound is about: "more than $ 102 million" is not met by a $ 208 million
+/// budget when the gross is $ 101.7 million (docs/bench/2026-10-17-nearest-bound.md).
 #[must_use]
 pub fn figures_backed(claim: &str, quotes: &[&str]) -> bool {
     let have: Vec<Quantity> = quotes.iter().flat_map(|q| quantities(q)).collect();
     bounded_quantities(claim).iter().all(|(q, cmp)| {
-        have.iter().any(|h| {
-            if *cmp == Cmp::Eq {
-                same(q, h) || year_of(q, h)
-            } else {
-                comparable(q, h) && cmp.holds(h.value, q.value)
-            }
-        })
+        if *cmp == Cmp::Eq {
+            return have.iter().any(|h| same(q, h) || year_of(q, h));
+        }
+        have.iter()
+            .filter(|h| comparable(q, h))
+            .min_by(|a, b| {
+                (a.value - q.value)
+                    .abs()
+                    .total_cmp(&(b.value - q.value).abs())
+            })
+            .is_some_and(|h| cmp.holds(h.value, q.value))
     })
 }
 
@@ -1603,6 +1609,19 @@ mod tests {
         ));
         assert!(!figures_backed("more than 5 km", &["in June 2020"])); // a figure of another kind meets no bound
         assert!(figures_backed("No figures here", &["none"]));
+        // The nearest figure decides a bound, not any figure that happens to meet it.
+        assert!(!figures_backed(
+            "It grossed more than $ 102 million",
+            &["a total gross of $ 101.7 million , against a budget of $ 208 million"]
+        ));
+        assert!(!figures_backed(
+            "They have won more than 65 titles",
+            &["they have won 65 titles , the most recent in 2018"]
+        ));
+        assert!(figures_backed(
+            "It grossed more than $ 100 million",
+            &["a total gross of $ 101.7 million , against a budget of $ 208 million"]
+        ));
     }
 
     #[test]
