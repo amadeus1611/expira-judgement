@@ -831,3 +831,13 @@ calibration data, and do not propose decision-block changes.
 - Layer-1 figure check: inherit the year from the same sentence and accept "2000-01" = "2000-2001" (research note
   first, measure blocks and approvals on all sets). Coverage needs the escalation layer measured, which costs
   subscription calls: ask the owner first.
+
+## 2026-10-17: year carried to yearless quote dates (kept)
+
+### Done
+- Quotes: "Month D" with no year takes the last full date's year. 16 wrong blocks of supported claims removed, no new
+  ones, approvals unchanged (docs/bench/2026-10-17-year-carried-dates.md). Carrying bare years or carrying in claims
+  was measured worse and dropped.
+
+### Next
+- "later than" / "earlier than" as bounds, and "2000-01" read as the season 2000-2001, each measured the same way.
