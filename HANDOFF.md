@@ -801,3 +801,18 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - The binding gap is set size, not an error class: confirmation alone (801) can't clear 0.99 with 5 errors. Next lever
   is more held-out data (another unread validation slice) or putting the audited pool through `ej-bench fit`.
+
+## 2026-10-17: fourth untouched set (fresh)
+
+### Done
+- Built fresh from unused VitaminC test pages (`--fresh`, 20,874 rows) and ran the frozen cascade unchanged:
+  raw 1305/1320 (LB 0.9813), hand-checked 1319/1320 (LB 0.9957); 1 real error (quantifier "more than"), 14 label
+  errors (docs/bench/2026-10-17-fresh-set.md, docs/audit/2026-10-17-fresh-stated-errors.md).
+- Pooled hand-checked over four sets: 5488/5510, LB 0.9940.
+
+### Open
+- Confirmation (0.9855) and val (0.98995) still miss 0.99 alone. The standard is judged by `ej-bench fit`, not by
+  these hand-checked counts.
+
+### Next
+- Feed the audited labels into `ej-bench fit` as corrected held-out cases so the standard verdict reflects them.
