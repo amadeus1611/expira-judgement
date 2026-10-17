@@ -697,9 +697,14 @@ pub fn names_in_quotes(claim: &str, quotes: &[&str]) -> bool {
 #[must_use]
 pub fn figures_backed(claim: &str, quotes: &[&str]) -> bool {
     let have: Vec<Quantity> = quotes.iter().flat_map(|q| quantities(q)).collect();
+    let bounds: Vec<(Quantity, Cmp)> = quotes.iter().flat_map(|q| bounded_quantities(q)).collect();
     bounded_quantities(claim).iter().all(|(q, cmp)| {
         if *cmp == Cmp::Eq {
             return have.iter().any(|h| same(q, h) || year_of(q, h));
+        }
+        // The quote states the same bound ("over 190 countries" for "more than 190 countries").
+        if bounds.iter().any(|(h, c)| c == cmp && same(q, h)) {
+            return true;
         }
         have.iter()
             .filter(|h| comparable(q, h))
@@ -1629,6 +1634,14 @@ mod tests {
         assert!(!figures_backed(
             "more than 100 cases",
             &["99 cases , then 300 cases"]
+        ));
+        assert!(figures_backed(
+            "cases were reported in more than 190 countries",
+            &["cases have been reported in over 190 countries"]
+        ));
+        assert!(!figures_backed(
+            "cases were reported in more than 190 countries",
+            &["cases have been reported in under 190 countries"]
         ));
         assert!(figures_backed(
             "It grossed more than $ 100 million",

@@ -745,3 +745,19 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - Layer-1 comparative-figure check ("more than N" against an exact or smaller figure); measure on fresh validation
   pages not in the 300 used, since this set has now been read.
+
+## 2026-10-17: nearest-figure bounds in the gate
+
+### Done
+- `figures_backed`: a bound is met by the quote stating the same bound, or else by the nearest comparable figure
+  (docs/research/2026-10-17-nearest-bound.md, docs/bench/2026-10-17-nearest-bound.md).
+- Third unread slice: `fetch_general.py --validation2`, `local_cascade.py --val2` (29,897 rows).
+- Confirmation 788/801 (LB 0.9724, +2 coverage, same errors). Val2, label-checked on changed rows, 1668/1692 (LB 0.9790,
+  was 0.9778).
+
+### Open
+- `pass_lower_bound` still binds near 0.98 on unaudited sets; most raw errors are label noise.
+- Nearest-figure picks the wrong referent when a closer figure belongs to something else (val2 1511).
+
+### Next
+- Audit the 24 val2 errors to get its audited LB, then pick the next real error class (time scope "in" vs "by").
