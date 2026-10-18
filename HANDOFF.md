@@ -644,8 +644,8 @@ calibration data, and do not propose decision-block changes.
 ## 2026-10-18 (Claude) Office stack scaffold for gsscph.com
 
 ### Done
-- Owner asked for a free, Rust-first replacement for Outlook and Drive. Added
-  `infra/gssc-office/`: Stalwart v0.15.5 (mail/CalDAV/CardDAV/WebDAV) + Garage
+- Owner asked for a free, Rust-first replacement for Outlook and Drive. Built (now in private repo
+  `amadeus1611/expira-mail`): Stalwart v0.15.5 (mail/CalDAV/CardDAV/WebDAV) + Garage
   v2.3.0 (S3 pool), compose file, secret and init scripts, DNS and migration docs.
   Separate from the judgement workspace; creating a `gssc-infra` repo was denied (403).
 - Tested in the container: both services up, local SMTP delivery to
@@ -657,4 +657,4 @@ calibration data, and do not propose decision-block changes.
 - Server choice (static IP, PTR, port 25 allowed), user count, Stalwart→Garage blob wiring.
 
 ### Next
-- Move to its own private repo; deploy once a server is chosen; run migration.
+- Deploy from expira-mail once a server is chosen; run migration.
