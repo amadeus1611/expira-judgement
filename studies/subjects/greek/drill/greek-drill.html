@@ -202,6 +202,45 @@ const DIPH = [
   ["ου  (οὐδέ)","soup"],["υι  (υἱός)","suite"],["ευ  (εὐθύς)","feud"],["ηυ","feud"]
 ];
 
+// BBG §4.1–4.2: punctuation and diacritical marks. Each item: [mark, answer, why].
+const MARKS = [
+  [";","question mark","The Greek ; is a question mark (§4.1)."],
+  ["·","semicolon","A dot above the line is a Greek semicolon (§4.1)."],
+  [",","comma","Same as English (§4.1)."],
+  [".","period","Same as English (§4.1)."],
+  ["ά","acute","Acute: the pitch went up (§4.2)."],
+  ["ὰ","grave","Grave: the pitch went down (§4.2)."],
+  ["ᾶ","circumflex","Circumflex: the pitch went up, then down (§4.2)."],
+  ["ἀπ᾿ ἐμοῦ","elision","The apostrophe marks a dropped vowel: ἀπὸ ἐμοῦ (§4.2)."]
+];
+// BBG §4.3 rule 1: one vowel or diphthong per syllable. Words are the book's examples.
+const COUNT = [
+  ["ἀκηκόαμεν","5","ἀ κη κό α μεν"],["μαρτυροῦμεν","4","μαρ τυ ροῦ μεν (ου is one diphthong)"],
+  ["ἐθεασάμεθα","6","ἐ θε α σά με θα"],["Ἠσαΐας","4","Ἠ σα ΐ ας (the diaeresis splits α ι)"],
+  ["πνεῦμα","2","πνεῦ μα (ευ is one diphthong)"],["γραφή","2","γρα φή"]
+];
+// BBG §4.3 examples, answers in our typing key with a space between syllables.
+const SYLL = [
+  ["ἀκηκόαμεν","a kH ko a men"],["μαρτυροῦμεν","mar tU roU men"],["ἐθεασάμεθα","e the a sa me tha"],
+  ["Ἠσαΐας","H sa i as"],["ἔμπροσθεν","em pro sthen"],["ἀρχῆς","ar chHs"],["Χριστός","chri stos"],
+  ["γραφή","gra phH"],["ἔθνεσιν","e thne sin"],["πνεῦμα","pneU ma"],["ἀπαγγέλλομεν","a pag gel lo men"],
+  ["παρρησία","par rH si a"],["ἐκβάλλω","ek bal lw"]
+];
+// BBG §4.3 rules 2–7: which rule makes the split marked |.
+const RULES = [
+  ["ἐ | θε α σά με θα","single consonant","A single consonant goes with the vowel after it (rule 2)."],
+  ["ἐ θε | α σά με θα","vowels split","ε and α are not a diphthong, so they split (rule 3)."],
+  ["Ἠ σα | ΐ ας","vowels split","The diaeresis shows α ι are not a diphthong (rule 3)."],
+  ["ἔμ | προ σθεν","can't say together","μπ can't be said together; μ goes with the vowel before (rule 4)."],
+  ["ἀρ | χῆς","can't say together","ρχ can't be said together (rule 4)."],
+  ["Χρι | στός","can say together","στ can begin a word (σταυρόω), so it goes with the vowel after (rule 5)."],
+  ["πνεῦ | μα","single consonant","A single μ goes with the vowel after it (rule 2)."],
+  ["ἀ παγ | γέλ λο μεν","double","γγ is a double consonant, so it splits (rule 6)."],
+  ["παρ | ρη σί α","double","ρρ is a double consonant (rule 6)."],
+  ["ἀντι | χριστός","compound","A compound word splits where its two words join (rule 7)."],
+  ["ἐκ | βάλλω","compound","ἐκ + βάλλω, split where joined (rule 7)."]
+];
+
 const DECKS = {
   lookalike: { label: "Look-alikes", ask: "Type its name, then its English letter", kind: "both",
     items: () => ["η","ν","ρ","χ","ω","π"].map(l => LETTERS.find(x => x[0] === l)) },
@@ -213,7 +252,14 @@ const DECKS = {
     options: ["rough", "smooth"], text: true, items: () => BREATHING },
   sound: { label: "Say it", ask: "Type how it sounds (see the key above)", kind: "word", items: () => SOUNDS },
   diph: { label: "Diphthongs", ask: "Which English word has this sound?", kind: "choice",
-    options: ["aisle", "eight", "oil", "sauerkraut", "soup", "suite", "feud"], text: true, items: () => DIPH }
+    options: ["aisle", "eight", "oil", "sauerkraut", "soup", "suite", "feud"], text: true, items: () => DIPH },
+  marks: { label: "Ch 4: Marks", ask: "What is this mark in Greek?", kind: "choice", text: true,
+    options: ["comma", "period", "semicolon", "question mark", "acute", "grave", "circumflex", "elision"], items: () => MARKS },
+  count: { label: "Ch 4: Count syllables", ask: "How many syllables? (one per vowel or diphthong)", kind: "choice",
+    options: ["2", "3", "4", "5", "6"], text: true, items: () => COUNT },
+  syll: { label: "Ch 4: Split it", ask: "Type it in English letters with a space between syllables (like gra phh)", kind: "word", items: () => SYLL },
+  rules: { label: "Ch 4: Which rule?", ask: "Which rule makes the split at | ?", kind: "choice", text: true,
+    options: ["single consonant", "vowels split", "can't say together", "can say together", "double", "compound"], items: () => RULES }
 };
 
 function clean(s) {

@@ -41,7 +41,7 @@ Ch. 1–2 (the Greek language; learning Greek) are background, with no forms to 
 
 Typing drill page for block A: `drill/greek-drill.html`, published as a private artifact
 (https://claude.ai/artifact/9fZHpDkwH3xWUmWdydSt7m). Decks: look-alikes, letter names, letter → English,
-word transliteration, σ/ς, breathing marks, say it, diphthongs. Each round ends with a results line the owner pastes back
+word transliteration, σ/ς, breathing marks, say it, diphthongs; ch. 4 marks, count syllables, split it, which rule. From 2026-10-18 all quizzes run in artifacts, not chat (owner request). Each round ends with a results line the owner pastes back
 for the record.
 
 ## Standing drill: look-alike letters
