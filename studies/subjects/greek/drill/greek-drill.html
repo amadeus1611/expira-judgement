@@ -118,7 +118,7 @@ pre {
     <p class="kt-title">Our typing key</p>
     <div class="keytable">
       <div><span lang="el">ω</span><code>w</code></div>
-      <div><span lang="el">η</span><code>ey</code><small>or h</small></div>
+      <div><span lang="el">η</span><code>h</code><small>or ey</small></div>
       <div><span lang="el">θ</span><code>th</code></div>
       <div><span lang="el">φ</span><code>ph</code></div>
       <div><span lang="el">χ</span><code>ch</code></div>
@@ -145,7 +145,7 @@ pre {
 </div>
 
 <script>
-// Letters from BBG §3.2 chart. Answers use our typing key: w = ω; H = η (ey or h);
+// Letters from BBG §3.2 chart. Answers use our typing key: w = ω; H = η (h or ey);
 // U = υ (u or y); X = ξ (x or xs).
 const LETTERS = [
   ["α","alpha","a"],["β","beta","b"],["γ","gamma","g"],["δ","delta","d"],["ε","epsilon","e"],
@@ -156,7 +156,7 @@ const LETTERS = [
 ];
 // BBG §3.3.3: do not confuse η/n, ν/v, ρ/p, χ/x, ω/w. π added: read as ν in session.
 const LOOKALIKE_NOTE = {
-  "η": "η is eta: type ey (or h). It is not the English n.",
+  "η": "η is eta: type h (its capital is H). It is not the English n.",
   "ν": "ν is nu (n). It is not the English v.",
   "ρ": "ρ is rho (r). It is not the English p.",
   "χ": "χ is chi (ch). It is not the English x.",
@@ -201,7 +201,7 @@ function variants(ans) {
   return out;
 }
 // How we show an answer: our main spelling.
-function show(ans) { return ans.replace(/H/g, "ey").replace(/U/g, "u").replace(/X/g, "x"); }
+function show(ans) { return ans.replace(/H/g, "h").replace(/U/g, "u").replace(/X/g, "x"); }
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 function load(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } }
