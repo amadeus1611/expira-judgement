@@ -37,6 +37,13 @@ every quiz answer correct, or the only slip fixed by the owner without being tol
 
 Ch. 1–2 (the Greek language; learning Greek) are background, with no forms to drill.
 
+## Interactive drill
+
+Typing drill page for block A: `drill/greek-drill.html`, published as a private artifact
+(https://claude.ai/artifact/9fZHpDkwH3xWUmWdydSt7m). Decks: look-alikes, letter names, letter → English,
+word transliteration, σ/ς. Each round ends with a results line the owner pastes back
+for the record.
+
 ## Standing drill: look-alike letters
 
 Typing convention agreed 2026-10-18: `w` = ω and `h` = η when typing (a keyboard

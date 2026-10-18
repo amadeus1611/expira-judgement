@@ -1,0 +1,282 @@
+<title>Greek Letter Drill</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:wght@400;700&family=Noto+Sans:wght@400;600&family=Noto+Sans+Mono:wght@500&display=swap">
+<style>
+/* Layout: one centred drill card under a row of deck tabs; a results strip below. */
+:root {
+  --bg: #eef2f4;
+  --surface: #ffffff;
+  --ink: #17232b;
+  --muted: #5a6b76;
+  --line: #d3dde3;
+  --accent: #1f5f8b;
+  --accent-soft: #e1edf5;
+  --good: #1d7a4c;
+  --good-soft: #e2f3ea;
+  --bad: #b23a2e;
+  --bad-soft: #f8e5e2;
+  --greek: "Gentium Book Plus", "Gentium Plus", "Times New Roman", serif;
+  --body: "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Noto Sans Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10161b; --surface: #182129; --ink: #e4ecf1; --muted: #93a5b1; --line: #2a3742;
+    --accent: #6fb0dc; --accent-soft: #1c3346; --good: #5cc48d; --good-soft: #173527;
+    --bad: #ef8a7d; --bad-soft: #3d1f1b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10161b; --surface: #182129; --ink: #e4ecf1; --muted: #93a5b1; --line: #2a3742;
+  --accent: #6fb0dc; --accent-soft: #1c3346; --good: #5cc48d; --good-soft: #173527;
+  --bad: #ef8a7d; --bad-soft: #3d1f1b; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 40px;
+}
+.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+header { display: flex; flex-direction: column; gap: 4px; }
+h1 { font-family: var(--greek); font-weight: 700; font-size: 28px; margin: 0; text-wrap: balance; }
+h1 span { color: var(--accent); }
+.sub { color: var(--muted); margin: 0; font-size: 14px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tab {
+  font: inherit; font-size: 13px; font-weight: 600; padding: 7px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.tab[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.tab:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 22px; display: flex; flex-direction: column; gap: 16px;
+}
+.meta { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .25s; }
+.prompt-label { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.prompt { font-family: var(--greek); font-size: 64px; line-height: 1.1; text-align: center; margin: 4px 0; min-height: 72px; overflow-wrap: anywhere; }
+.prompt.word { font-size: 44px; }
+form { display: flex; gap: 8px; }
+input[type="text"] {
+  flex: 1; min-width: 0; font: inherit; font-family: var(--mono); font-size: 18px; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink);
+}
+.btn {
+  font: inherit; font-weight: 600; padding: 10px 16px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--accent); background: var(--accent); color: var(--surface);
+}
+.btn.ghost { background: transparent; color: var(--accent); }
+.choices { display: flex; gap: 10px; justify-content: center; }
+.choices .btn { font-family: var(--greek); font-size: 30px; min-width: 84px; }
+.feedback { border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+.feedback.good { background: var(--good-soft); color: var(--good); }
+.feedback.bad { background: var(--bad-soft); color: var(--bad); }
+.feedback b { font-family: var(--mono); }
+.hint { color: var(--muted); font-size: 13px; margin: 0; }
+.done { text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.done .score { font-family: var(--greek); font-size: 48px; margin: 0; font-variant-numeric: tabular-nums; }
+.results { display: flex; flex-direction: column; gap: 8px; }
+.results h2 { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+pre {
+  margin: 0; white-space: pre-wrap; font-family: var(--mono); font-size: 12.5px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; padding: 12px; color: var(--ink); overflow-x: auto;
+}
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.key { font-size: 13px; color: var(--muted); }
+.key code { font-family: var(--mono); color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+@media (max-width: 420px) { .prompt { font-size: 52px; } .prompt.word { font-size: 34px; } form { flex-direction: column; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Greek <span>Letter Drill</span></h1>
+    <p class="sub">Mounce, BBG ch. 3 · type the answer and press Enter. Missed items come back until you get them.</p>
+  </header>
+
+  <div class="tabs" id="tabs" role="group" aria-label="Choose a deck"></div>
+
+  <section class="card" id="card" aria-live="polite"></section>
+
+  <p class="key">Typing: <code>w</code> = ω, <code>h</code> = η (ō and ē also work). Accents and breathing marks are not tested yet.</p>
+
+  <section class="results">
+    <h2>Results to paste back to Claude</h2>
+    <pre id="log">No rounds finished yet.</pre>
+    <div class="row">
+      <button class="btn ghost" id="copy" type="button">Copy results</button>
+      <span class="key" id="copied"></span>
+    </div>
+  </section>
+</div>
+
+<script>
+// Letters from BBG §3.2 chart. t: transliteration in the w/h typing convention.
+const LETTERS = [
+  ["α","alpha","a"],["β","beta","b"],["γ","gamma","g"],["δ","delta","d"],["ε","epsilon","e"],
+  ["ζ","zeta","z"],["η","eta","h"],["θ","theta","th"],["ι","iota","i"],["κ","kappa","k"],
+  ["λ","lambda","l"],["μ","mu","m"],["ν","nu","n"],["ξ","xi","x"],["ο","omicron","o"],
+  ["π","pi","p"],["ρ","rho","r"],["σ","sigma","s"],["τ","tau","t"],["υ","upsilon","u"],
+  ["φ","phi","ph"],["χ","chi","ch"],["ψ","psi","ps"],["ω","omega","w"]
+];
+// BBG §3.3.3: do not confuse η/n, ν/v, ρ/p, χ/x, ω/w. π added: read as ν in session.
+const LOOKALIKE_NOTE = {
+  "η": "η is eta (ē, typed h). It is not the English n.",
+  "ν": "ν is nu (n). It is not the English v.",
+  "ρ": "ρ is rho (r). It is not the English p.",
+  "χ": "χ is chi (ch). It is not the English x.",
+  "ω": "ω is omega (ō, typed w). It is not the English w.",
+  "π": "π is pi (p), the little table. ν is nu (n)."
+};
+const NAME_ALT = { "xi": ["xi","xsi"], "omicron": ["omicron","o micron"], "upsilon": ["upsilon","ypsilon"] };
+const WORDS = [
+  ["λόγος","logos"],["ἀπόστολος","apostolos"],["Χριστός","christos"],["θεός","theos"],
+  ["ἀγαπῶ","agapw"],["ποιοῦμεν","poioumen"],["πληρόω","plhrow"],["ἀδελφός","adelphos"],
+  ["ἄνθρωπος","anthrwpos"],["γραφή","graphh"],["ζωή","zwh"],["καρδία","kardia"],
+  ["φωνή","phwnh"],["ἔχω","echw"],["πνεῦμα","pneuma"],["βλέπω","blepw"],
+  ["ἀκούω","akouw"],["λέγω","legw"],["πιστεύω","pisteuw"],["ψυχή","psuchh"],
+  ["ἀγαπᾶτε","agapate"],["πληροῦτε","plhroute"],["ποιεῖτε","poieite"],["ῥῆμα","rhhma"]
+];
+// BBG §3.3.4: ς only at the end of a word, σ elsewhere.
+const SIGMA = [
+  ["λόγο_","ς"],["ἀπό_τολος","σ"],["Χρι_τός","σ"],["θεό_","ς"],["πι_τεύω","σ"],
+  ["ἀδελφό_","ς"],["_ῴζω","σ"],["ἄνθρωπο_","ς"],["ἀκούει_","ς"],["ἀγαπᾷ_","ς"]
+];
+
+const DECKS = {
+  lookalike: { label: "Look-alikes", ask: "Name it, then its English letter", kind: "both",
+    items: () => ["η","ν","ρ","χ","ω","π"].map(l => LETTERS.find(x => x[0] === l)) },
+  names: { label: "Letter names", ask: "Type the letter's name", kind: "name", items: () => LETTERS },
+  english: { label: "Letter → English", ask: "Type the English letter(s)", kind: "translit", items: () => LETTERS },
+  words: { label: "Transliterate words", ask: "Transliterate (ignore accents)", kind: "word", items: () => WORDS },
+  sigma: { label: "σ or ς", ask: "Which sigma fills the gap?", kind: "sigma", items: () => SIGMA }
+};
+
+function norm(s) {
+  return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/ō/g, "w").replace(/ē/g, "h").replace(/xs/g, "x").replace(/y/g, "u")
+    .replace(/[^a-z ]/g, "").replace(/\s+/g, " ").trim();
+}
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function load(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } }
+
+const card = document.getElementById("card");
+const tabs = document.getElementById("tabs");
+const logEl = document.getElementById("log");
+let state = null;
+let history = load("gd-history", []);
+
+function renderLog() { logEl.textContent = history.length ? history.slice(-8).join("\n") : "No rounds finished yet."; }
+
+function start(deckKey) {
+  store("gd-deck", deckKey);
+  [...tabs.children].forEach(b => b.setAttribute("aria-pressed", b.dataset.deck === deckKey));
+  const d = DECKS[deckKey];
+  const items = shuffle(d.items());
+  state = { deckKey, d, queue: items.map((it, i) => ({ it, id: i })), total: items.length,
+    firstTry: new Set(), missed: new Map(), stage: 0, answered: 0 };
+  next();
+}
+
+function current() { return state.queue[0]; }
+
+function next(feedbackHtml) {
+  if (!state.queue.length) return finish();
+  const q = current(), d = state.d, it = q.it;
+  const kind = d.kind === "both" ? (state.stage === 0 ? "name" : "translit") : d.kind;
+  const greek = it[0];
+  const isWord = kind === "word" || kind === "sigma";
+  const pct = Math.round(100 * state.firstTry.size / state.total);
+  const askText = d.kind === "both" ? (kind === "name" ? "Type the letter's name" : "Now its English letter(s)") : d.ask;
+  card.innerHTML = `
+    <div class="meta"><span>${d.label}</span><span>${state.firstTry.size} / ${state.total} right first time · ${state.queue.length} left</span></div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <p class="prompt-label">${askText}</p>
+    <div class="prompt${isWord ? " word" : ""}" lang="el">${greek}</div>
+    ${kind === "sigma"
+      ? `<div class="choices"><button class="btn" type="button" data-c="σ">σ</button><button class="btn" type="button" data-c="ς">ς</button></div>`
+      : `<form id="f" autocomplete="off"><input id="answer" type="text" inputmode="latin" autocapitalize="off" spellcheck="false" aria-label="Your answer"><button class="btn" type="submit">Check</button></form>`}
+    ${feedbackHtml || ""}`;
+  if (kind === "sigma") {
+    card.querySelectorAll("[data-c]").forEach(b => b.addEventListener("click", () => check(b.dataset.c, kind)));
+  } else {
+    const f = document.getElementById("f"), inp = document.getElementById("answer");
+    f.addEventListener("submit", e => { e.preventDefault(); if (inp.value.trim()) check(inp.value, kind); });
+    inp.focus();
+  }
+}
+
+function expected(it, kind) {
+  if (kind === "name") return NAME_ALT[it[1]] || [it[1]];
+  if (kind === "translit") return [it[2]];
+  if (kind === "word") return [it[1]];
+  return [it[1]];
+}
+
+function check(raw, kind) {
+  const q = current(), it = q.it;
+  const exp = expected(it, kind);
+  const ok = kind === "sigma" ? raw === it[1] : exp.some(e => norm(e) === norm(raw));
+  const shown = kind === "sigma" ? it[1] : (kind === "name" ? it[1] : (kind === "word" ? it[1] : it[2]));
+  const note = LOOKALIKE_NOTE[it[0]];
+  let fb;
+  if (ok) {
+    fb = `<div class="feedback good">Correct: <b>${shown}</b></div>`;
+    if (state.d.kind === "both" && state.stage === 0) { state.stage = 1; return next(fb); }
+    state.stage = 0;
+    if (!state.missed.has(q.id)) state.firstTry.add(q.id);
+    state.queue.shift();
+  } else {
+    const key = it[0] + (state.d.kind === "both" ? (kind === "name" ? " (name)" : " (letter)") : "");
+    const list = state.missed.get(q.id) || [];
+    list.push(`${key}: typed "${raw.trim()}"`);
+    state.missed.set(q.id, list);
+    fb = `<div class="feedback bad">Not quite. You typed <b>${escapeHtml(raw.trim())}</b>, answer <b>${shown}</b>.${note ? " " + note : ""} It will come back.</div>`;
+    state.stage = 0;
+    const item = state.queue.shift();
+    state.queue.splice(Math.min(3, state.queue.length), 0, item);
+  }
+  next(fb);
+}
+
+function escapeHtml(s) { return s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[c])); }
+
+function finish() {
+  const right = state.firstTry.size, total = state.total;
+  const misses = [...state.missed.values()].flat();
+  const date = new Date().toISOString().slice(0, 10);
+  const line = `${date} ${state.d.label}: ${right}/${total} first try` + (misses.length ? `; missed ${misses.join(", ")}` : "; no misses");
+  history.push(line); store("gd-history", history.slice(-50)); renderLog();
+  card.innerHTML = `
+    <div class="done">
+      <p class="prompt-label">${state.d.label} finished</p>
+      <p class="score">${right} / ${total}</p>
+      <p class="hint">${misses.length ? "Right first time. Every missed item was repeated until you got it." : "Every item right first time."}</p>
+      <div class="row"><button class="btn" id="again" type="button">Go again</button></div>
+    </div>`;
+  document.getElementById("again").addEventListener("click", () => start(state.deckKey));
+}
+
+Object.entries(DECKS).forEach(([k, d]) => {
+  const b = document.createElement("button");
+  b.className = "tab"; b.type = "button"; b.dataset.deck = k; b.textContent = d.label;
+  b.addEventListener("click", () => start(k));
+  tabs.appendChild(b);
+});
+
+document.getElementById("copy").addEventListener("click", () => {
+  const text = logEl.textContent, out = document.getElementById("copied");
+  const sel = () => { const r = document.createRange(); r.selectNodeContents(logEl); const s = getSelection(); s.removeAllRanges(); s.addRange(r); out.textContent = "Selected. Copy it with your keyboard."; };
+  try { navigator.clipboard.writeText(text).then(() => { out.textContent = "Copied. Paste it in the chat."; }, sel); } catch (e) { sel(); }
+});
+
+renderLog();
+const saved = load("gd-deck", "lookalike");
+start(DECKS[saved] ? saved : "lookalike");
+</script>
