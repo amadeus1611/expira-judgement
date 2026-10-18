@@ -26,7 +26,7 @@ every quiz answer correct, or the only slip fixed by the owner without being tol
 
 | Block | Chapters | Topic | Pass 1 | Pass 2 | Status |
 |---|---|---|---|---|---|
-| A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | 2026-10-18 ch. 3 (§3.2–3.5): 108/108 first try | | in progress: ch. 4 still to review |
+| A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | 2026-10-18 ch. 3–4: 146/146 first try | | pass 1 done; pass 2 due in a later session |
 | B | 5–6 | English nouns; nominative and accusative; the article | | | not started |
 | C | 7 | Genitive and dative | | | not started |
 | D | 8 | Prepositions and εἰμί | | | not started |
@@ -68,3 +68,7 @@ Slips seen: ν as "v" (2026-10-16); ρ as "p" three times, π read as ν once (2
 - 2026-10-18 Breathing marks: 8/8 first try; no misses
 - 2026-10-18 Say it: 5/5 first try; no misses
 - 2026-10-18 Diphthongs: 8/8 first try; no misses
+- 2026-10-18 Ch 4: Marks: 8/8 first try; no misses
+- 2026-10-18 Ch 4: Count syllables: 6/6 first try; no misses
+- 2026-10-18 Ch 4: Split it: 13/13 first try; no misses
+- 2026-10-18 Ch 4: Which rule?: 11/11 first try; no misses
