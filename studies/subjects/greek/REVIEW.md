@@ -27,7 +27,7 @@ every quiz answer correct, or the only slip fixed by the owner without being tol
 | Block | Chapters | Topic | Pass 1 | Pass 2 | Status |
 |---|---|---|---|---|---|
 | A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | 2026-10-18 ch. 3–4: 146/146 first try | | pass 1 done; pass 2 due in a later session |
-| B | 5–6 | English nouns; nominative and accusative; the article | | | not started |
+| B | 5–6 | English nouns; nominative and accusative; the article | | | in progress: drill decks ready 2026-10-18 |
 | C | 7 | Genitive and dative | | | not started |
 | D | 8 | Prepositions and εἰμί | | | not started |
 | E | 9 | Adjectives | | | not started |

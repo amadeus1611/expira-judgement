@@ -250,6 +250,46 @@ const RULES = [
   ["ἐκ | βάλλω","compound","ἐκ + βάλλω, split where joined (rule 7)."]
 ];
 
+// BBG §6.15 and §6.22: noun paradigm with the article. Each item: [noun, article in our key, why].
+const ARTICLE = [
+  ["λόγος","ho","nom sg masc: ὁ λόγος"],["λόγον","ton","acc sg masc: τὸν λόγον"],
+  ["λόγοι","hoi","nom pl masc: οἱ λόγοι"],["λόγους","tous","acc pl masc: τοὺς λόγους"],
+  ["γραφή","hH","nom sg fem: ἡ γραφή"],["γραφήν","tHn","acc sg fem: τὴν γραφήν"],
+  ["γραφαί","hai","nom pl fem: αἱ γραφαί"],["γραφάς","tas","acc pl fem: τὰς γραφάς"],
+  ["ὥρα","hH","nom sg fem: ἡ ὥρα. The feminine article always has η in the singular, even when the noun has α (§6.23 n. 9)."],
+  ["ὥραν","tHn","acc sg fem: τὴν ὥραν (η in the article, α in the noun)."],
+  ["ὧραι","hai","nom pl fem: αἱ ὧραι"],["ὥρας","tas","acc pl fem: τὰς ὥρας"],
+  ["ἔργον","to","nom or acc sg neut: τὸ ἔργον (rule 2: same form for both)"],
+  ["ἔργα","ta","nom or acc pl neut: τὰ ἔργα (rule 3: neuter plural ends in α)"]
+];
+// BBG §6.17–6.18: parse case and number; neuter nom/acc are listed as both.
+const PARSE = [
+  ["λόγος","nom sg","ς is the masc nom sg ending."],["λόγον","acc sg","ν is the masc acc sg ending."],
+  ["λόγοι","nom pl","ι is the masc nom pl ending."],["λόγους","acc pl","υς is the masc acc pl ending (§6.13 n.)."],
+  ["γραφήν","acc sg","ν is the fem acc sg ending."],["γραφαί","nom pl","αι: vowel + iota is nom pl; αι is feminine."],
+  ["γραφάς","acc pl","ς on the α stem: fem acc pl. In the plural η shifts to α (§6.16)."],["ὥρα","nom sg","Fem nom sg has no ending: the stem stands alone."],
+  ["ἔργον","nom/acc sg","Neuter: nom and acc are always the same (rule 2). Parse both (§6.18)."],
+  ["ἔργα","nom/acc pl","Neuter plural ends in α (rule 3), nom or acc (rule 2)."]
+];
+// BBG §6.19 noun rules 1–3, §6.21 agreement, §6.29 postpositive.
+const NRULES = [
+  ["Stems ending in α or η","1st declension","Rule 1."],["Stems ending in ο","2nd declension","Rule 1."],
+  ["Consonant stems","3rd declension","Rule 1."],
+  ["Every neuter word has the same form in…","nom and acc","Rule 2."],
+  ["Almost all neuter nom/acc plurals end in…","α","Rule 3."],
+  ["The article agrees with its noun in…","case, number, gender","§6.21. Not declension: ἡ works for any feminine noun (§6.23)."],
+  ["Lexical form of the article","ὁ","Nom sg masc (§6.21)."],
+  ["Greek word for the indefinite article \"a\"","there is none","Greek has only the definite article (§6.20)."]
+];
+// BBG §6.10 and translation procedure: case, not word order, shows subject and object.
+const SUBJ = [
+  ["θεὸς σώσει ψυχάς. — subject?","θεὸς","Nominative = subject (§6.8)."],
+  ["θεὸς σώσει ψυχάς. — direct object?","ψυχάς","Accusative = direct object (§6.9)."],
+  ["ψυχὰς σώσει θεός. — subject?","θεός","Still nominative. Word order does not decide (§6.10)."],
+  ["ὁ λόγος σώσει ψυχάς. — subject?","ὁ λόγος","Keep the article with its noun."],
+  ["τὸν λόγον σώσει θεός. — direct object?","τὸν λόγον","Accusative τόν/λόγον, even though it comes first."]
+];
+
 const DECKS = {
   lookalike: { label: "Look-alikes", ask: "Type its name, then its English letter", kind: "both",
     items: () => ["η","ν","ρ","χ","ω","π"].map(l => LETTERS.find(x => x[0] === l)) },
@@ -268,7 +308,15 @@ const DECKS = {
     options: ["2", "3", "4", "5", "6"], text: true, items: () => COUNT },
   syll: { label: "Ch 4: Split it", ask: "Split the GREEK letters, then type them in English with spaces (like gra phh). θ φ χ ψ are one letter each.", kind: "word", items: () => SYLL },
   rules: { label: "Ch 4: Which rule?", ask: "Which rule makes the split at | ?", kind: "choice", text: true,
-    options: ["single consonant", "vowels split", "can't say together", "can say together", "double", "compound"], items: () => RULES }
+    options: ["single consonant", "vowels split", "can't say together", "can say together", "double", "compound"], items: () => RULES },
+  article: { label: "Ch 6: Add the article", ask: "Type the article that goes with this noun (ὁ = ho, ἡ = hh, τόν = ton)", kind: "word", items: () => ARTICLE },
+  parse: { label: "Ch 6: Parse it", ask: "Case and number?", kind: "choice", text: true,
+    options: ["nom sg", "acc sg", "nom pl", "acc pl", "nom/acc sg", "nom/acc pl"], items: () => PARSE },
+  nrules: { label: "Ch 6: Noun rules", ask: "Pick the answer", kind: "choice", text: true,
+    options: ["1st declension", "2nd declension", "3rd declension", "nom and acc", "α", "case, number, gender", "ὁ", "there is none"], items: () => NRULES },
+  subj: { label: "Ch 6: Subject or object", ask: "Pick the word", kind: "choice", text: true, items: () => SUBJ,
+    optionsFor: it => it[0].split(" — ")[0].replace(".", "").split(" ").reduce((a, w, i, ws) => {
+      if (w === "ὁ" || w === "τὸν") return a; const prev = ws[i - 1]; a.push(prev === "ὁ" || prev === "τὸν" ? prev + " " + w : w); return a; }, []) }
 };
 
 function clean(s) {
@@ -324,7 +372,7 @@ function next(feedbackHtml) {
     <p class="prompt-label">${askText}</p>
     <div class="prompt${isWord ? " word" : ""}" lang="el">${greek}</div>
     ${kind === "choice"
-      ? `<div class="choices${d.text ? " txt" : ""}">${d.options.map(o => `<button class="btn" type="button" data-c="${o}">${o}</button>`).join("")}</div>`
+      ? `<div class="choices${d.text ? " txt" : ""}">${(d.optionsFor ? d.optionsFor(it) : d.options).map(o => `<button class="btn" type="button" data-c="${o}">${o}</button>`).join("")}</div>`
       : `<form id="f" autocomplete="off"><input id="answer" type="text" inputmode="latin" autocapitalize="off" spellcheck="false" placeholder="Type here, then press Enter" aria-label="Your answer"><button class="btn" type="submit">Check</button></form>`}
     ${feedbackHtml || ""}`;
   if (kind === "choice") {
