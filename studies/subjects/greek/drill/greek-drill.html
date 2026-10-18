@@ -223,7 +223,7 @@ const COUNT = [
 const SYLL = [
   ["ἀκηκόαμεν","a kH ko a men"],["μαρτυροῦμεν","mar tU roU men"],["ἐθεασάμεθα","e the a sa me tha"],
   ["Ἠσαΐας","H sa i as"],["ἔμπροσθεν","em pro sthen"],["ἀρχῆς","ar chHs"],["Χριστός","chri stos"],
-  ["γραφή","gra phH"],["ἔθνεσιν","e thne sin"],["πνεῦμα","pneU ma"],["ἀπαγγέλλομεν","a pag gel lo men"],
+  ["γραφή","gra phH"],["ἔθνεσιν","e thne sin"],["πνεῦμα","pneU ma"],["ἀπαγγέλλομεν","a pan gel lo men|a pag gel lo men","γγ is said ng (§3.4.4), so the first γ sounds n: a pan gel lo men. Only one π."],
   ["παρρησία","par rH si a"],["ἐκβάλλω","ek bal lw"]
 ];
 // BBG §4.3 rules 2–7: which rule makes the split marked |.
@@ -330,7 +330,7 @@ function next(feedbackHtml) {
 function expected(it, kind) {
   if (kind === "name") return NAME_ALT[it[1]] || [it[1]];
   if (kind === "translit") return [it[2]];
-  if (kind === "word") return [it[1]];
+  if (kind === "word") return it[1].split("|");
   return [it[1]];
 }
 
@@ -338,8 +338,8 @@ function check(raw, kind) {
   const q = current(), it = q.it;
   const exp = expected(it, kind);
   const ok = kind === "choice" ? raw === it[1] : exp.some(e => variants(e).includes(clean(raw)));
-  const shown = kind === "choice" ? it[1] : show(kind === "translit" ? it[2] : it[1]);
-  const note = it[2] && kind === "choice" ? it[2] : LOOKALIKE_NOTE[it[0]];
+  const shown = kind === "choice" ? it[1] : show(kind === "translit" ? it[2] : it[1].split("|")[0]);
+  const note = it[2] && kind !== "translit" && kind !== "name" ? it[2] : LOOKALIKE_NOTE[it[0]];
   let fb;
   if (ok) {
     fb = `<div class="feedback good">Correct: <b>${shown}</b></div>`;
