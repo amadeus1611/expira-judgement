@@ -102,12 +102,18 @@ pre {
 .key code { font-family: var(--mono); color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
 @media (max-width: 420px) { .prompt { font-size: 52px; } .prompt.word { font-size: 34px; } form { flex-direction: column; } }
+.study summary { cursor: pointer; }
+.study ul { margin: 6px 0 0; padding-left: 20px; } .study li { margin: 4px 0; }
+.para { border-collapse: collapse; margin: 6px 0 10px; font-size: 15px; }
+.para th, .para td { border: 1px solid var(--line); padding: 4px 10px; text-align: left; }
+.para th { color: var(--muted); font-weight: 600; font-size: 13px; }
+.para td { font-family: var(--greek); }
 </style>
 
 <div class="wrap">
   <header>
     <h1>Greek <span>Letter Drill</span></h1>
-    <p class="sub">Mounce, BBG ch. 3 · alphabet and sounds, block A</p>
+    <p class="sub">Mounce, BBG · review blocks A–B (ch. 3–6)</p>
   </header>
 
   <section class="howto" aria-label="How to use">
@@ -130,6 +136,33 @@ pre {
     </div>
     <p class="hint">Accents and capital letters don't matter.</p>
   </section>
+
+  <details class="howto study">
+    <summary><b>Ch. 6 study sheet</b> (open before the ch. 6 decks)</summary>
+    <p class="kt-title">1. Endings alone (§6.13): learn these first</p>
+    <table class="para"><tr><th></th><th>masc</th><th>fem</th><th>neut</th></tr>
+      <tr><th>nom sg</th><td>ς</td><td>(none)</td><td>ν</td></tr>
+      <tr><th>acc sg</th><td>ν</td><td>ν</td><td>ν</td></tr>
+      <tr><th>nom pl</th><td>ι</td><td>ι</td><td>α</td></tr>
+      <tr><th>acc pl</th><td>υς</td><td>ς</td><td>α</td></tr></table>
+    <p class="kt-title">2. With the article (§6.22)</p>
+    <table class="para" lang="el"><tr><th></th><th>masc</th><th>fem</th><th>neut</th></tr>
+      <tr><th>nom sg</th><td>ὁ λόγος</td><td>ἡ γραφή · ἡ ὥρα</td><td>τὸ ἔργον</td></tr>
+      <tr><th>acc sg</th><td>τὸν λόγον</td><td>τὴν γραφήν · τὴν ὥραν</td><td>τὸ ἔργον</td></tr>
+      <tr><th>nom pl</th><td>οἱ λόγοι</td><td>αἱ γραφαί · αἱ ὧραι</td><td>τὰ ἔργα</td></tr>
+      <tr><th>acc pl</th><td>τοὺς λόγους</td><td>τὰς γραφάς · τὰς ὥρας</td><td>τὰ ἔργα</td></tr></table>
+    <p class="kt-title">3. Patterns that make it stick (Mounce's hints, §6.14, §6.23)</p>
+    <ul>
+      <li><b>ν = accusative singular</b> in every gender. See ν alone at the end: think "object".</li>
+      <li><b>vowel + ι = nominative plural</b>: οι is masculine, αι is feminine.</li>
+      <li><b>vowel + ς = accusative plural</b>: ους is masculine, ας is feminine.</li>
+      <li><b>Neuter: nom = acc</b> (rule 2), and the plural ends in <b>α</b> (rule 3). Context decides subject or object.</li>
+      <li><b>The article</b> = rough breathing or τ, then the vowel (ο for masc/neut, η/α for fem), then the ending. Only τό breaks the pattern.</li>
+      <li><b>The feminine article always has η in the singular</b>, even on an α noun: ἡ ὥρα, τὴν ὥραν.</li>
+      <li><b>Feminine η nouns switch to α in the plural</b>: γραφή → γραφαί (§6.16).</li>
+      <li><b>Find the subject by the ending, not the position</b>: ψυχὰς σώσει θεός = God will save souls.</li>
+    </ul>
+  </details>
 
   <div class="tabs" id="tabs" role="group" aria-label="Choose a deck"></div>
 
@@ -290,6 +323,42 @@ const SUBJ = [
   ["τὸν λόγον σώσει θεός. — direct object?","τὸν λόγον","Accusative τόν/λόγον, even though it comes first."]
 ];
 
+// BBG §6.13 endings by themselves. Each item: [slot, ending, why].
+const ENDINGS = [
+  ["masc nom sg","ς","λόγο-ς"],["masc acc sg","ν","λόγο-ν"],["masc nom pl","ι","λόγο-ι"],["masc acc pl","υς","λόγο-υς → λόγους"],
+  ["fem nom sg","none","γραφή: the stem stands alone"],["fem acc sg","ν","γραφή-ν"],["fem nom pl","ι","γραφα-ί"],["fem acc pl","ς","γραφά-ς"],
+  ["neut nom sg","ν","ἔργο-ν"],["neut acc sg","ν","ἔργο-ν (same as nom, rule 2)"],["neut nom pl","α","ἔργ-α"],["neut acc pl","α","ἔργ-α (rule 3)"]
+];
+// Ch. 6 vocabulary nouns declined on the §6.15 patterns: ἀγάπη like γραφή,
+// βασιλεία like ὥρα, καιρός like λόγος, ἔργον itself.
+const DECLINE = [
+  ["ἀγάπη → acc sg","agapHn","τὴν ἀγάπην: η stem + ν, like γραφήν."],
+  ["βασιλεία → acc sg","basileian","τὴν βασιλείαν: α stem + ν, like ὥραν."],
+  ["βασιλεία → nom pl","basileiai","αἱ βασιλεῖαι: vowel + ι, like ὧραι."],
+  ["βασιλεία → acc pl","basileias","τὰς βασιλείας: vowel + ς, like ὥρας."],
+  ["καιρός → acc sg","kairon","τὸν καιρόν, like λόγον."],
+  ["καιρός → nom pl","kairoi","οἱ καιροί, like λόγοι."],
+  ["καιρός → acc pl","kairoUs","τοὺς καιρούς, like λόγους."],
+  ["ἔργον → acc sg","ergon","τὸ ἔργον: neuter nom = acc."],
+  ["ἔργον → nom pl","erga","τὰ ἔργα: neuter plural in α."],
+  ["λόγος → acc pl","logoUs","τοὺς λόγους."],
+  ["γραφή → nom pl","graphai","αἱ γραφαί: η shifts to α in the plural (§6.16)."],
+  ["γραφή → acc pl","graphas","τὰς γραφάς: η shifts to α (§6.16)."]
+];
+// Article + noun phrases from ch. 6 vocabulary, parsed (§6.17–6.18).
+const PHRASE = [
+  ["τὴν ἀγάπην","acc sg","τήν + ν: feminine accusative singular."],
+  ["ἡ βασιλεία","nom sg","ἡ: feminine nominative singular."],
+  ["τὰς βασιλείας","acc pl","τάς + ας: feminine accusative plural."],
+  ["οἱ καιροί","nom pl","οἱ + οι: masculine nominative plural."],
+  ["τοὺς καιρούς","acc pl","τούς + ους: masculine accusative plural."],
+  ["τὸν καιρόν","acc sg","τόν + ν: masculine accusative singular."],
+  ["τὰ ἔργα","nom/acc pl","Neuter plural: nom or acc (rules 2–3)."],
+  ["τὸ ἔργον","nom/acc sg","Neuter singular: nom or acc (rule 2)."],
+  ["αἱ ὧραι","nom pl","αἱ + αι: feminine nominative plural."],
+  ["τὴν ὥραν","acc sg","τήν (η in the article) + ὥραν (α in the noun)."]
+];
+
 const DECKS = {
   lookalike: { label: "Look-alikes", ask: "Type its name, then its English letter", kind: "both",
     items: () => ["η","ν","ρ","χ","ω","π"].map(l => LETTERS.find(x => x[0] === l)) },
@@ -309,6 +378,11 @@ const DECKS = {
   syll: { label: "Ch 4: Split it", ask: "Split the GREEK letters, then type them in English with spaces (like gra phh). θ φ χ ψ are one letter each.", kind: "word", items: () => SYLL },
   rules: { label: "Ch 4: Which rule?", ask: "Which rule makes the split at | ?", kind: "choice", text: true,
     options: ["single consonant", "vowels split", "can't say together", "can say together", "double", "compound"], items: () => RULES },
+  endings: { label: "Ch 6: Endings alone", ask: "Which ending goes in this slot?", kind: "choice", text: true,
+    options: ["ς", "ν", "ι", "υς", "α", "none"], items: () => ENDINGS },
+  decline: { label: "Ch 6: Decline it", ask: "Type the form in our typing key (like logous)", kind: "word", items: () => DECLINE },
+  phrase: { label: "Ch 6: Read the article", ask: "Case and number? Use the article.", kind: "choice", text: true,
+    options: ["nom sg", "acc sg", "nom pl", "acc pl", "nom/acc sg", "nom/acc pl"], items: () => PHRASE },
   article: { label: "Ch 6: Add the article", ask: "Type the article that goes with this noun (ὁ = ho, ἡ = hh, τόν = ton)", kind: "word", items: () => ARTICLE },
   parse: { label: "Ch 6: Parse it", ask: "Case and number?", kind: "choice", text: true,
     options: ["nom sg", "acc sg", "nom pl", "acc pl", "nom/acc sg", "nom/acc pl"], items: () => PARSE },
