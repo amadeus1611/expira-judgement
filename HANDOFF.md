@@ -640,3 +640,230 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - Review the actual transfer response; resolve remaining counting gaps before the
   next concept. Continue saving tested study updates under standing merge authorization.
+
+## 2026-10-16 (Claude) Reproduction from scratch and two-judge agreement
+
+### Done
+- Audited Codex's work: clean. Fixed the cargo-deny rustls advisory (`cargo update -p rustls`).
+- `tools/rebuild_inputs.sh` rebuilds every bench input (splits, confirmation set, pinned models, layer 1, wording gate,
+  scores) in one resumable command. `fetch_general.py --confirm` dedupes against cal/test (11,393 rows).
+- xsmall and large reproduce exactly; `local_cascade.py` gained `JUDGE+JUDGE2` agreement mode. large+xsmall was
+  rejected (confirmation lower bound 0.9614 vs 0.9678). See docs/bench/2026-10-16-reproduction-and-agreement.md.
+
+### Open
+- Standard v1 not passed: best local confirmation lower bound 0.9724 (large+roberta, docs/bench/2026-10-16-roberta-second-family.md), bar 0.99.
+
+### Next
+- RoBERTa-large-MNLI done: alone 0.9698, large+roberta 0.9724 (kept). Next: inspect the 13 confirmation errors; try BART-large-MNLI the same way.
+- Large-model latency on a quiet machine; role-swap layer-1 check (research note first).
+- Haiku escalation of the unsure middle only after the owner approves the cost.
+
+## 2026-10-16 (Claude) Repository made public
+
+### Done
+- Owner made the repo public (CI on private repos had run out of Actions runner minutes: jobs ended in 2-3 s with
+  no runner). Added `LICENSE-MIT` and `LICENSE-APACHE`; workspace licence `MIT OR Apache-2.0`; cargo-deny now checks
+  the workspace crates too (`[licenses.private] ignore = false`). CLAUDE.md, AGENTS.md and README updated.
+- Pre-publication scan of the full history: no keys, tokens or private keys. `studies/` kept in place (owner: fine).
+
+### Open
+- Confirm CI runs green on the public repo.
+
+### Next
+- Reported/planned cue in the wording gate: prototyped and rejected (docs/bench/2026-10-16-reported-modality.md).
+- Of the 13 large+roberta confirmation errors about 8 look like label errors; the binding need is clean held-out data
+  or escalation. Next free step: BART-large-MNLI as a third family; then ask the owner about Haiku escalation cost.
+
+## 2026-10-16 (Claude) BART third family
+
+### Done
+- BART-large-MNLI scored on cal/test/confirmation; alone 0.9597, large+bart 0.9638, roberta+bart 0.9724 (tie).
+  Rejected (docs/bench/2026-10-16-bart-third-family.md). Best stays large+roberta, confirmation lower bound 0.9724.
+
+### Next
+- Free judge-family options are exhausted. Cost-estimate Haiku escalation of the unsure middle and ask the owner;
+  or build cleaner held-out data (about 8 of 13 large+roberta confirmation errors look like label errors).
+
+## 2026-10-16 (Claude) Label audit of large+roberta
+
+### Done
+- Audited large+roberta's 14 disagreements (docs/audit/2026-10-16-large-roberta-stated-errors.md): confirmation
+  786/799 raw (0.9724) -> 794/799 audited (0.9854). Still below 0.99; label cleaning alone cannot pass.
+- large+roberta's fitted large threshold is ~0.0002: effectively RoBERTa alone behind the wording gate.
+
+### Next
+- Haiku escalation estimate for the unsure middle; owner approval before any spend.
+
+## 2026-10-16 (Claude) Haiku escalation pilot
+
+### Done
+- Haiku via `claude -p` (subscription) on unsure rows: 96.8% raw, ~98.5% audited precision; not adopted
+  (docs/bench/2026-10-16-haiku-escalation.md). Run stopped at owner's usage concern.
+
+### Next
+- A small hand-verified held-out set (VitaminC label noise is ~half of all measured errors), before any more model runs.
+- No subscription runs without owner approval.
+
+## 2026-10-16: Haiku second check on local approvals
+
+### Done
+- `haiku_escalate.py --verify` on every local "stated" call (cal 156, test 199, conf 799; 24 subscription calls,
+  owner-approved). Local AND Haiku: confirmation LB 0.9724 -> 0.9790 raw, 0.9854 -> 0.9883 audited; drops 22% of
+  correct approvals. Not adopted (docs/bench/2026-10-16-haiku-verify.md).
+
+### Open
+- Haiku misses 2914 (genus/species) and 3598 (ungrammatical claim); `pass_lower_bound` still binds.
+
+### Next
+- Hand-verified clean test set (no model calls). No subscription runs without owner approval.
+
+## 2026-10-17: genus vs species layer-1 rule
+
+### Done
+- Prototyped a rule for error 2914 (genus vs species). It fires on 1 of 17,393 rows, the row it was built from.
+  Rejected as fitted to n=1 (docs/bench/2026-10-17-genus-species-check.md,
+  docs/research/2026-10-17-genus-species-check.md). No code change.
+
+### Open
+- 3598 (garbled role swap) has no deterministic candidate. Confirmation still 786/799 raw, 794/799 audited.
+
+### Next
+- A hand-verified clean held-out set (no model calls) so `pass_lower_bound` measures the system, not label noise;
+  new rules should be judged on rows they were not written from.
+
+## 2026-10-17: second untouched set (VitaminC validation split)
+
+### Done
+- `fetch_general.py --validation` (30,000 rows, a split no other set uses) and `local_cascade.py --val`.
+- Frozen large+roberta: 1628/1664 raw (LB 0.9702); audited 1653/1664 (LB 0.9882); pooled with confirmation
+  2447/2463 (LB 0.9895). docs/bench/2026-10-17-validation-set.md, docs/audit/2026-10-17-validation-stated-errors.md.
+
+### Open
+- `pass_lower_bound` binds at about 0.989 audited. Real error classes: comparative figures, time scope, "is a Y" vs
+  "is about / in a Y", swaps.
+
+### Next
+- Layer-1 comparative-figure check ("more than N" against an exact or smaller figure); measure on fresh validation
+  pages not in the 300 used, since this set has now been read.
+
+## 2026-10-17: nearest-figure bounds in the gate
+
+### Done
+- `figures_backed`: a bound is met by the quote stating the same bound, or else by the nearest comparable figure
+  (docs/research/2026-10-17-nearest-bound.md, docs/bench/2026-10-17-nearest-bound.md).
+- Third unread slice: `fetch_general.py --validation2`, `local_cascade.py --val2` (29,897 rows).
+- Confirmation 788/801 (LB 0.9724, +2 coverage, same errors). Val2, label-checked on changed rows, 1668/1692 (LB 0.9790,
+  was 0.9778).
+
+### Open
+- `pass_lower_bound` still binds near 0.98 on unaudited sets; most raw errors are label noise.
+- Nearest-figure picks the wrong referent when a closer figure belongs to something else (val2 1511).
+
+### Next
+- Done below.
+
+## 2026-10-17: val2 audit
+
+### Done
+- All 28 non-supports val2 approvals read (docs/audit/2026-10-17-val2-stated-errors.md): 3 real, 4 arguable, 21 label
+  errors. Audited 1685/1692, LB 0.9915 (arguable as errors). First audited set past 0.99.
+
+### Open
+- Real classes left: time scope ("the night before" vs "the night", "in" vs "by"), quantifier scope ("most of X"
+  vs "most of Y and one X"), "is a Y" vs a part of Y. Confirmation and val audited LBs are still under 0.99.
+
+### Next
+- Done below.
+
+## 2026-10-17: audited pool across confirmation, val, val2
+
+### Done
+- Diffed approvals old vs new gate: the gate added only correct approvals and removed val's real errors 7363 and
+  19216, so earlier audits carry over (docs/bench/2026-10-17-audited-pool.md).
+- Audited: confirmation 796/801 (0.9855), val 1688/1697 (0.98995), val2 1685/1692 (0.9915), pooled 4169/4190 (0.9923).
+
+### Open
+- Pooled audited LB passes 0.99; single sets do not all pass. Supports-labelled approvals were never read.
+
+### Next
+- Spot check done (60 val2 supports approvals: 0 real errors, 1 arguable scope drop). Next: time-scope check in the
+  gate ("the night before" vs "the night", "in" vs "by"), then scope drops ("sea travel" vs "sea travel from X").
+
+## 2026-10-17: time-order words in the gate (reverted)
+
+### Done
+- Required "after"/"before"/"during" to appear in a quote: 1 real error blocked, 18 correct approvals lost to
+  paraphrases. Reverted (docs/research/2026-10-17-time-order-words.md, docs/bench/2026-10-17-time-order-words.md).
+
+### Open
+- Pooled audited LB 0.9923 (4169/4190). Remaining real errors are one-offs (time order, quantifier scope, part-of).
+
+### Next
+- The binding gap is set size, not an error class: confirmation alone (801) can't clear 0.99 with 5 errors. Next lever
+  is more held-out data (another unread validation slice) or putting the audited pool through `ej-bench fit`.
+
+## 2026-10-17: fourth untouched set (fresh)
+
+### Done
+- Built fresh from unused VitaminC test pages (`--fresh`, 20,874 rows) and ran the frozen cascade unchanged:
+  raw 1305/1320 (LB 0.9813), hand-checked 1319/1320 (LB 0.9957); 1 real error (quantifier "more than"), 14 label
+  errors (docs/bench/2026-10-17-fresh-set.md, docs/audit/2026-10-17-fresh-stated-errors.md).
+- Pooled hand-checked over four sets: 5488/5510, LB 0.9940.
+
+### Open
+- Confirmation (0.9855) and val (0.98995) still miss 0.99 alone. The standard is judged by `ej-bench fit`, not by
+  these hand-checked counts.
+
+### Next
+- Feed the audited labels into `ej-bench fit` as corrected held-out cases so the standard verdict reflects them.
+
+## 2026-10-17: every gate on the frozen cascade
+
+### Done
+- Measured block accuracy and coverage on all five sets (docs/bench/2026-10-17-all-gates.md): block LB 0.82-0.88
+  raw, coverage 0.09-0.11. Hand-checked 25 wrong blocks: 8 real, 7 arguable, 10 right; real ones are layer-1 figure
+  misses (year carried in the sentence, season spelling, comparisons, ranges).
+
+### Open
+- Binding gate is min_coverage (0.10 vs 0.50), then block_lower_bound. pass_lower_bound is no longer the gap.
+
+### Next
+- Layer-1 figure check: inherit the year from the same sentence and accept "2000-01" = "2000-2001" (research note
+  first, measure blocks and approvals on all sets). Coverage needs the escalation layer measured, which costs
+  subscription calls: ask the owner first.
+
+## 2026-10-17: year carried to yearless quote dates (kept)
+
+### Done
+- Quotes: "Month D" with no year takes the last full date's year. 16 wrong blocks of supported claims removed, no new
+  ones, approvals unchanged (docs/bench/2026-10-17-year-carried-dates.md). Carrying bare years or carrying in claims
+  was measured worse and dropped.
+
+### Next
+- "later than" / "earlier than" as bounds, and "2000-01" read as the season 2000-2001, each measured the same way.
+
+## 2026-10-17: bounds and seasons (reverted)
+
+### Done
+- "later/earlier than" as bounds: 2 wrong blocks fixed, 2 right blocks lost. Seasons "2000-01" as two years: 3 fixed,
+  2 new wrong blocks. Both reverted (docs/bench/2026-10-17-bounds-and-seasons.md).
+
+### Next
+- Wrong blocks left are mostly label noise and yearless quotes; block accuracy is ~0.85-0.87 raw against 0.95. The
+  binding gate stays coverage (~0.10 vs 0.50), which needs the escalation layer measured (subscription: ask first).
+
+## 2026-10-17: judge blocks (kept in the bench tool)
+
+### Done
+- `local_cascade.py --block`: unsure rows with every judge score <= 0.02065 (fit on cal) are blocked, except claims
+  whose figures layer 1 backs. Test coverage 0.09 -> 0.27, block LB 0.88 -> 0.93; confirmation 0.11 -> 0.29,
+  0.87 -> 0.94; approvals unchanged (docs/bench/2026-10-17-judge-blocks.md).
+- Corrected a wrong claim of mine: Claude escalation does not count toward min_coverage (local layer only).
+
+### Open
+- `ej check` does not block on judge scores yet. min_coverage 0.50 and block LB 0.95 cannot both be met on VitaminC by
+  thresholds alone; whether the coverage bar fits this data is the owner's call (bars change only by deliberate commit).
+
+### Next
+- Port judge blocks to `ej check --nli` (policy file block threshold) with tests; score val/val2/fresh on all unsure
+  rows (~13 CPU hours) to confirm on more data.

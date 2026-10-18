@@ -23,7 +23,7 @@ pub struct Quantity {
 pub fn quantities(text: &str) -> Vec<Quantity> {
     let toks = range_tokens(text);
     let toks: Vec<&str> = toks.iter().map(String::as_str).collect();
-    located(&toks).into_iter().map(|(_, q)| q).collect()
+    located(&toks, true).into_iter().map(|(_, q)| q).collect()
 }
 
 /// How a claim states a figure: exactly, or as a bound ("more than 64", "before 19 October 1984").
@@ -70,7 +70,7 @@ pub fn bounded_quantities(text: &str) -> Vec<(Quantity, Cmp)> {
             .trim_matches(|c: char| !c.is_alphanumeric())
             .to_lowercase()
     };
-    located(&toks)
+    located(&toks, false)
         .into_iter()
         .map(|(i, q)| {
             // Step back over currency markers to the word that carries the comparison.
@@ -108,10 +108,10 @@ pub fn bounded_quantities(text: &str) -> Vec<(Quantity, Cmp)> {
         .collect()
 }
 
-/// Quantities with the token index each starts at, in text order.
-fn located(toks: &[&str]) -> Vec<(usize, Quantity)> {
+/// Quantities with the token index each starts at, in text order. `anchor`: see `dates`.
+fn located(toks: &[&str], anchor: bool) -> Vec<(usize, Quantity)> {
     let toks = toks.to_vec();
-    let (mut out, used) = dates(&toks);
+    let (mut out, used) = dates(&toks, anchor);
     for (i, raw) in toks.iter().enumerate() {
         if used[i] {
             continue;
@@ -234,7 +234,9 @@ fn int(t: &str, digits: std::ops::RangeInclusive<usize>) -> Option<i64> {
 }
 
 /// Finds dates and months in the tokens; returns them with their first token index, and which tokens they used.
-fn dates(toks: &[&str]) -> (Vec<(usize, Quantity)>, Vec<bool>) {
+/// With `anchor` (quotes only), a day written without a year takes the year of the last full date or month before it.
+/// A claim never gets one: that would make it more precise than it is written.
+fn dates(toks: &[&str], anchor: bool) -> (Vec<(usize, Quantity)>, Vec<bool>) {
     let mut out = Vec::new();
     let mut used = vec![false; toks.len()];
     let valid = |y: i64, m: i64, d: i64| day_number(&format!("{y:04}-{m:02}-{d:02}")).is_some();
@@ -243,6 +245,10 @@ fn dates(toks: &[&str]) -> (Vec<(usize, Quantity)>, Vec<bool>) {
         unit: "date".into(),
     };
     let mut i = 0;
+    // The year of the last date or month read, for a later day written without one ("began on August 2 , 1777 , and
+    // ended August 22"), as temporal taggers anchor an underspecified date to the text's last full one. Bare years are
+    // not used: a four-digit count or code ("2500 recoveries", "2019-nCoV") is not a year.
+    let mut year: Option<i64> = None;
     // Each pass consumes at least one token, so the loop needs at most one pass per token. The explicit bound keeps a
     // broken step (one that stops advancing) from looping forever and exhausting memory.
     for _ in 0..toks.len() {
@@ -294,9 +300,18 @@ fn dates(toks: &[&str]) -> (Vec<(usize, Quantity)>, Vec<bool>) {
                     },
                     2,
                 ))
+            } else if let (Some(y), Some(m), Some(d)) = (year, month(t(0)), int(t(1), 1..=2)) {
+                valid(y, m, d).then(|| (date(y, m, d), 2))
+            } else if let (Some(y), Some(d), Some(m)) = (year, int(t(0), 1..=2), month(t(1))) {
+                valid(y, m, d).then(|| (date(y, m, d), 2))
             } else {
                 None
             };
+        #[allow(clippy::cast_possible_truncation)]
+        if let Some((q, _)) = &found {
+            let per_year = if q.unit == "date" { 10_000 } else { 100 };
+            year = anchor.then_some(q.value as i64 / per_year);
+        }
         match found {
             Some((q, n)) => {
                 out.push((i, q));
@@ -690,19 +705,30 @@ pub fn names_in_quotes(claim: &str, quotes: &[&str]) -> bool {
 }
 
 /// Is every figure in the claim backed by the quotes: an exact figure found (a bare year by a date or month in it),
-/// a bound met by a comparable figure? Layer 1 escalates a figure it cannot settle; a local model must then not call
-/// the claim stated on wording alone ("born before 1950" against "born 1951" read as stated on `VitaminC`).
+/// a bound met by the comparable figure nearest to it? Layer 1 escalates a figure it cannot settle; a local model must
+/// then not call the claim stated on wording alone ("born before 1950" against "born 1951" read as stated on
+/// `VitaminC`). The nearest figure is the one the bound is about: "more than $ 102 million" is not met by a $ 208 million
+/// budget when the gross is $ 101.7 million (docs/bench/2026-10-17-nearest-bound.md).
 #[must_use]
 pub fn figures_backed(claim: &str, quotes: &[&str]) -> bool {
     let have: Vec<Quantity> = quotes.iter().flat_map(|q| quantities(q)).collect();
+    let bounds: Vec<(Quantity, Cmp)> = quotes.iter().flat_map(|q| bounded_quantities(q)).collect();
     bounded_quantities(claim).iter().all(|(q, cmp)| {
-        have.iter().any(|h| {
-            if *cmp == Cmp::Eq {
-                same(q, h) || year_of(q, h)
-            } else {
-                comparable(q, h) && cmp.holds(h.value, q.value)
-            }
-        })
+        if *cmp == Cmp::Eq {
+            return have.iter().any(|h| same(q, h) || year_of(q, h));
+        }
+        // The quote states the same bound ("over 190 countries" for "more than 190 countries").
+        if bounds.iter().any(|(h, c)| c == cmp && same(q, h)) {
+            return true;
+        }
+        have.iter()
+            .filter(|h| comparable(q, h))
+            .min_by(|a, b| {
+                (a.value - q.value)
+                    .abs()
+                    .total_cmp(&(b.value - q.value).abs())
+            })
+            .is_some_and(|h| cmp.holds(h.value, q.value))
     })
 }
 
@@ -961,6 +987,33 @@ mod tests {
             "2026-09-02",
         );
         assert_eq!(check(&c, &pol()).unwrap().verdict, Verdict::Mismatch);
+    }
+
+    #[test]
+    fn a_quote_day_without_a_year_takes_the_last_full_date_year() {
+        let dates_in = |t: &str| -> Vec<f64> {
+            quantities(t)
+                .into_iter()
+                .filter(|q| q.unit == "date")
+                .map(|q| q.value)
+                .collect()
+        };
+        let q = "The siege began on August 2 , 1777 , and ended August 22 .";
+        assert_eq!(dates_in(q), vec![ymd(1777, 8, 2), ymd(1777, 8, 22)]);
+        // No full date before it, or only a bare year or a code: no anchor.
+        assert!(dates_in("Since 16 January , 2,410 recoveries .").is_empty());
+        assert!(dates_in("In 2019 , cases fell on 16 January .").is_empty());
+        // A claim never takes one.
+        assert!(
+            bounded_quantities("Opened on 1 Sept 2026 and closed on 3 Sept .")
+                .iter()
+                .all(|(q, _)| q.unit != "date" || (q.value - ymd(2026, 9, 1)).abs() < 0.5)
+        );
+        let c = claim("The siege ended on August 22 , 1777", q, "2026-09-02");
+        assert_ne!(
+            check(&c, &pol()).map(|f| f.verdict),
+            Some(Verdict::Mismatch)
+        );
     }
 
     #[test]
@@ -1603,6 +1656,39 @@ mod tests {
         ));
         assert!(!figures_backed("more than 5 km", &["in June 2020"])); // a figure of another kind meets no bound
         assert!(figures_backed("No figures here", &["none"]));
+        // The nearest figure decides a bound, not any figure that happens to meet it.
+        assert!(!figures_backed(
+            "It grossed more than $ 102 million",
+            &["a total gross of $ 101.7 million , against a budget of $ 208 million"]
+        ));
+        assert!(!figures_backed(
+            "They have won more than 65 titles",
+            &["they have won 65 titles , the most recent in 2018"]
+        ));
+        assert!(figures_backed(
+            "more than 100 cases",
+            &["50 cases , then 101 cases"]
+        ));
+        assert!(figures_backed(
+            "more than 100 cases",
+            &["101 cases , then 50 cases"]
+        ));
+        assert!(!figures_backed(
+            "more than 100 cases",
+            &["99 cases , then 300 cases"]
+        ));
+        assert!(figures_backed(
+            "cases were reported in more than 190 countries",
+            &["cases have been reported in over 190 countries"]
+        ));
+        assert!(!figures_backed(
+            "cases were reported in more than 190 countries",
+            &["cases have been reported in under 190 countries"]
+        ));
+        assert!(figures_backed(
+            "It grossed more than $ 100 million",
+            &["a total gross of $ 101.7 million , against a budget of $ 208 million"]
+        ));
     }
 
     #[test]

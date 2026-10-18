@@ -68,6 +68,16 @@ mod processes {
             );
             std::fs::write(&program, script).unwrap();
             std::fs::set_permissions(&program, std::fs::Permissions::from_mode(0o700)).unwrap();
+            // A process forked by a parallel test while the script was open for writing briefly inherits that handle,
+            // and exec then fails with ETXTBSY (26). Probe until the script starts (it exits at once without arguments).
+            for _ in 0..200 {
+                match Command::new(&program).output() {
+                    Err(e) if e.raw_os_error() == Some(26) => {
+                        std::thread::sleep(std::time::Duration::from_millis(5));
+                    }
+                    _ => break,
+                }
+            }
             Self {
                 engine: Engine {
                     program,
