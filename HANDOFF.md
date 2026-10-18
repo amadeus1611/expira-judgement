@@ -640,3 +640,21 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - Review the actual transfer response; resolve remaining counting gaps before the
   next concept. Continue saving tested study updates under standing merge authorization.
+
+## 2026-10-18 (Claude) Office stack scaffold for gsscph.com
+
+### Done
+- Owner asked for a free, Rust-first replacement for Outlook and Drive. Added
+  `infra/gssc-office/`: Stalwart v0.15.5 (mail/CalDAV/CardDAV/WebDAV) + Garage
+  v2.3.0 (S3 pool), compose file, secret and init scripts, DNS and migration docs.
+  Separate from the judgement workspace; creating a `gssc-infra` repo was denied (403).
+- Tested in the container: both services up, local SMTP delivery to
+  management@gsscph.com, WebDAV upload/download. No internet delivery or TLS tested.
+- Research: no free unlimited storage exists from mainstream providers; capacity
+  comes from adding disks/nodes to Garage.
+
+### Open
+- Server choice (static IP, PTR, port 25 allowed), user count, Stalwart→Garage blob wiring.
+
+### Next
+- Move to its own private repo; deploy once a server is chosen; run migration.

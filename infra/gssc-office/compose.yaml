@@ -1,0 +1,31 @@
+# GSSC office stack: mail + calendar + contacts + files for gsscph.com.
+# Rust-first: Stalwart (mail/CalDAV/CardDAV/WebDAV) and Garage (S3 storage).
+# Verify image tags against upstream releases before first deploy.
+services:
+  garage:
+    image: dxflrs/garage:v2.3.0
+    restart: unless-stopped
+    volumes:
+      - ./garage.toml:/etc/garage.toml:ro
+      - ./data/garage/meta:/var/lib/garage/meta
+      - ./data/garage/data:/var/lib/garage/data
+    environment:
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET:?set in .env}
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN:?set in .env}
+    ports:
+      - "127.0.0.1:3900:3900" # S3 API, local only
+      - "127.0.0.1:3903:3903" # admin API, local only
+
+  stalwart:
+    image: ghcr.io/stalwartlabs/stalwart:v0.15.5
+    restart: unless-stopped
+    depends_on: [garage]
+    volumes:
+      - ./data/stalwart:/opt/stalwart
+    ports:
+      - "25:25"     # SMTP inbound
+      - "465:465"   # SMTP submission (TLS)
+      - "587:587"   # SMTP submission (STARTTLS)
+      - "993:993"   # IMAPS
+      - "443:443"   # HTTPS: JMAP, CalDAV, CardDAV, WebDAV files, admin UI
+      - "8080:8080" # first-run admin UI; close after setup
