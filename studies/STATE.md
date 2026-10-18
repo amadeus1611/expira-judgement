@@ -1,6 +1,6 @@
 # Current study state
 
-Last updated: 2026-10-16 (Greek added; FOUND/SECPLUS unchanged since 2026-10-14).
+Last updated: 2026-10-18 (Greek ch. 17 and review plateau; FOUND/SECPLUS unchanged since 2026-10-14).
 
 ## Current position
 
@@ -27,7 +27,8 @@ Last updated: 2026-10-16 (Greek added; FOUND/SECPLUS unchanged since 2026-10-14)
 ## Greek track (added 2026-10-16)
 
 - `GREEK`: Mounce BBG 2nd ed., Track Two. Ch. 1–9 and 15 assumed done in Codex;
-  ch. 16 and `-ειν` demonstrated 2026-10-16 (test 9/10); next ch. 17 Contract Verbs.
+  ch. 16 and `-ειν` demonstrated 2026-10-16 (test 9/10); ch. 17 demonstrated 2026-10-18.
+  Now in a review plateau of ch. 1–17 as studied ([Greek review](subjects/greek/REVIEW.md)); next block A.
   Resume: [Greek tracker](subjects/greek/TRACKER.md), [Greek state](subjects/greek/STATE.md).
   Greek sessions run in their own chat; `FOUND`/`SECPLUS` next action below is unchanged.
 

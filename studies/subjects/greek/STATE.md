@@ -1,6 +1,6 @@
 # GREEK — Current state
 
-Last updated: 2026-10-16.
+Last updated: 2026-10-18.
 
 - Text: Mounce BBG 2nd ed. (`SRC-GREEK-MOUNCE-BBG2`), following Track Two; see
   [ROADMAP.md](ROADMAP.md).
@@ -25,4 +25,20 @@ Last updated: 2026-10-16.
 - Checker setup: no local judge model or policy installed; paraphrases come back
   `unsure`, and a false claim also came back `unsure` rather than `mismatch`.
 
-Next: one-line recall of the connecting-vowel rule, then start ch. 17 Contract Verbs. See [TRACKER.md](TRACKER.md).
+- 2026-10-18: connecting-vowel rule recalled cold (ε before τε; reason given as "from
+  ετε", then stated in full by the teacher) → `demonstrated`.
+- Ch. 17 Contract Verbs: taught 2026-10-18 (§17.1–17.8, Big Five, rules 6–8, paradigm,
+  elimination method). Checked 11 claims with ej-study `--lines`: 1 backed, 10 `unsure`
+  ("no judge available"; the OCR source splits words, e.g. "w hose", so word-for-word
+  matching misses). All 11 were checked by hand against the book text. See
+  `reports/GREEK-017-*`. Observed: named α/ε/ο; rebuilt ποιεῖτε, ἀγαπᾶτε, ἀγαπῶμεν,
+  πληροῦτε, ποιοῦσι, ποιεῖς, ἀγαπᾷ, πληροῖ correctly; parsed ποιοῦσι (pres act ind
+  3 pl); listed the three ου forms of πληρόω; used the elimination method on πληροῦτε
+  after the worked example. Needed the answer for the εο/οο ambiguity and for the first
+  elimination question; rule numbers often left out. Status: `demonstrated`.
+- Transliteration slips: ρ written as "p" (3×), π read as ν once; "ei" called a long e.
+  Typing convention: `w` = ω, `h` = η.
+- Owner chose a review plateau (2026-10-18): drill ch. 1–17 as studied until solid,
+  before ch. 18. Plan and progress: [REVIEW.md](REVIEW.md).
+
+Next: review block A (alphabet; ρ/ν/ω/η drill) per [REVIEW.md](REVIEW.md). See [TRACKER.md](TRACKER.md).

@@ -1,0 +1,11 @@
+Contract verbs are verbs whose stems end in alpha, epsilon, or omicron.
+That final vowel is called the "contract vowel."
+When that final stem vowel comes into contact with the connecting vowel, the two vowels contract.
+All alpha contracts behave similarly, as do all epsilon and all omicron contracts.
+We meet contractions only in two tenses, the present and the imperfect.
+ου is formed from εο, οε, and oo.
+ω is formed from almost any combination of omicron or omega with any other vowel, except for rule #1.
+If the contract vowel and the first vowel of the diphthong are the same, they simplify.
+If the second vowel of the diphthong is an iota, it subscripts if possible; if it is an upsilon it drops off.
+There always will be a circumflex over the contracted vowels in the present indicative.
+Since the personal ending begins with tau, the connecting vowel must be an epsilon.

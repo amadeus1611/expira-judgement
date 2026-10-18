@@ -110,3 +110,23 @@ Review the four-bit response before advancing or assigning further counting prac
 
 ### Next
 Recall the connecting-vowel rule, then ch. 17 Contract Verbs.
+
+## 2026-10-18 — GREEK ch. 17 Contract Verbs; review plateau planned
+
+### Recorded
+- Connecting-vowel rule recalled cold (ε before τε) → ch. 16 rule `demonstrated`.
+- Ch. 17 taught from BBG §17.1–17.8: contract vowels, Big Five, rules 6–8, paradigm,
+  elimination method. 11 claims checked with ej-study `--lines`: 1 backed, 10 unsure
+  (no judge installed; the OCR source splits words, so exact matching misses); all
+  checked by hand against the book. Report in `subjects/greek/reports/`.
+- Observed: contractions rebuilt and ποιοῦσι parsed correctly; elimination method used
+  on πληροῦτε. Ch. 17 `demonstrated`. Slips: ρ as "p", rule numbers left out.
+- Typing convention: `w` = ω, `h` = η.
+- Owner chose a review plateau over ch. 1–17 as studied; plan in `subjects/greek/REVIEW.md`.
+
+### Open
+- ej-study can't match word for word against the OCR book text (split words); a cleaned
+  source excerpt or a local judge would let claims come back `backed`.
+
+### Next
+Greek review block A: alphabet and the ρ/ν/ω/η look-alike drill.

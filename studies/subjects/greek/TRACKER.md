@@ -10,8 +10,8 @@ per the owner (2026-10-16), not re-tested here. `demonstrated` needs observed qu
 
 ## Where you are
 
-**Now:** ch. 17 Contract Verbs (review the connecting-vowel rule first).
-**Done:** ch. 1–9 and 15 (in Codex, assumed). Observed here: ch. 16 and `-ειν` (test 9/10, 2026-10-16).
+**Now:** review plateau, ch. 1–17 as studied ([REVIEW.md](REVIEW.md)); start at block A.
+**Done:** ch. 1–9 and 15 (in Codex, assumed). Observed here: ch. 16 and `-ειν` (test 9/10, 2026-10-16); ch. 17 (2026-10-18).
 
 ## Chapters
 
@@ -27,9 +27,9 @@ per the owner (2026-10-16), not re-tested here. `demonstrated` needs observed qu
 | 8 | 8 | Prepositions and εἰμί | 54 | done (Codex) | — | assumed from Codex |
 | 9 | 9 | Adjectives | 63 | done (Codex) | — | assumed from Codex |
 | 15 | 10 | Introduction to Verbs | 121 | done (Codex) | — | assumed from Codex |
-| 16 | 11 | Present Active Indicative | 129 | demonstrated | 2026-10-16 | test 9/10; connecting-vowel rule needs review |
+| 16 | 11 | Present Active Indicative | 129 | demonstrated | 2026-10-18 | test 9/10; connecting-vowel rule recalled cold 2026-10-18 |
 | 32A | 12 | Present active infinitive `-ειν` (part of ch. 32) | 299 | demonstrated | 2026-10-16 | produced γράφειν, ἀκούειν |
-| 17 | 13 | Contract Verbs | 138 | not started | — | |
+| 17 | 13 | Contract Verbs | 138 | demonstrated | 2026-10-18 | Big Five, paradigm; give rule numbers |
 | 18 | 14 | Present Middle/Passive Indicative (+ `-εσθαι`) | 147 | not started | — | |
 | 21 | 15 | Imperfect Indicative | 180 | not started | — | |
 | 10 | 16 | Third Declension | 75 | not started | — | Track Two puts this after ch. 21 |
@@ -63,6 +63,7 @@ Tick a set only after it is produced correctly from memory in a session.
 | Primary active endings ω, εις, ει, ομεν, ετε, ουσι(ν) | ch. 16 | recalled 2026-10-16 ✓ |
 | Present active infinitive ειν | ch. 32 | recalled 2026-10-16 ✓ |
 | Noun case endings (1st/2nd declension) | ch. 6–7 | done (Codex) |
+| Big Five contraction rules | ch. 17 | used correctly 2026-10-18; recall from cold due |
 
 ## How each session runs
 
