@@ -27,7 +27,7 @@ every quiz answer correct, or the only slip fixed by the owner without being tol
 | Block | Chapters | Topic | Pass 1 | Pass 2 | Status |
 |---|---|---|---|---|---|
 | A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | 2026-10-18 ch. 3–4: 146/146 first try | | pass 1 done; pass 2 due in a later session |
-| B | 5–6 | English nouns; nominative and accusative; the article | | | in progress: drill decks ready 2026-10-18 |
+| B | 5–6 | English nouns; nominative and accusative; the article 2026-10-18 ch. 6: 36/37 first try; one slip (picked first word ψυχὰς as subject), then a clean 5/5 re-run | | pass 1 done (one slip, fixed on re-run); pass 2 due in a later session |
 | C | 7 | Genitive and dative | | | not started |
 | D | 8 | Prepositions and εἰμί | | | not started |
 | E | 9 | Adjectives | | | not started |
@@ -56,6 +56,8 @@ shortcut, not the printed transliteration ō / ē).
 | ω | omega | ō (`w`) | w (the English letter) |
 | η | eta | ē (`h`) | n |
 
+Slips seen (block B): took the first word as subject in ψυχὰς σώσει θεός (2026-10-18); watch word order in pass 2.
+
 Slips seen: ν as "v" (2026-10-16); ρ as "p" three times, π read as ν once (2026-10-18).
 
 ## Drill results (pasted by the owner)
@@ -72,3 +74,8 @@ Slips seen: ν as "v" (2026-10-16); ρ as "p" three times, π read as ν once (2
 - 2026-10-18 Ch 4: Count syllables: 6/6 first try; no misses
 - 2026-10-18 Ch 4: Split it: 13/13 first try; no misses
 - 2026-10-18 Ch 4: Which rule?: 11/11 first try; no misses
+- 2026-10-18 Ch 6: Add the article: 14/14 first try; no misses
+- 2026-10-18 Ch 6: Parse it: 10/10 first try; no misses
+- 2026-10-18 Ch 6: Noun rules: 8/8 first try; no misses
+- 2026-10-18 Ch 6: Subject or object: 4/5 first try; missed ψυχὰς σώσει θεός. — subject?: typed "ψυχὰς"
+- 2026-10-18 Ch 6: Subject or object: 5/5 first try; no misses (re-run)
