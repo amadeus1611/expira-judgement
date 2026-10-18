@@ -28,7 +28,7 @@ Last updated: 2026-10-18 (Greek ch. 17 and review plateau; FOUND/SECPLUS unchang
 
 - `GREEK`: Mounce BBG 2nd ed., Track One since 2026-10-18 (was Track Two). Ch. 1–9 and 15 assumed done in Codex;
   ch. 16 and `-ειν` demonstrated 2026-10-16 (test 9/10); ch. 17 demonstrated 2026-10-18.
-  Now in a review plateau (ch. 1–9 first, then the verbs; then ch. 10–14) ([Greek review](subjects/greek/REVIEW.md)); next block A.
+  Now in a review plateau (ch. 1–9 first, then the verbs; then ch. 10–14) ([Greek review](subjects/greek/REVIEW.md)); blocks A–B pass 1 done 2026-10-18; next: A–B pass 2, then block C (ch. 7).
   Resume: [Greek tracker](subjects/greek/TRACKER.md), [Greek state](subjects/greek/STATE.md).
   Greek sessions run in their own chat; `FOUND`/`SECPLUS` next action below is unchanged.
 

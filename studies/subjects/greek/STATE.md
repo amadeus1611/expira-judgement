@@ -49,3 +49,11 @@ Last updated: 2026-10-18.
   a later session.
 
 Next: rest of block A (§3.4–3.5 pronunciation, breathing marks, diphthongs; ch. 4). Was: review block A (alphabet; ρ/ν/ω/η drill) per [REVIEW.md](REVIEW.md). See [TRACKER.md](TRACKER.md).
+- 2026-10-18 review session (drill page, results pasted by the owner): block A pass 1
+  done, ch. 3–4 146/146 first try. Block B pass 1 done: ch. 6 forms 66/66 first try
+  (endings, declining ch. 6 nouns, article, parsing, noun rules 1–3). Weak spot: word
+  order. Twice took position over ending (ψυχὰς σώσει θεός; τὸν λόγον σώσει θεός),
+  fixed on re-run. Subject/object deck widened to 13 items. From now on quizzes run on
+  the drill artifact, not in chat (owner request).
+- Next session: block A pass 2 (cold), block B pass 2 with the 13-item subject/object
+  deck, then block C (ch. 7 genitive and dative).

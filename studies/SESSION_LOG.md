@@ -136,3 +136,21 @@ Greek review block A: alphabet and the ρ/ν/ω/η look-alike drill.
 - Built an interactive alphabet typing drill (`subjects/greek/drill/greek-drill.html`,
   private artifact). Owner's pasted results: 87/87 first try across five decks. Block A
   alphabet part, pass 1. Next: §3.4–3.5 and ch. 4.
+
+## 2026-10-18 (Greek review, continued)
+
+### Done
+- Block A pass 1 complete: ch. 3 §3.4–3.5 and ch. 4 decks added; 146/146 first try overall.
+- Block B pass 1: ch. 6 decks (article, parse, noun rules, endings, decline, read the article,
+  subject/object) and a ch. 6 study sheet on the drill page. 66/66 on forms; two word-order
+  slips on subject/object, each fixed on re-run.
+- Fixes from owner feedback: γγ said "ng" in the split deck (a pan gel lo men); the Greek split
+  and rule now show after every syllable answer.
+- Owner asked that all quizzes run in the artifact rather than chat.
+- Drill artifact moved to a new URL (see REVIEW.md).
+
+### Open
+- Word order: the owner still reads position before ending in object-first sentences.
+
+### Next
+Block A pass 2 and block B pass 2 (cold), then block C (ch. 7 genitive and dative).

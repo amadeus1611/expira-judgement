@@ -71,3 +71,6 @@ Tick a set only after it is produced correctly from memory in a session.
 2. Read the chapter section in your copy; claims are checked with ej-study.
 3. Quiz; record actual answers in STATE and update this table.
 4. Commit and push at the end.
+
+- 2026-10-18 review: block A (ch. 3–4) pass 1 done, 146/146. Block B (ch. 5–6) pass 1 done,
+  ch. 6 forms 66/66; word-order slips ×2 (fixed on re-run). Pass 2 for both is due next session.
