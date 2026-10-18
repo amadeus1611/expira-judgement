@@ -221,10 +221,19 @@ const COUNT = [
 ];
 // BBG §4.3 examples, answers in our typing key with a space between syllables.
 const SYLL = [
-  ["ἀκηκόαμεν","a kH ko a men"],["μαρτυροῦμεν","mar tU roU men"],["ἐθεασάμεθα","e the a sa me tha"],
-  ["Ἠσαΐας","H sa i as"],["ἔμπροσθεν","em pro sthen"],["ἀρχῆς","ar chHs"],["Χριστός","chri stos"],
-  ["γραφή","gra phH"],["ἔθνεσιν","e thne sin"],["πνεῦμα","pneU ma"],["ἀπαγγέλλομεν","a pan gel lo men|a pag gel lo men","γγ is said ng (§3.4.4), so the first γ sounds n: a pan gel lo men. Only one π."],
-  ["παρρησία","par rH si a"],["ἐκβάλλω","ek bal lw"]
+  ["ἀκηκόαμεν","a kH ko a men","Greek: ἀ κη κό α μεν. One vowel per syllable; a single consonant goes with the vowel after it (rules 1–2)."],
+  ["μαρτυροῦμεν","mar tU roU men","Greek: μαρ τυ ροῦ μεν. ρτ can't be said together, so ρ stays behind (rule 4)."],
+  ["ἐθεασάμεθα","e the a sa me tha","Greek: ἐ θε α σά με θα. θ is one letter; ε α are not a diphthong (rules 2–3)."],
+  ["Ἠσαΐας","H sa i as","Greek: Ἠ σα ΐ ας. The diaeresis splits α ι (rule 3)."],
+  ["ἔμπροσθεν","em pro sthen","Greek: ἔμ προ σθεν. μπ can't be said together; πρ and σθ can (rules 4–5)."],
+  ["ἀρχῆς","ar chHs","Greek: ἀρ χῆς. χ is one letter; ρχ can't be said together (rule 4)."],
+  ["Χριστός","chri stos","Greek: Χρι στός. στ can start a word (σταυρόω), so it goes forward (rule 5)."],
+  ["γραφή","gra phH","Greek: γρα φή. φ is one letter, so it goes with the vowel after it (rule 2)."],
+  ["ἔθνεσιν","e thne sin","Greek: ἔ θνε σιν. θ is ONE letter, so θν is a two-letter cluster, and the book says a cluster with μ or ν goes with the vowel after it (rule 5)."],
+  ["πνεῦμα","pneU ma","Greek: πνεῦ μα. πν goes forward (a cluster with ν, rule 5); single μ goes forward (rule 2)."],
+  ["ἀπαγγέλλομεν","a pan gel lo men|a pag gel lo men","Greek: ἀ παγ γέλ λο μεν. Double γγ and λλ split (rule 6). γγ is said ng (§3.4.4), so you hear a pan gel lo men. Only one π."],
+  ["παρρησία","par rH si a","Greek: παρ ρη σί α. Double ρρ splits (rule 6)."],
+  ["ἐκβάλλω","ek bal lw","Greek: ἐκ βάλ λω. Compound ἐκ + βάλλω splits where joined (rule 7); λλ splits (rule 6)."]
 ];
 // BBG §4.3 rules 2–7: which rule makes the split marked |.
 const RULES = [
@@ -257,7 +266,7 @@ const DECKS = {
     options: ["comma", "period", "semicolon", "question mark", "acute", "grave", "circumflex", "elision"], items: () => MARKS },
   count: { label: "Ch 4: Count syllables", ask: "How many syllables? (one per vowel or diphthong)", kind: "choice",
     options: ["2", "3", "4", "5", "6"], text: true, items: () => COUNT },
-  syll: { label: "Ch 4: Split it", ask: "Type it in English letters with a space between syllables (like gra phh)", kind: "word", items: () => SYLL },
+  syll: { label: "Ch 4: Split it", ask: "Split the GREEK letters, then type them in English with spaces (like gra phh). θ φ χ ψ are one letter each.", kind: "word", items: () => SYLL },
   rules: { label: "Ch 4: Which rule?", ask: "Which rule makes the split at | ?", kind: "choice", text: true,
     options: ["single consonant", "vowels split", "can't say together", "can say together", "double", "compound"], items: () => RULES }
 };
@@ -342,7 +351,7 @@ function check(raw, kind) {
   const note = it[2] && kind !== "translit" && kind !== "name" ? it[2] : LOOKALIKE_NOTE[it[0]];
   let fb;
   if (ok) {
-    fb = `<div class="feedback good">Correct: <b>${shown}</b></div>`;
+    fb = `<div class="feedback good">Correct: <b>${shown}</b>${it[2] && kind === "word" ? " " + it[2] : ""}</div>`;
     if (state.d.kind === "both" && state.stage === 0) { state.stage = 1; return next(fb); }
     state.stage = 0;
     if (!state.missed.has(q.id)) state.firstTry.add(q.id);
