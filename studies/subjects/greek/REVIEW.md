@@ -26,7 +26,7 @@ every quiz answer correct, or the only slip fixed by the owner without being tol
 
 | Block | Chapters | Topic | Pass 1 | Pass 2 | Status |
 |---|---|---|---|---|---|
-| A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | | | not started |
+| A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | 2026-10-18 alphabet part (§3.2–3.3): 87/87 first try | | in progress: §3.4–3.5 and ch. 4 still to review |
 | B | 5–6 | English nouns; nominative and accusative; the article | | | not started |
 | C | 7 | Genitive and dative | | | not started |
 | D | 8 | Prepositions and εἰμί | | | not started |
@@ -46,7 +46,7 @@ for the record.
 
 ## Standing drill: look-alike letters
 
-Typing convention agreed 2026-10-18: `w` = ω and `h` = η when typing (a keyboard
+Typing convention agreed 2026-10-18: `w` = ω and `h` = η (owner: η's capital is Η; `ey` also accepted) when typing (a keyboard
 shortcut, not the printed transliteration ō / ē).
 
 | Letter | Name | Is | Not |
@@ -57,3 +57,11 @@ shortcut, not the printed transliteration ō / ē).
 | η | eta | ē (`h`) | n |
 
 Slips seen: ν as "v" (2026-10-16); ρ as "p" three times, π read as ν once (2026-10-18).
+
+## Drill results (pasted by the owner)
+
+- 2026-10-18 Look-alikes: 6/6 first try; no misses
+- 2026-10-18 Letter names: 24/24 first try; no misses
+- 2026-10-18 Letter → English: 24/24 first try; no misses
+- 2026-10-18 Transliterate words: 23/23 first try; no misses
+- 2026-10-18 σ or ς: 10/10 first try; no misses

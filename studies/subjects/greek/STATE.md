@@ -44,4 +44,8 @@ Last updated: 2026-10-18.
 - Switched to Track One 2026-10-18 (owner had followed it in their own study; the
   verbs-first order was confusing). After the review: ch. 10–14, then 18 onward.
 
-Next: review block A (alphabet; ρ/ν/ω/η drill) per [REVIEW.md](REVIEW.md). See [TRACKER.md](TRACKER.md).
+- Block A pass 1, alphabet part (2026-10-18, interactive drill): 87/87 first try across
+  look-alikes, names, letter → English, word transliteration and σ/ς. Pass 2 is due in
+  a later session.
+
+Next: rest of block A (§3.4–3.5 pronunciation, breathing marks, diphthongs; ch. 4). Was: review block A (alphabet; ρ/ν/ω/η drill) per [REVIEW.md](REVIEW.md). See [TRACKER.md](TRACKER.md).

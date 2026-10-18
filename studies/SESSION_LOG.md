@@ -133,3 +133,6 @@ Greek review block A: alphabet and the ρ/ν/ω/η look-alike drill.
 - Later the same session: switched GREEK to Track One. The owner had followed it in
   their own study, and the verbs-first order was confusing; Mounce also prefers it
   (p. 74). Order now: review ch. 1–9, review the verb blocks, then ch. 10–14, then 18 on.
+- Built an interactive alphabet typing drill (`subjects/greek/drill/greek-drill.html`,
+  private artifact). Owner's pasted results: 87/87 first try across five decks. Block A
+  alphabet part, pass 1. Next: §3.4–3.5 and ch. 4.
