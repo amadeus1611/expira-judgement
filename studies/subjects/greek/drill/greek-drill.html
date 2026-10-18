@@ -78,6 +78,15 @@ input[type="text"] {
 .feedback.bad { background: var(--bad-soft); color: var(--bad); }
 .feedback b { font-family: var(--mono); }
 .hint { color: var(--muted); font-size: 13px; margin: 0; }
+.howto { background: var(--accent-soft); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.howto ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.kt-title { margin: 4px 0 0; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.keytable { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.keytable > div { display: flex; align-items: baseline; gap: 8px; background: var(--surface); border-radius: 8px; padding: 6px 10px; }
+.keytable span { font-family: var(--greek); font-size: 22px; }
+.keytable code { font-family: var(--mono); font-weight: 600; color: var(--accent); }
+.keytable small { color: var(--muted); font-size: 11px; }
+@media (max-width: 520px) { .keytable { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .done { text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; }
 .done .score { font-family: var(--greek); font-size: 48px; margin: 0; font-variant-numeric: tabular-nums; }
 .results { display: flex; flex-direction: column; gap: 8px; }
@@ -96,14 +105,34 @@ pre {
 <div class="wrap">
   <header>
     <h1>Greek <span>Letter Drill</span></h1>
-    <p class="sub">Mounce, BBG ch. 3 · type the answer and press Enter. Missed items come back until you get them.</p>
+    <p class="sub">Mounce, BBG ch. 3 · alphabet review, block A</p>
   </header>
+
+  <section class="howto" aria-label="How to use">
+    <ol>
+      <li><b>Pick a deck</b> from the buttons below. Start with <b>Look-alikes</b>.</li>
+      <li><b>Type your answer</b> in the box and press <b>Enter</b>.</li>
+      <li>If you miss one, it <b>comes back</b> a few questions later until you get it.</li>
+      <li>At the end, press <b>Copy results</b> and paste them in the chat.</li>
+    </ol>
+    <p class="kt-title">Our typing key</p>
+    <div class="keytable">
+      <div><span lang="el">ω</span><code>w</code></div>
+      <div><span lang="el">η</span><code>ey</code><small>or h</small></div>
+      <div><span lang="el">θ</span><code>th</code></div>
+      <div><span lang="el">φ</span><code>ph</code></div>
+      <div><span lang="el">χ</span><code>ch</code></div>
+      <div><span lang="el">ψ</span><code>ps</code></div>
+      <div><span lang="el">ξ</span><code>x</code><small>or xs</small></div>
+      <div><span lang="el">υ</span><code>u</code><small>or y</small></div>
+    </div>
+    <p class="hint">Accents and capital letters don't matter.</p>
+  </section>
 
   <div class="tabs" id="tabs" role="group" aria-label="Choose a deck"></div>
 
   <section class="card" id="card" aria-live="polite"></section>
 
-  <p class="key">Typing: <code>w</code> = ω, <code>h</code> = η (ō and ē also work). Accents and breathing marks are not tested yet.</p>
 
   <section class="results">
     <h2>Results to paste back to Claude</h2>
@@ -116,31 +145,32 @@ pre {
 </div>
 
 <script>
-// Letters from BBG §3.2 chart. t: transliteration in the w/h typing convention.
+// Letters from BBG §3.2 chart. Answers use our typing key: w = ω; H = η (ey or h);
+// U = υ (u or y); X = ξ (x or xs).
 const LETTERS = [
   ["α","alpha","a"],["β","beta","b"],["γ","gamma","g"],["δ","delta","d"],["ε","epsilon","e"],
-  ["ζ","zeta","z"],["η","eta","h"],["θ","theta","th"],["ι","iota","i"],["κ","kappa","k"],
-  ["λ","lambda","l"],["μ","mu","m"],["ν","nu","n"],["ξ","xi","x"],["ο","omicron","o"],
-  ["π","pi","p"],["ρ","rho","r"],["σ","sigma","s"],["τ","tau","t"],["υ","upsilon","u"],
+  ["ζ","zeta","z"],["η","eta","H"],["θ","theta","th"],["ι","iota","i"],["κ","kappa","k"],
+  ["λ","lambda","l"],["μ","mu","m"],["ν","nu","n"],["ξ","xi","X"],["ο","omicron","o"],
+  ["π","pi","p"],["ρ","rho","r"],["σ","sigma","s"],["τ","tau","t"],["υ","upsilon","U"],
   ["φ","phi","ph"],["χ","chi","ch"],["ψ","psi","ps"],["ω","omega","w"]
 ];
 // BBG §3.3.3: do not confuse η/n, ν/v, ρ/p, χ/x, ω/w. π added: read as ν in session.
 const LOOKALIKE_NOTE = {
-  "η": "η is eta (ē, typed h). It is not the English n.",
+  "η": "η is eta: type ey (or h). It is not the English n.",
   "ν": "ν is nu (n). It is not the English v.",
   "ρ": "ρ is rho (r). It is not the English p.",
   "χ": "χ is chi (ch). It is not the English x.",
-  "ω": "ω is omega (ō, typed w). It is not the English w.",
+  "ω": "ω is omega, a long o: type w.",
   "π": "π is pi (p), the little table. ν is nu (n)."
 };
 const NAME_ALT = { "xi": ["xi","xsi"], "omicron": ["omicron","o micron"], "upsilon": ["upsilon","ypsilon"] };
 const WORDS = [
   ["λόγος","logos"],["ἀπόστολος","apostolos"],["Χριστός","christos"],["θεός","theos"],
-  ["ἀγαπῶ","agapw"],["ποιοῦμεν","poioumen"],["πληρόω","plhrow"],["ἀδελφός","adelphos"],
-  ["ἄνθρωπος","anthrwpos"],["γραφή","graphh"],["ζωή","zwh"],["καρδία","kardia"],
-  ["φωνή","phwnh"],["ἔχω","echw"],["πνεῦμα","pneuma"],["βλέπω","blepw"],
-  ["ἀκούω","akouw"],["λέγω","legw"],["πιστεύω","pisteuw"],["ψυχή","psuchh"],
-  ["ἀγαπᾶτε","agapate"],["πληροῦτε","plhroute"],["ποιεῖτε","poieite"],["ῥῆμα","rhhma"]
+  ["ἀγαπῶ","agapw"],["ποιοῦμεν","poioUmen"],["πληρόω","plHrow"],["ἀδελφός","adelphos"],
+  ["ἄνθρωπος","anthrwpos"],["γραφή","graphH"],["ζωή","zwH"],["καρδία","kardia"],
+  ["φωνή","phwnH"],["ἔχω","echw"],["πνεῦμα","pneUma"],["βλέπω","blepw"],
+  ["ἀκούω","akoUw"],["λέγω","legw"],["πιστεύω","pisteUw"],["ψυχή","psUchH"],
+  ["ἀγαπᾶτε","agapate"],["πληροῦτε","plHroUte"],["ποιεῖτε","poieite"]
 ];
 // BBG §3.3.4: ς only at the end of a word, σ elsewhere.
 const SIGMA = [
@@ -149,19 +179,29 @@ const SIGMA = [
 ];
 
 const DECKS = {
-  lookalike: { label: "Look-alikes", ask: "Name it, then its English letter", kind: "both",
+  lookalike: { label: "Look-alikes", ask: "Type its name, then its English letter", kind: "both",
     items: () => ["η","ν","ρ","χ","ω","π"].map(l => LETTERS.find(x => x[0] === l)) },
   names: { label: "Letter names", ask: "Type the letter's name", kind: "name", items: () => LETTERS },
-  english: { label: "Letter → English", ask: "Type the English letter(s)", kind: "translit", items: () => LETTERS },
-  words: { label: "Transliterate words", ask: "Transliterate (ignore accents)", kind: "word", items: () => WORDS },
+  english: { label: "Letter → English", ask: "Type it in English letters (see the key above)", kind: "translit", items: () => LETTERS },
+  words: { label: "Transliterate words", ask: "Spell the word in English letters (see the key above)", kind: "word", items: () => WORDS },
   sigma: { label: "σ or ς", ask: "Which sigma fills the gap?", kind: "sigma", items: () => SIGMA }
 };
 
-function norm(s) {
-  return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
-    .replace(/ō/g, "w").replace(/ē/g, "h").replace(/xs/g, "x").replace(/y/g, "u")
-    .replace(/[^a-z ]/g, "").replace(/\s+/g, " ").trim();
+function clean(s) {
+  return s.toLowerCase().replace(/ō/g, "w").replace(/ē/g, "ey").normalize("NFD")
+    .replace(/[̀-ͯ]/g, "").replace(/[^a-z ]/g, "").replace(/\s+/g, " ").trim();
 }
+// Every accepted spelling of an answer: H -> ey|h, U -> u|y, X -> x|xs.
+function variants(ans) {
+  let out = [""];
+  for (const c of ans) {
+    const opts = c === "H" ? ["ey", "h"] : c === "U" ? ["u", "y"] : c === "X" ? ["x", "xs"] : [c];
+    out = out.flatMap(o => opts.map(x => o + x));
+  }
+  return out;
+}
+// How we show an answer: our main spelling.
+function show(ans) { return ans.replace(/H/g, "ey").replace(/U/g, "u").replace(/X/g, "x"); }
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 function load(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } }
@@ -193,7 +233,7 @@ function next(feedbackHtml) {
   const greek = it[0];
   const isWord = kind === "word" || kind === "sigma";
   const pct = Math.round(100 * state.firstTry.size / state.total);
-  const askText = d.kind === "both" ? (kind === "name" ? "Type the letter's name" : "Now its English letter(s)") : d.ask;
+  const askText = d.kind === "both" ? (kind === "name" ? "Step 1 of 2: type the letter's name (like alpha)" : "Step 2 of 2: type it in English letters (like a)") : d.ask;
   card.innerHTML = `
     <div class="meta"><span>${d.label}</span><span>${state.firstTry.size} / ${state.total} right first time · ${state.queue.length} left</span></div>
     <div class="bar"><i style="width:${pct}%"></i></div>
@@ -201,7 +241,7 @@ function next(feedbackHtml) {
     <div class="prompt${isWord ? " word" : ""}" lang="el">${greek}</div>
     ${kind === "sigma"
       ? `<div class="choices"><button class="btn" type="button" data-c="σ">σ</button><button class="btn" type="button" data-c="ς">ς</button></div>`
-      : `<form id="f" autocomplete="off"><input id="answer" type="text" inputmode="latin" autocapitalize="off" spellcheck="false" aria-label="Your answer"><button class="btn" type="submit">Check</button></form>`}
+      : `<form id="f" autocomplete="off"><input id="answer" type="text" inputmode="latin" autocapitalize="off" spellcheck="false" placeholder="Type here, then press Enter" aria-label="Your answer"><button class="btn" type="submit">Check</button></form>`}
     ${feedbackHtml || ""}`;
   if (kind === "sigma") {
     card.querySelectorAll("[data-c]").forEach(b => b.addEventListener("click", () => check(b.dataset.c, kind)));
@@ -222,8 +262,8 @@ function expected(it, kind) {
 function check(raw, kind) {
   const q = current(), it = q.it;
   const exp = expected(it, kind);
-  const ok = kind === "sigma" ? raw === it[1] : exp.some(e => norm(e) === norm(raw));
-  const shown = kind === "sigma" ? it[1] : (kind === "name" ? it[1] : (kind === "word" ? it[1] : it[2]));
+  const ok = kind === "sigma" ? raw === it[1] : exp.some(e => variants(e).includes(clean(raw)));
+  const shown = kind === "sigma" ? it[1] : show(kind === "translit" ? it[2] : it[1]);
   const note = LOOKALIKE_NOTE[it[0]];
   let fb;
   if (ok) {
