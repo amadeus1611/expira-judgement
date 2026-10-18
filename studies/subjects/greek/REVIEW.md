@@ -79,3 +79,8 @@ Slips seen: ν as "v" (2026-10-16); ρ as "p" three times, π read as ν once (2
 - 2026-10-18 Ch 6: Noun rules: 8/8 first try; no misses
 - 2026-10-18 Ch 6: Subject or object: 4/5 first try; missed ψυχὰς σώσει θεός. — subject?: typed "ψυχὰς"
 - 2026-10-18 Ch 6: Subject or object: 5/5 first try; no misses (re-run)
+- 2026-10-18 Ch 6: Endings alone: 12/12 first try; no misses
+- 2026-10-18 Ch 6: Decline it: 12/12 first try; no misses
+- 2026-10-18 Ch 6: Read the article: 10/10 first try; no misses
+- 2026-10-18 Ch 6 (round 2): Add the article 14/14, Parse it 10/10, Noun rules 8/8
+- 2026-10-18 Ch 6: Subject or object: 4/5 first try; missed τὸν λόγον σώσει θεός. — direct object?: typed "θεός" (second word-order slip); re-run 5/5. Deck widened to 13 items.

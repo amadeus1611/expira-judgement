@@ -315,12 +315,21 @@ const NRULES = [
   ["Greek word for the indefinite article \"a\"","there is none","Greek has only the definite article (§6.20)."]
 ];
 // BBG §6.10 and translation procedure: case, not word order, shows subject and object.
+// Extra items 2026-10-18 after two word-order slips; same verb (σώσει) and nouns from the book.
 const SUBJ = [
   ["θεὸς σώσει ψυχάς. — subject?","θεὸς","Nominative = subject (§6.8)."],
   ["θεὸς σώσει ψυχάς. — direct object?","ψυχάς","Accusative = direct object (§6.9)."],
   ["ψυχὰς σώσει θεός. — subject?","θεός","Still nominative. Word order does not decide (§6.10)."],
   ["ὁ λόγος σώσει ψυχάς. — subject?","ὁ λόγος","Keep the article with its noun."],
-  ["τὸν λόγον σώσει θεός. — direct object?","τὸν λόγον","Accusative τόν/λόγον, even though it comes first."]
+  ["τὸν λόγον σώσει θεός. — direct object?","τὸν λόγον","Accusative τόν/λόγον, even though it comes first."],
+  ["τὸν λόγον σώσει θεός. — subject?","θεός","-ος is nominative: the subject, even last."],
+  ["ψυχὰς σώσει ὁ θεός. — direct object?","ψυχὰς","-ας is accusative plural: the object, even first."],
+  ["τὴν ψυχὴν σώσει ὁ θεός. — subject?","ὁ θεός","ὁ is nominative. τήν/-ην is accusative."],
+  ["τὴν ψυχὴν σώσει ὁ θεός. — direct object?","τὴν ψυχὴν","τήν + -ην: accusative singular, even first."],
+  ["ἀνθρώπους σώσει θεός. — subject?","θεός","-ους is accusative plural; -ος is nominative."],
+  ["τοὺς ἀνθρώπους σώσει ὁ θεός. — direct object?","τοὺς ἀνθρώπους","τούς + -ους: accusative plural."],
+  ["ὁ θεὸς σώσει τοὺς ἀνθρώπους. — direct object?","τοὺς ἀνθρώπους","Same sentence in English order. The endings did not change."],
+  ["σώσει ψυχὰς ὁ θεός. — subject?","ὁ θεός","The verb can come first too. Look for the nominative."]
 ];
 
 // BBG §6.13 endings by themselves. Each item: [slot, ending, why].
@@ -390,7 +399,8 @@ const DECKS = {
     options: ["1st declension", "2nd declension", "3rd declension", "nom and acc", "α", "case, number, gender", "ὁ", "there is none"], items: () => NRULES },
   subj: { label: "Ch 6: Subject or object", ask: "Pick the word", kind: "choice", text: true, items: () => SUBJ,
     optionsFor: it => it[0].split(" — ")[0].replace(".", "").split(" ").reduce((a, w, i, ws) => {
-      if (w === "ὁ" || w === "τὸν") return a; const prev = ws[i - 1]; a.push(prev === "ὁ" || prev === "τὸν" ? prev + " " + w : w); return a; }, []) }
+      const ART = ["ὁ", "τὸν", "τὴν", "τοὺς", "τὰς", "οἱ", "αἱ"];
+      if (ART.includes(w)) return a; const prev = ws[i - 1]; a.push(ART.includes(prev) ? prev + " " + w : w); return a; }, []) }
 };
 
 function clean(s) {
