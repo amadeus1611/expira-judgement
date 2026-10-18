@@ -1,9 +1,11 @@
 # GREEK — Review plateau (ch. 1–17)
 
 Started 2026-10-18 at the owner's request: drill everything studied so far until it
-is solid, before going on to ch. 18. This covers the chapters studied up to now:
-ch. 1–9, 15, 16, `-ειν` (ch. 32 part) and 17. Ch. 10–14 have not been studied yet
-(Track Two puts them after ch. 21), so they are not part of this review.
+is solid, before going on to ch. 10. This covers the chapters studied up to now:
+ch. 1–9, 15, 16, `-ειν` (ch. 32 part) and 17. Ch. 10–14 have not been studied yet;
+they come next, after this review (Track One, chosen 2026-10-18).
+
+Order: blocks A–E (ch. 1–9) first, then F–H (the verbs).
 
 Each topic is taught again from Mounce BBG 2nd ed. and checked with ej-study before
 quizzing, just like a new lesson. No content is written here from memory.

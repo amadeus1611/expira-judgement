@@ -1,35 +1,34 @@
 # GREEK — Proposed roadmap
 
-Proposed 2026-10-16 from the book's table of contents and its "Track One or Track
+Proposed 2026-10-16, switched to Track One 2026-10-18, from the book's table of contents and its "Track One or Track
 Two?" page (after chapter 9). A proposal, not a commitment; revise from observed results.
 
 ## Why this order
 
-- The owner learned the present active indicative (ch. 16) before finishing the noun
-  chapters, which matches the book's **Track Two** ("Get Into Verbs").
-- The owner's Codex sequence next taught the present active infinitive (`-ειν`).
-  The book teaches infinitives fully in ch. 32. Only the present active form is
-  taken early (`GREEK-032A`), because it uses the present stem already learned;
-  the rest of ch. 32 needs the aorist and perfect stems first.
-- Each later infinitive form is attached to the chapter that introduces its stem.
+- Switched to the book's **Track One** ("Finish Noun System") on 2026-10-18. The owner
+  had followed Track One in their own study and found the jump to verbs confusing.
+  Mounce: "My preference is to finish the noun system (Track One)" (p. 74). The
+  chapters are the same on both tracks; only the order and exercises differ.
+- Ch. 15–17 and the present active infinitive `-ειν` were already studied (on
+  Track Two, 2026-10-16/18). They stay done and are kept fresh in the review.
+- The rest of ch. 32 (infinitives) needs the aorist and perfect stems first; each
+  later infinitive form goes with the chapter that introduces its stem.
 
 ## Sequence
 
 | Step | Book chapter(s) | Status |
 |---|---|---|
-| 1 | 1–9 (alphabet through adjectives) | done in Codex (assumed) |
-| 2 | 15 Introduction to Verbs (done in Codex), 16 Present Active Indicative | demonstrated |
-| 3 | `GREEK-032A`: present active infinitive `-ειν` (from ch. 32) | demonstrated |
-| 4 | 17 Contract Verbs | not started |
-| 5 | 18 Present Middle/Passive Indicative (+ present middle/passive infinitive `-εσθαι`) | not started |
+| 1 | Review plateau: 1–9 drilled first ([REVIEW.md](REVIEW.md)) | in progress |
+| 2 | Review plateau: verb blocks 15–17 and `-ειν` | not started |
+| 3 | 10–14 Third Declension, Personal Pronouns, αὐτός, Demonstratives, Relative Pronouns | not started |
+| 4 | 18 Present Middle/Passive Indicative (+ present middle/passive infinitive `-εσθαι`) | not started |
+| 5 | 19–20 Future and Verbal Roots | not started |
 | 6 | 21 Imperfect Indicative | not started |
-| 7 | 10–14 Third Declension, Personal Pronouns, αὐτός, Demonstratives, Relative Pronouns  | not started |
-| 8 | 19–20 Future and Verbal Roots | not started |
-| 9 | 22–24 Second Aorist, First Aorist, Aorist/Future Passive (+ aorist infinitives) | not started |
-| 10 | 25 Perfect Indicative (+ perfect infinitive) | not started |
-| 11 | 26–30 Participles | not started |
-| 12 | 31 Subjunctive, rest of 32 Infinitive (uses), 33 Imperative | not started |
-| 13 | 34–35 μι verbs (the last chapters) | not started |
+| 7 | 22–24 Second Aorist, First Aorist, Aorist/Future Passive (+ aorist infinitives) | not started |
+| 8 | 25 Perfect Indicative (+ perfect infinitive) | not started |
+| 9 | 26–30 Participles | not started |
+| 10 | 31 Subjunctive, rest of 32 Infinitive (uses), 33 Imperative | not started |
+| 11 | 34–35 μι verbs (the last chapters) | not started |
 
 Chapter-by-chapter status lives in [TRACKER.md](TRACKER.md).
 

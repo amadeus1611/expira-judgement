@@ -2,11 +2,11 @@
 
 Last updated: 2026-10-18.
 
-- Text: Mounce BBG 2nd ed. (`SRC-GREEK-MOUNCE-BBG2`), following Track Two; see
+- Text: Mounce BBG 2nd ed. (`SRC-GREEK-MOUNCE-BBG2`), following Track One since 2026-10-18 (was Track Two); see
   [ROADMAP.md](ROADMAP.md).
 - Chapters 1–9 and 15: done in Codex; the owner asked (2026-10-16) that completed
-  Codex lessons be assumed done. Not re-tested here. Chapters 10–14 come later on
-  Track Two.
+  Codex lessons be assumed done. Not re-tested here. Chapters 10–14 come next after
+  the review (Track One).
 - Ch. 16 Present Active Indicative: `in progress`. Owner recalled the endings
   `-ομεν`, `-ετε`. Taught 2026-10-16: endings ω, εις, ει, ομεν, ετε, ουσι(ν); real
   endings; connecting vowel rule; agreement. Checked: 8 claims backed, 1 dropped
@@ -40,5 +40,8 @@ Last updated: 2026-10-18.
   Typing convention: `w` = ω, `h` = η.
 - Owner chose a review plateau (2026-10-18): drill ch. 1–17 as studied until solid,
   before ch. 18. Plan and progress: [REVIEW.md](REVIEW.md).
+
+- Switched to Track One 2026-10-18 (owner had followed it in their own study; the
+  verbs-first order was confusing). After the review: ch. 10–14, then 18 onward.
 
 Next: review block A (alphabet; ρ/ν/ω/η drill) per [REVIEW.md](REVIEW.md). See [TRACKER.md](TRACKER.md).

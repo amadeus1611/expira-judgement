@@ -1,8 +1,8 @@
 # GREEK — Progress tracker
 
 One row per chapter of Mounce BBG 2nd ed. (titles and pages from its table of
-contents, opened 2026-10-16). Rows are in **study order** (Track Two plus the early
-`-ειν`), not book order. Updated at the end of every session.
+contents, opened 2026-10-16). Rows are in **study order** (Track One from 2026-10-18; ch. 15–17 and the early
+`-ειν` were already studied on Track Two), not book order. Updated at the end of every session.
 
 Status key: `not started` → `in progress` → `needs review` → `demonstrated` →
 `review due`. `done (Codex)` means completed in Codex before this repo; assumed done
@@ -10,7 +10,7 @@ per the owner (2026-10-16), not re-tested here. `demonstrated` needs observed qu
 
 ## Where you are
 
-**Now:** review plateau, ch. 1–17 as studied ([REVIEW.md](REVIEW.md)); start at block A.
+**Now:** review plateau ([REVIEW.md](REVIEW.md)): ch. 1–9 first (block A), then the verb blocks. Then ch. 10–14 (Track One).
 **Done:** ch. 1–9 and 15 (in Codex, assumed). Observed here: ch. 16 and `-ειν` (test 9/10, 2026-10-16); ch. 17 (2026-10-18).
 
 ## Chapters
@@ -30,15 +30,15 @@ per the owner (2026-10-16), not re-tested here. `demonstrated` needs observed qu
 | 16 | 11 | Present Active Indicative | 129 | demonstrated | 2026-10-18 | test 9/10; connecting-vowel rule recalled cold 2026-10-18 |
 | 32A | 12 | Present active infinitive `-ειν` (part of ch. 32) | 299 | demonstrated | 2026-10-16 | produced γράφειν, ἀκούειν |
 | 17 | 13 | Contract Verbs | 138 | demonstrated | 2026-10-18 | Big Five, paradigm; give rule numbers |
-| 18 | 14 | Present Middle/Passive Indicative (+ `-εσθαι`) | 147 | not started | — | |
-| 21 | 15 | Imperfect Indicative | 180 | not started | — | |
-| 10 | 16 | Third Declension | 75 | not started | — | Track Two puts this after ch. 21 |
-| 11 | 17 | First and Second Person Personal Pronouns | 89 | not started | — | |
-| 12 | 18 | αὐτός | 98 | not started | — | |
-| 13 | 19 | Demonstrative Pronouns/Adjectives | 106 | not started | — | |
-| 14 | 20 | Relative Pronoun | 114 | not started | — | |
-| 19 | 21 | Future Active/Middle Indicative | 155 | not started | — | |
-| 20 | 22 | Verbal Roots, and Other Forms of the Future | 165 | not started | — | |
+| 10 | 14 | Third Declension | 75 | not started | — | next new chapter after the review |
+| 11 | 15 | First and Second Person Personal Pronouns | 89 | not started | — | |
+| 12 | 16 | αὐτός | 98 | not started | — | |
+| 13 | 17 | Demonstrative Pronouns/Adjectives | 106 | not started | — | |
+| 14 | 18 | Relative Pronoun | 114 | not started | — | |
+| 18 | 19 | Present Middle/Passive Indicative (+ `-εσθαι`) | 147 | not started | — | |
+| 19 | 20 | Future Active/Middle Indicative | 155 | not started | — | |
+| 20 | 21 | Verbal Roots, and Other Forms of the Future | 165 | not started | — | |
+| 21 | 22 | Imperfect Indicative | 180 | not started | — | |
 | 22 | 23 | Second Aorist Active/Middle Indicative | 193 | not started | — | |
 | 23 | 24 | First Aorist Active/Middle Indicative | 202 | not started | — | |
 | 24 | 25 | Aorist and Future Passive Indicative | 212 | not started | — | |
