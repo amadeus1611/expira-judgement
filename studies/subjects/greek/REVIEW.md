@@ -26,7 +26,7 @@ every quiz answer correct, or the only slip fixed by the owner without being tol
 
 | Block | Chapters | Topic | Pass 1 | Pass 2 | Status |
 |---|---|---|---|---|---|
-| A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | 2026-10-18 alphabet part (§3.2–3.3): 87/87 first try | | in progress: §3.4–3.5 and ch. 4 still to review |
+| A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | 2026-10-18 ch. 3 (§3.2–3.5): 108/108 first try | | in progress: ch. 4 still to review |
 | B | 5–6 | English nouns; nominative and accusative; the article | | | not started |
 | C | 7 | Genitive and dative | | | not started |
 | D | 8 | Prepositions and εἰμί | | | not started |
@@ -41,7 +41,7 @@ Ch. 1–2 (the Greek language; learning Greek) are background, with no forms to 
 
 Typing drill page for block A: `drill/greek-drill.html`, published as a private artifact
 (https://claude.ai/artifact/9fZHpDkwH3xWUmWdydSt7m). Decks: look-alikes, letter names, letter → English,
-word transliteration, σ/ς. Each round ends with a results line the owner pastes back
+word transliteration, σ/ς, breathing marks, say it, diphthongs. Each round ends with a results line the owner pastes back
 for the record.
 
 ## Standing drill: look-alike letters
@@ -65,3 +65,6 @@ Slips seen: ν as "v" (2026-10-16); ρ as "p" three times, π read as ν once (2
 - 2026-10-18 Letter → English: 24/24 first try; no misses
 - 2026-10-18 Transliterate words: 23/23 first try; no misses
 - 2026-10-18 σ or ς: 10/10 first try; no misses
+- 2026-10-18 Breathing marks: 8/8 first try; no misses
+- 2026-10-18 Say it: 5/5 first try; no misses
+- 2026-10-18 Diphthongs: 8/8 first try; no misses
