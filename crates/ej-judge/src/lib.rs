@@ -67,6 +67,19 @@ pub fn adjudicate(claim: &Claim, judges: &[&dyn Judge], bars: Bars) -> Finding {
                 continue;
             }
         }
+        // Nor may it block a claim whose figures layer 1 finds in or met by the quotes ("more than 95,000" against 98,491):
+        // the local judges are weakest at comparing figures (docs/bench/2026-10-17-judge-blocks.md).
+        if r == Ruling::Contradicts
+            && j.layer() == Layer::LocalJudge
+            && claim.text.chars().any(|ch| ch.is_ascii_digit())
+            && ej_evidence::figures_backed(&claim.text, &quotes)
+        {
+            last = format!(
+                "{:?} said not stated but the claim's figures are backed by the quotes",
+                j.layer()
+            );
+            continue;
+        }
         if r != Ruling::Unsure && (j.self_gated() || c >= bars.act) {
             let verdict = if r == Ruling::Supports {
                 Verdict::Supported
@@ -160,6 +173,40 @@ impl<J: Judge> Judge for Calibrated<J> {
                     self.cal.no, self.cal.yes
                 ),
             )
+        }
+    }
+}
+
+/// Several judges that must all agree: Supports only when every one says Supports, Contradicts only when every one
+/// says Contradicts, otherwise Unsure. Confidence is the lowest of theirs. Two model families that must both clear their
+/// own thresholds err less than either alone (docs/bench/2026-10-16-roberta-second-family.md).
+pub struct AllOf {
+    /// The judges, each usually `Calibrated` with its own fitted thresholds.
+    pub judges: Vec<Box<dyn Judge>>,
+}
+
+impl Judge for AllOf {
+    fn layer(&self) -> Layer {
+        self.judges.first().map_or(Layer::LocalJudge, |j| j.layer())
+    }
+    fn self_gated(&self) -> bool {
+        self.judges.iter().all(|j| j.self_gated())
+    }
+    fn rule(&self, claim: &Claim) -> (Ruling, f32, String) {
+        let rulings: Vec<_> = self.judges.iter().map(|j| j.rule(claim)).collect();
+        let Some(first) = rulings.first().map(|r| r.0) else {
+            return (Ruling::Unsure, 0.0, "no judge in the ensemble".into());
+        };
+        let why = rulings
+            .iter()
+            .map(|r| r.2.as_str())
+            .collect::<Vec<_>>()
+            .join("; ");
+        if first != Ruling::Unsure && rulings.iter().all(|r| r.0 == first) {
+            let conf = rulings.iter().map(|r| r.1).fold(f32::INFINITY, f32::min);
+            (first, conf, format!("all agree: {why}"))
+        } else {
+            (Ruling::Unsure, 0.0, format!("judges disagree: {why}"))
         }
     }
 }
@@ -329,6 +376,81 @@ mod tests {
             Bars::default(),
         );
         assert_eq!(f.verdict, Verdict::Supported);
+    }
+
+    fn cal(yes: f64, no: f64) -> Calibration {
+        Calibration {
+            a: 1.0,
+            b: 0.0,
+            yes,
+            no,
+        }
+    }
+
+    #[test]
+    fn all_of_acts_only_when_every_judge_agrees() {
+        let both = |x: f32, y: f32| AllOf {
+            judges: vec![
+                Box::new(Calibrated {
+                    inner: Score(x),
+                    cal: cal(0.7, 0.2),
+                }),
+                Box::new(Calibrated {
+                    inner: Score(y),
+                    cal: cal(0.9, 0.1),
+                }),
+            ],
+        };
+        let cl = c("x", "x");
+        assert_eq!(both(0.8, 0.95).rule(&cl).0, Ruling::Supports);
+        assert_eq!(both(0.8, 0.5).rule(&cl).0, Ruling::Unsure);
+        assert_eq!(both(0.05, 0.05).rule(&cl).0, Ruling::Contradicts);
+        assert_eq!(both(0.05, 0.5).rule(&cl).0, Ruling::Unsure);
+        assert!(both(0.8, 0.95).self_gated());
+        let lowest = both(0.8, 0.95).rule(&cl).1;
+        assert!((lowest - 0.8).abs() < 1e-6);
+        let none = AllOf { judges: vec![] };
+        assert_eq!(
+            (none.rule(&cl).0, none.layer()),
+            (Ruling::Unsure, Layer::LocalJudge)
+        );
+        assert!(!AllOf {
+            judges: vec![Box::new(Fixed(Ruling::Supports, 0.9))]
+        }
+        .self_gated());
+    }
+
+    #[test]
+    fn a_local_judge_never_blocks_a_claim_whose_figures_are_backed() {
+        let low = Calibrated {
+            inner: Score(0.01),
+            cal: cal(0.7, 0.2),
+        };
+        let backed = c(
+            "More than 95,000 tests were done",
+            "98,491 tests have been processed.",
+        );
+        assert_eq!(
+            adjudicate(&backed, &[&low], Bars::default()).verdict,
+            Verdict::Unsure
+        );
+        // Without figures, or with figures the quotes do not back, the block stands.
+        let plain = c(
+            "Kevin Costner has written novels",
+            "Kevin Costner is a well-known writer.",
+        );
+        assert_eq!(
+            adjudicate(&plain, &[&low], Bars::default()).verdict,
+            Verdict::Mismatch
+        );
+        let unbacked = c(
+            "More than 95,000 tests were done",
+            "Many tests have been processed.",
+        );
+        assert_eq!(
+            adjudicate(&unbacked, &[&low], Bars::default()).verdict,
+            Verdict::Mismatch
+        );
     }
 
     #[test]
