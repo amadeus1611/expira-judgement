@@ -72,7 +72,9 @@ input[type="text"] {
 }
 .btn.ghost { background: transparent; color: var(--accent); }
 .choices { display: flex; gap: 10px; justify-content: center; }
+.choices { flex-wrap: wrap; }
 .choices .btn { font-family: var(--greek); font-size: 30px; min-width: 84px; }
+.choices.txt .btn { font-family: var(--body); font-size: 15px; min-width: 0; }
 .feedback { border-radius: 10px; padding: 10px 12px; font-size: 14px; }
 .feedback.good { background: var(--good-soft); color: var(--good); }
 .feedback.bad { background: var(--bad-soft); color: var(--bad); }
@@ -105,7 +107,7 @@ pre {
 <div class="wrap">
   <header>
     <h1>Greek <span>Letter Drill</span></h1>
-    <p class="sub">Mounce, BBG ch. 3 · alphabet review, block A</p>
+    <p class="sub">Mounce, BBG ch. 3 · alphabet and sounds, block A</p>
   </header>
 
   <section class="howto" aria-label="How to use">
@@ -178,13 +180,40 @@ const SIGMA = [
   ["ἀδελφό_","ς"],["_ῴζω","σ"],["ἄνθρωπο_","ς"],["ἀκούει_","ς"],["ἀγαπᾷ_","ς"]
 ];
 
+// BBG §3.4.6: rough breathing (῾) adds an h sound; smooth (᾿) is silent; every word
+// starting with ρ or υ takes rough. Each item: [word, answer, why].
+const BREATHING = [
+  ["ὑπέρ","rough","Every word starting with υ takes rough: huper (§3.4.6)."],
+  ["ῥῆμα","rough","Every word starting with ρ takes rough (§3.4.6)."],
+  ["ἀπόστολος","smooth","Smooth: apostolos, no h (§3.4.6)."],
+  ["ἄγγελος","smooth","Smooth: no h."],
+  ["ὁ","rough","Rough: ho."],
+  ["ἐγώ","smooth","Smooth: no h."],
+  ["ἁμαρτία","rough","Rough: hamartia."],
+  ["ἀκούω","smooth","Smooth: no h."]
+];
+// BBG §3.4.4 gamma nasal (γγ said as ng) and §3.4.6 rough breathing h.
+const SOUNDS = [
+  ["ἄγγελος","angelos"],["ὑπέρ","hUper"],["ἀπόστολος","apostolos"],["ὁ","ho"],["ἁμαρτία","hamartia"]
+];
+// BBG §3.5.1 diphthong sounds, with the book's example word.
+const DIPH = [
+  ["αι  (αἴρω)","aisle"],["ει  (εἰ)","eight"],["οι  (οἰκία)","oil"],["αυ  (αὐτός)","sauerkraut"],
+  ["ου  (οὐδέ)","soup"],["υι  (υἱός)","suite"],["ευ  (εὐθύς)","feud"],["ηυ","feud"]
+];
+
 const DECKS = {
   lookalike: { label: "Look-alikes", ask: "Type its name, then its English letter", kind: "both",
     items: () => ["η","ν","ρ","χ","ω","π"].map(l => LETTERS.find(x => x[0] === l)) },
   names: { label: "Letter names", ask: "Type the letter's name", kind: "name", items: () => LETTERS },
   english: { label: "Letter → English", ask: "Type it in English letters (see the key above)", kind: "translit", items: () => LETTERS },
   words: { label: "Transliterate words", ask: "Spell the word in English letters (see the key above)", kind: "word", items: () => WORDS },
-  sigma: { label: "σ or ς", ask: "Which sigma fills the gap?", kind: "sigma", items: () => SIGMA }
+  sigma: { label: "σ or ς", ask: "Which sigma fills the gap?", kind: "choice", options: ["σ", "ς"], items: () => SIGMA },
+  breathing: { label: "Breathing marks", ask: "Rough (h sound) or smooth (no sound)?", kind: "choice",
+    options: ["rough", "smooth"], text: true, items: () => BREATHING },
+  sound: { label: "Say it", ask: "Type how it sounds (see the key above)", kind: "word", items: () => SOUNDS },
+  diph: { label: "Diphthongs", ask: "Which English word has this sound?", kind: "choice",
+    options: ["aisle", "eight", "oil", "sauerkraut", "soup", "suite", "feud"], text: true, items: () => DIPH }
 };
 
 function clean(s) {
@@ -231,7 +260,7 @@ function next(feedbackHtml) {
   const q = current(), d = state.d, it = q.it;
   const kind = d.kind === "both" ? (state.stage === 0 ? "name" : "translit") : d.kind;
   const greek = it[0];
-  const isWord = kind === "word" || kind === "sigma";
+  const isWord = kind === "word" || kind === "choice";
   const pct = Math.round(100 * state.firstTry.size / state.total);
   const askText = d.kind === "both" ? (kind === "name" ? "Step 1 of 2: type the letter's name (like alpha)" : "Step 2 of 2: type it in English letters (like a)") : d.ask;
   card.innerHTML = `
@@ -239,11 +268,11 @@ function next(feedbackHtml) {
     <div class="bar"><i style="width:${pct}%"></i></div>
     <p class="prompt-label">${askText}</p>
     <div class="prompt${isWord ? " word" : ""}" lang="el">${greek}</div>
-    ${kind === "sigma"
-      ? `<div class="choices"><button class="btn" type="button" data-c="σ">σ</button><button class="btn" type="button" data-c="ς">ς</button></div>`
+    ${kind === "choice"
+      ? `<div class="choices${d.text ? " txt" : ""}">${d.options.map(o => `<button class="btn" type="button" data-c="${o}">${o}</button>`).join("")}</div>`
       : `<form id="f" autocomplete="off"><input id="answer" type="text" inputmode="latin" autocapitalize="off" spellcheck="false" placeholder="Type here, then press Enter" aria-label="Your answer"><button class="btn" type="submit">Check</button></form>`}
     ${feedbackHtml || ""}`;
-  if (kind === "sigma") {
+  if (kind === "choice") {
     card.querySelectorAll("[data-c]").forEach(b => b.addEventListener("click", () => check(b.dataset.c, kind)));
   } else {
     const f = document.getElementById("f"), inp = document.getElementById("answer");
@@ -262,9 +291,9 @@ function expected(it, kind) {
 function check(raw, kind) {
   const q = current(), it = q.it;
   const exp = expected(it, kind);
-  const ok = kind === "sigma" ? raw === it[1] : exp.some(e => variants(e).includes(clean(raw)));
-  const shown = kind === "sigma" ? it[1] : show(kind === "translit" ? it[2] : it[1]);
-  const note = LOOKALIKE_NOTE[it[0]];
+  const ok = kind === "choice" ? raw === it[1] : exp.some(e => variants(e).includes(clean(raw)));
+  const shown = kind === "choice" ? it[1] : show(kind === "translit" ? it[2] : it[1]);
+  const note = it[2] && kind === "choice" ? it[2] : LOOKALIKE_NOTE[it[0]];
   let fb;
   if (ok) {
     fb = `<div class="feedback good">Correct: <b>${shown}</b></div>`;
