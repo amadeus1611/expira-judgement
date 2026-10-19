@@ -57,3 +57,5 @@ Next: rest of block A (§3.4–3.5 pronunciation, breathing marks, diphthongs; c
   the drill artifact, not in chat (owner request).
 - Next session: block A pass 2 (cold), block B pass 2 with the 13-item subject/object
   deck, then block C (ch. 7 genitive and dative).
+
+- 2026-10-19: review blocks A and B drilled (pass 2 cold). Next session: block C (ch. 7, genitive and dative) on the drill page.

@@ -26,7 +26,7 @@ every quiz answer correct, or the only slip fixed by the owner without being tol
 
 | Block | Chapters | Topic | Pass 1 | Pass 2 | Status |
 |---|---|---|---|---|---|
-| A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | 2026-10-18 ch. 3–4: 146/146 first try | | pass 1 done; pass 2 started 2026-10-19 (Which rule? 11/11); ch. 3 decks and Marks, Count, Syllables still to run |
+| A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | 2026-10-18 ch. 3–4: 146/146 first try | | drilled: pass 2 2026-10-19 cold (Which rule? 11/11 seen; owner reports the ch. 3 decks and Marks, Count, Syllables done, scores not pasted because the log was cut off) |
 | B | 5–6 | English nouns; nominative and accusative; the article 2026-10-18 ch. 6: 36/37 first try; one slip (picked first word ψυχὰς as subject), then a clean 5/5 re-run | | drilled: pass 2 2026-10-19 cold, 79/79 first try (Endings 12/12, Decline 12/12, Read article 10/10, Add article 14/14, Parse 10/10, Noun rules 8/8, Subject or object 13/13) |
 | C | 7 | Genitive and dative | | | not started |
 | D | 8 | Prepositions and εἰμί | | | not started |
