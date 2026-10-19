@@ -1,129 +1,174 @@
-<title>Greek Letter Drill</title>
+<title>Greek Drill</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:wght@400;700&family=Noto+Sans:wght@400;600&family=Noto+Sans+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-/* Layout: one centred drill card under a row of deck tabs; a results strip below. */
+/* Layout: a chapter-grouped deck list on the left (stacks on top on phones), one working card on the right,
+   the results log under the card. Greek is set in a book face; everything else in a quiet sans. */
 :root {
-  --bg: #eef2f4;
+  --bg: #eef1ee;
+  --panel: #f8faf8;
   --surface: #ffffff;
-  --ink: #17232b;
-  --muted: #5a6b76;
-  --line: #d3dde3;
-  --accent: #1f5f8b;
-  --accent-soft: #e1edf5;
-  --good: #1d7a4c;
-  --good-soft: #e2f3ea;
-  --bad: #b23a2e;
-  --bad-soft: #f8e5e2;
+  --ink: #18211e;
+  --muted: #5b6863;
+  --line: #d4dcd7;
+  --accent: #2c5a4e;
+  --accent-ink: #ffffff;
+  --accent-soft: #dfeae5;
+  --good: #1f7348;
+  --good-soft: #e0f1e6;
+  --bad: #a83a2c;
+  --bad-soft: #f7e3df;
   --greek: "Gentium Book Plus", "Gentium Plus", "Times New Roman", serif;
-  --body: "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "Noto Sans Mono", ui-monospace, Menlo, Consolas, monospace;
+  --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #10161b; --surface: #182129; --ink: #e4ecf1; --muted: #93a5b1; --line: #2a3742;
-    --accent: #6fb0dc; --accent-soft: #1c3346; --good: #5cc48d; --good-soft: #173527;
-    --bad: #ef8a7d; --bad-soft: #3d1f1b; color-scheme: dark;
+    --bg: #111715; --panel: #161e1b; --surface: #1b2420; --ink: #e3ebe7; --muted: #94a59e; --line: #2b3732;
+    --accent: #7fc0aa; --accent-ink: #0f1a16; --accent-soft: #1f3530; --good: #69c793; --good-soft: #16321f;
+    --bad: #ef8f80; --bad-soft: #3b1f1a; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #10161b; --surface: #182129; --ink: #e4ecf1; --muted: #93a5b1; --line: #2a3742;
-  --accent: #6fb0dc; --accent-soft: #1c3346; --good: #5cc48d; --good-soft: #173527;
-  --bad: #ef8a7d; --bad-soft: #3d1f1b; color-scheme: dark;
+  --bg: #111715; --panel: #161e1b; --surface: #1b2420; --ink: #e3ebe7; --muted: #94a59e; --line: #2b3732;
+  --accent: #7fc0aa; --accent-ink: #0f1a16; --accent-soft: #1f3530; --good: #69c793; --good-soft: #16321f;
+  --bad: #ef8f80; --bad-soft: #3b1f1a; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body {
-  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5;
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 24px 40px;
+  padding-block: 20px 48px;
 }
-.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
-header { display: flex; flex-direction: column; gap: 4px; }
-h1 { font-family: var(--greek); font-weight: 700; font-size: 28px; margin: 0; text-wrap: balance; }
-h1 span { color: var(--accent); }
-.sub { color: var(--muted); margin: 0; font-size: 14px; }
-.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
-.tab {
-  font: inherit; font-size: 13px; font-weight: 600; padding: 7px 12px; border-radius: 999px;
-  border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer;
-}
-.tab[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
-.tab:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.card {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
-  padding: 22px; display: flex; flex-direction: column; gap: 16px;
-}
-.meta { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
-.bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .25s; }
-.prompt-label { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; }
-.prompt { font-family: var(--greek); font-size: 64px; line-height: 1.1; text-align: center; margin: 4px 0; min-height: 72px; overflow-wrap: anywhere; }
-.prompt.word { font-size: 44px; }
-form { display: flex; gap: 8px; }
-input[type="text"] {
-  flex: 1; min-width: 0; font: inherit; font-family: var(--mono); font-size: 18px; padding: 10px 12px;
-  border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink);
-}
-.btn {
-  font: inherit; font-weight: 600; padding: 10px 16px; border-radius: 10px; cursor: pointer;
-  border: 1px solid var(--accent); background: var(--accent); color: var(--surface);
-}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.app { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 24px; align-items: start; }
+header.top { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+h1 { font-family: var(--greek); font-size: 30px; font-weight: 700; margin: 0; letter-spacing: .01em; }
+h1 span { color: var(--accent); font-style: italic; font-weight: 400; }
+.sub { color: var(--muted); font-size: 14px; margin: 0; }
+
+/* Deck list */
+nav.decks { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 2px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); max-height: calc(100vh - 40px); overflow-y: auto; }
+.navtoggle { display: none; }
+.group { display: flex; flex-direction: column; gap: 1px; padding-block: 6px 4px; }
+.group + .group { border-top: 1px solid var(--line); }
+.group h2 { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 2px 10px 4px; }
+.deck { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; text-align: left; border: 0; background: transparent; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 14.5px; }
+.deck:hover { background: var(--accent-soft); }
+.deck[aria-current="true"] { background: var(--accent); color: var(--accent-ink); }
+.deck .score { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.deck[aria-current="true"] .score { color: var(--accent-ink); opacity: .85; }
+.deck .score.full { color: var(--good); font-weight: 600; }
+.deck.sheet { font-style: italic; }
+
+/* Main column */
+main { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px 24px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.meta .deckname { font-weight: 700; }
+.meta .count { font-size: 13.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 5px; background: var(--line); border-radius: 3px; overflow: hidden; display: flex; }
+.bar i { display: block; height: 100%; transition: width .25s; }
+.bar i.ok { background: var(--good); }
+.bar i.miss { background: var(--bad); }
+.ask { margin: 0; font-size: 15px; color: var(--muted); }
+.prompt { font-family: var(--greek); font-size: clamp(34px, 7vw, 60px); line-height: 1.15; text-align: center; padding-block: 14px; overflow-wrap: anywhere; }
+.prompt.long { font-size: clamp(24px, 4.5vw, 36px); }
+.prompt.label { font-family: var(--body); font-size: clamp(22px, 4vw, 30px); font-weight: 600; }
+.choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.choices.greek { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+.choice { position: relative; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 11px 12px 11px 34px; text-align: left; cursor: pointer; font-size: 15.5px; min-height: 48px; }
+.choices.greek .choice { font-family: var(--greek); font-size: 24px; text-align: center; padding-left: 26px; }
+.choice kbd { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.choice:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+.choice:disabled { cursor: default; opacity: .55; }
+.choice.right { opacity: 1; border-color: var(--good); background: var(--good-soft); color: var(--good); font-weight: 600; }
+.choice.wrong { opacity: 1; border-color: var(--bad); background: var(--bad-soft); color: var(--bad); text-decoration: line-through; }
+form.typed { display: flex; gap: 8px; }
+input[type="text"] { flex: 1; min-width: 0; font-family: var(--mono); font-size: 18px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--ink); }
+input[type="text"]:disabled { opacity: .7; }
+.btn { font-weight: 600; padding: 10px 18px; border-radius: 10px; cursor: pointer; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); white-space: nowrap; }
 .btn.ghost { background: transparent; color: var(--accent); }
-.choices { display: flex; gap: 10px; justify-content: center; }
-.choices { flex-wrap: wrap; }
-.choices .btn { font-family: var(--greek); font-size: 30px; min-width: 84px; }
-.choices.txt .btn { font-family: var(--body); font-size: 15px; min-width: 0; }
-.feedback { border-radius: 10px; padding: 10px 12px; font-size: 14px; }
-.feedback.good { background: var(--good-soft); color: var(--good); }
-.feedback.bad { background: var(--bad-soft); color: var(--bad); }
-.feedback b { font-family: var(--mono); }
-.hint { color: var(--muted); font-size: 13px; margin: 0; }
-.howto { background: var(--accent-soft); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
-.howto ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
-.kt-title { margin: 4px 0 0; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.btn.small { padding: 6px 12px; font-size: 14px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.actions .spacer { flex: 1; }
+.tip { font-size: 13px; color: var(--muted); }
+.tip kbd { font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; }
+.fb { border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.fb.good { background: var(--good-soft); color: var(--good); }
+.fb.bad { background: var(--bad-soft); color: var(--bad); }
+.fb .head { font-weight: 700; }
+.fb .why { color: var(--ink); }
+.fb .ans { font-family: var(--mono); font-weight: 600; }
+.fb .gk { font-family: var(--greek); font-size: 1.15em; }
+.prev { font-size: 13.5px; color: var(--good); }
+.done { text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; padding-block: 12px; }
+.done .big { font-family: var(--greek); font-size: 56px; margin: 0; font-variant-numeric: tabular-nums; }
+.done ul { text-align: left; margin: 0; padding-left: 20px; color: var(--muted); font-size: 14px; }
+
+/* Study sheets */
+.sheet-body { display: flex; flex-direction: column; gap: 14px; }
+.sheet-body h3 { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 6px 0 0; }
+.sheet-body ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 5px; }
+.sheet-body p { margin: 0; }
+.tablewrap { overflow-x: auto; }
+.para { border-collapse: collapse; font-size: 16px; min-width: 100%; }
+.para th, .para td { border: 1px solid var(--line); padding: 5px 12px; text-align: left; white-space: nowrap; }
+.para th { color: var(--muted); font-weight: 600; font-size: 13px; background: var(--panel); }
+.para td { font-family: var(--greek); font-size: 18px; }
+.para td b { color: var(--accent); }
 .keytable { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-.keytable > div { display: flex; align-items: baseline; gap: 8px; background: var(--surface); border-radius: 8px; padding: 6px 10px; }
+.keytable > div { display: flex; align-items: baseline; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
 .keytable span { font-family: var(--greek); font-size: 22px; }
 .keytable code { font-family: var(--mono); font-weight: 600; color: var(--accent); }
-.keytable small { color: var(--muted); font-size: 11px; }
-@media (max-width: 520px) { .keytable { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.done { text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; }
-.done .score { font-family: var(--greek); font-size: 48px; margin: 0; font-variant-numeric: tabular-nums; }
+.keytable small { color: var(--muted); font-size: 12px; }
+
+/* Results */
 .results { display: flex; flex-direction: column; gap: 8px; }
-.results h2 { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; }
-pre {
-  margin: 0; white-space: pre-wrap; font-family: var(--mono); font-size: 12.5px; background: var(--surface);
-  border: 1px solid var(--line); border-radius: 10px; padding: 12px; color: var(--ink); overflow-x: auto;
+.results h2 { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+pre { margin: 0; white-space: pre-wrap; font-family: var(--mono); font-size: 12.5px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; max-height: 260px; overflow: auto; }
+
+@media (max-width: 760px) {
+  .app { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  nav.decks { position: static; max-height: none; }
+  .navtoggle { display: flex; justify-content: space-between; align-items: center; width: 100%; border: 0; background: transparent; padding: 8px 10px; cursor: pointer; font-weight: 700; }
+  nav.decks.closed .group { display: none; }
+  .keytable { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card { padding: 18px 16px 20px; }
 }
-.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.key { font-size: 13px; color: var(--muted); }
-.key code { font-family: var(--mono); color: var(--ink); }
+@media (max-width: 420px) { form.typed { flex-direction: column; } .choices { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
-@media (max-width: 420px) { .prompt { font-size: 52px; } .prompt.word { font-size: 34px; } form { flex-direction: column; } }
-.study summary { cursor: pointer; }
-.study ul { margin: 6px 0 0; padding-left: 20px; } .study li { margin: 4px 0; }
-.para { border-collapse: collapse; margin: 6px 0 10px; font-size: 15px; }
-.para th, .para td { border: 1px solid var(--line); padding: 4px 10px; text-align: left; }
-.para th { color: var(--muted); font-weight: 600; font-size: 13px; }
-.para td { font-family: var(--greek); }
 </style>
 
-<div class="wrap">
-  <header>
-    <h1>Greek <span>Letter Drill</span></h1>
-    <p class="sub">Mounce, BBG · review blocks A–C (ch. 3–7)</p>
+<div class="app">
+  <header class="top">
+    <h1>Greek <span>Drill</span></h1>
+    <p class="sub">Mounce, BBG · review blocks A–C, ch. 3–7</p>
   </header>
 
-  <section class="howto" aria-label="How to use">
-    <ol>
-      <li><b>Pick a deck</b> from the buttons below. Start with <b>Look-alikes</b>.</li>
-      <li><b>Type your answer</b> in the box and press <b>Enter</b>.</li>
-      <li>If you miss one, it <b>comes back</b> a few questions later until you get it.</li>
-      <li>At the end, press <b>Copy results</b> and paste them in the chat.</li>
-    </ol>
-    <p class="kt-title">Our typing key</p>
+  <nav class="decks" id="nav" aria-label="Decks">
+    <button class="navtoggle" id="navtoggle" type="button" aria-expanded="true"><span id="navnow">Decks</span><span aria-hidden="true">▾</span></button>
+  </nav>
+
+  <main>
+    <section class="card" id="card" aria-live="polite"></section>
+    <section class="results">
+      <h2>Results to paste back to Claude</h2>
+      <pre id="log">No rounds finished yet.</pre>
+      <div class="actions">
+        <button class="btn ghost small" id="copy" type="button">Copy results</button>
+        <span class="tip" id="copied"></span>
+      </div>
+    </section>
+  </main>
+</div>
+
+<template id="sheet-key">
+  <div class="sheet-body">
+    <p>Type Greek with English letters. Accents and capitals don't matter. Rough breathing is an <code>h</code> at the front.</p>
     <div class="keytable">
       <div><span lang="el">ω</span><code>w</code></div>
       <div><span lang="el">η</span><code>h</code><small>or ey</small></div>
@@ -134,76 +179,79 @@ pre {
       <div><span lang="el">ξ</span><code>x</code><small>or xs</small></div>
       <div><span lang="el">υ</span><code>u</code><small>or y</small></div>
     </div>
-    <p class="hint">Accents and capital letters don't matter.</p>
-  </section>
-
-  <details class="howto study">
-    <summary><b>Ch. 7 study sheet</b> (open before the ch. 7 decks)</summary>
-    <p class="kt-title">1. Endings with the stem vowel (§7.8)</p>
-    <table class="para" lang="el"><tr><th></th><th>masc</th><th>fem</th><th>neut</th></tr>
-      <tr><th>gen sg</th><td>ου</td><td>ης · ας</td><td>ου</td></tr>
-      <tr><th>dat sg</th><td>ῳ</td><td>ῃ · ᾳ</td><td>ῳ</td></tr>
-      <tr><th>gen pl</th><td>ων</td><td>ων</td><td>ων</td></tr>
-      <tr><th>dat pl</th><td>οις</td><td>αις</td><td>οις</td></tr></table>
-    <p class="kt-title">2. The article, gen and dat (§7.10)</p>
-    <table class="para" lang="el"><tr><th></th><th>masc</th><th>fem</th><th>neut</th></tr>
-      <tr><th>gen sg</th><td>τοῦ</td><td>τῆς</td><td>τοῦ</td></tr>
-      <tr><th>dat sg</th><td>τῷ</td><td>τῇ</td><td>τῷ</td></tr>
-      <tr><th>gen pl</th><td>τῶν</td><td>τῶν</td><td>τῶν</td></tr>
-      <tr><th>dat pl</th><td>τοῖς</td><td>ταῖς</td><td>τοῖς</td></tr></table>
-    <p class="kt-title">3. Patterns that make it stick (§7.8 hints, §7.12–7.15)</p>
+    <p class="tip">So ου is <code>ou</code>, ῳ is <code>w</code>, ἡ is <code>hh</code>, τῆς is <code>ths</code>.</p>
+    <h3>How a round works</h3>
     <ul>
-      <li><b>Genitive = "of"</b>, and it follows its head noun: ὁ λόγος τοῦ θεοῦ, the word of God.</li>
-      <li><b>Dative = "to"</b> (also in, with). The indirect object is dative.</li>
-      <li><b>Subscript ι = dative singular</b>, always. Nothing else has it (rule 4).</li>
-      <li><b>ων = genitive plural</b> in every gender.</li>
-      <li><b>Masc and neut are identical in gen and dat</b> (rule 6).</li>
-      <li><b>ας can be gen sg or acc pl</b>: let the article decide (τῆς ὥρας / τὰς ὥρας).</li>
-      <li><b>α after ε, ι, ρ stays</b> (ὥρας); otherwise it shifts to η in gen/dat sg (δόξης, δόξῃ).</li>
+      <li>Pick a deck on the left. In choice decks, press the number keys <kbd>1</kbd>–<kbd>9</kbd> or click.</li>
+      <li>A wrong answer stops on the explanation. Press <kbd>Enter</kbd> to go on. The item comes back a few questions later.</li>
+      <li>Only first tries count toward the score.</li>
+      <li>When you're done, press <b>Copy results</b> and paste them in the chat.</li>
     </ul>
-  </details>
+  </div>
+</template>
 
-  <details class="howto study">
-    <summary><b>Ch. 6 study sheet</b> (open before the ch. 6 decks)</summary>
-    <p class="kt-title">1. Endings alone (§6.13): learn these first</p>
-    <table class="para"><tr><th></th><th>masc</th><th>fem</th><th>neut</th></tr>
+<template id="sheet-6">
+  <div class="sheet-body">
+    <h3>Endings alone (§6.13)</h3>
+    <div class="tablewrap"><table class="para"><tr><th></th><th>masc</th><th>fem</th><th>neut</th></tr>
       <tr><th>nom sg</th><td>ς</td><td>(none)</td><td>ν</td></tr>
       <tr><th>acc sg</th><td>ν</td><td>ν</td><td>ν</td></tr>
       <tr><th>nom pl</th><td>ι</td><td>ι</td><td>α</td></tr>
-      <tr><th>acc pl</th><td>υς</td><td>ς</td><td>α</td></tr></table>
-    <p class="kt-title">2. With the article (§6.22)</p>
-    <table class="para" lang="el"><tr><th></th><th>masc</th><th>fem</th><th>neut</th></tr>
-      <tr><th>nom sg</th><td>ὁ λόγος</td><td>ἡ γραφή · ἡ ὥρα</td><td>τὸ ἔργον</td></tr>
-      <tr><th>acc sg</th><td>τὸν λόγον</td><td>τὴν γραφήν · τὴν ὥραν</td><td>τὸ ἔργον</td></tr>
-      <tr><th>nom pl</th><td>οἱ λόγοι</td><td>αἱ γραφαί · αἱ ὧραι</td><td>τὰ ἔργα</td></tr>
-      <tr><th>acc pl</th><td>τοὺς λόγους</td><td>τὰς γραφάς · τὰς ὥρας</td><td>τὰ ἔργα</td></tr></table>
-    <p class="kt-title">3. Patterns that make it stick (Mounce's hints, §6.14, §6.23)</p>
+      <tr><th>acc pl</th><td>υς</td><td>ς</td><td>α</td></tr></table></div>
+    <h3>With the article (§6.22)</h3>
+    <div class="tablewrap"><table class="para" lang="el"><tr><th></th><th>masc</th><th>fem η</th><th>fem α</th><th>neut</th></tr>
+      <tr><th>nom sg</th><td>ὁ λόγος</td><td>ἡ γραφή</td><td>ἡ ὥρα</td><td>τὸ ἔργον</td></tr>
+      <tr><th>acc sg</th><td>τὸν λόγον</td><td>τὴν γραφήν</td><td>τὴν ὥραν</td><td>τὸ ἔργον</td></tr>
+      <tr><th>nom pl</th><td>οἱ λόγοι</td><td>αἱ γραφαί</td><td>αἱ ὧραι</td><td>τὰ ἔργα</td></tr>
+      <tr><th>acc pl</th><td>τοὺς λόγους</td><td>τὰς γραφάς</td><td>τὰς ὥρας</td><td>τὰ ἔργα</td></tr></table></div>
+    <h3>Patterns (§6.14, §6.16, §6.23)</h3>
     <ul>
-      <li><b>ν = accusative singular</b> in every gender. See ν alone at the end: think "object".</li>
-      <li><b>vowel + ι = nominative plural</b>: οι is masculine, αι is feminine.</li>
-      <li><b>vowel + ς = accusative plural</b>: ους is masculine, ας is feminine.</li>
-      <li><b>Neuter: nom = acc</b> (rule 2), and the plural ends in <b>α</b> (rule 3). Context decides subject or object.</li>
-      <li><b>The article</b> = rough breathing or τ, then the vowel (ο for masc/neut, η/α for fem), then the ending. Only τό breaks the pattern.</li>
-      <li><b>The feminine article always has η in the singular</b>, even on an α noun: ἡ ὥρα, τὴν ὥραν.</li>
-      <li><b>Feminine η nouns switch to α in the plural</b>: γραφή → γραφαί (§6.16).</li>
-      <li><b>Find the subject by the ending, not the position</b>: ψυχὰς σώσει θεός = God will save souls.</li>
+      <li><b>ν = accusative singular</b> in every gender.</li>
+      <li><b>vowel + ι = nominative plural</b>: οι masculine, αι feminine.</li>
+      <li><b>vowel + ς = accusative plural</b>: ους masculine, ας feminine.</li>
+      <li><b>Neuter: nom = acc</b> (rule 2), plural ends in <b>α</b> (rule 3).</li>
+      <li><b>The feminine article has η in the singular</b>, even on an α noun: ἡ ὥρα.</li>
+      <li><b>η nouns switch to α in the plural</b>: γραφή → γραφαί.</li>
+      <li><b>The ending finds the subject, not the position</b>: ψυχὰς σώσει θεός = God will save souls.</li>
     </ul>
-  </details>
+  </div>
+</template>
 
-  <div class="tabs" id="tabs" role="group" aria-label="Choose a deck"></div>
-
-  <section class="card" id="card" aria-live="polite"></section>
-
-
-  <section class="results">
-    <h2>Results to paste back to Claude</h2>
-    <pre id="log">No rounds finished yet.</pre>
-    <div class="row">
-      <button class="btn ghost" id="copy" type="button">Copy results</button>
-      <span class="key" id="copied"></span>
-    </div>
-  </section>
-</div>
+<template id="sheet-7">
+  <div class="sheet-body">
+    <h3>The full chart (§7.11; ὥρα plural built on §7.14)</h3>
+    <div class="tablewrap"><table class="para" lang="el"><tr><th></th><th>masc</th><th>fem η</th><th>fem α</th><th>neut</th></tr>
+      <tr><th>nom sg</th><td>ὁ λόγος</td><td>ἡ γραφή</td><td>ἡ ὥρα</td><td>τὸ ἔργον</td></tr>
+      <tr><th>gen sg</th><td><b>τοῦ λόγου</b></td><td><b>τῆς γραφῆς</b></td><td><b>τῆς ὥρας</b></td><td><b>τοῦ ἔργου</b></td></tr>
+      <tr><th>dat sg</th><td><b>τῷ λόγῳ</b></td><td><b>τῇ γραφῇ</b></td><td><b>τῇ ὥρᾳ</b></td><td><b>τῷ ἔργῳ</b></td></tr>
+      <tr><th>acc sg</th><td>τὸν λόγον</td><td>τὴν γραφήν</td><td>τὴν ὥραν</td><td>τὸ ἔργον</td></tr>
+      <tr><th>nom pl</th><td>οἱ λόγοι</td><td>αἱ γραφαί</td><td>αἱ ὧραι</td><td>τὰ ἔργα</td></tr>
+      <tr><th>gen pl</th><td><b>τῶν λόγων</b></td><td><b>τῶν γραφῶν</b></td><td><b>τῶν ὡρῶν</b></td><td><b>τῶν ἔργων</b></td></tr>
+      <tr><th>dat pl</th><td><b>τοῖς λόγοις</b></td><td><b>ταῖς γραφαῖς</b></td><td><b>ταῖς ὥραις</b></td><td><b>τοῖς ἔργοις</b></td></tr>
+      <tr><th>acc pl</th><td>τοὺς λόγους</td><td>τὰς γραφάς</td><td>τὰς ὥρας</td><td>τὰ ἔργα</td></tr></table></div>
+    <h3>True endings (§7.8)</h3>
+    <div class="tablewrap"><table class="para"><tr><th></th><th>masc</th><th>fem</th><th>neut</th></tr>
+      <tr><th>nom sg</th><td>ς</td><td>(none)</td><td>ν</td></tr>
+      <tr><th>gen sg</th><td><b>υ</b></td><td><b>ς</b></td><td><b>υ</b></td></tr>
+      <tr><th>dat sg</th><td><b>ι</b></td><td><b>ι</b></td><td><b>ι</b></td></tr>
+      <tr><th>acc sg</th><td>ν</td><td>ν</td><td>ν</td></tr>
+      <tr><th>nom pl</th><td>ι</td><td>ι</td><td>α</td></tr>
+      <tr><th>gen pl</th><td><b>ων</b></td><td><b>ων</b></td><td><b>ων</b></td></tr>
+      <tr><th>dat pl</th><td><b>ις</b></td><td><b>ις</b></td><td><b>ις</b></td></tr>
+      <tr><th>acc pl</th><td>υς</td><td>ς</td><td>α</td></tr></table></div>
+    <h3>Patterns (§7.4–7.15)</h3>
+    <ul>
+      <li><b>Genitive = "of"</b>, and it follows its head noun: ὁ λόγος τοῦ θεοῦ.</li>
+      <li><b>Dative = "to"</b> (also in, with). The indirect object is dative.</li>
+      <li><b>Subscript ι = dative singular</b>, nothing else (rule 4).</li>
+      <li><b>ων = genitive plural</b> in every gender.</li>
+      <li><b>Masc = neut in gen and dat</b> (rule 6).</li>
+      <li><b>ας is gen sg or acc pl</b>: the article decides (τῆς ὥρας / τὰς ὥρας).</li>
+      <li><b>α after ε, ι, ρ stays</b> (ὥρας); otherwise gen/dat sg shift to η (δόξης, δόξῃ).</li>
+      <li><b>Ἰησοῦ is gen or dat</b>: the article decides (§7.13).</li>
+    </ul>
+  </div>
+</template>
 
 <script>
 // Letters from BBG §3.2 chart. Answers use our typing key: w = ω; H = η (h or ey);
@@ -394,33 +442,97 @@ const PHRASE = [
   ["τὴν ὥραν","acc sg","τήν (η in the article) + ὥραν (α in the noun)."]
 ];
 
-// BBG ch. 7: genitive and dative. Each item: [prompt, answer, why].
-// §7.8 true endings for the gen and dat slots.
+
+// BBG ch. 7: genitive and dative, drilled against the whole 8-slot chart so every
+// choice deck offers every case and number. Each item: [prompt, answer, why].
+const CASES = ["nom sg", "gen sg", "dat sg", "acc sg", "nom pl", "gen pl", "dat pl", "acc pl", "nom/acc sg", "nom/acc pl"];
+// §7.8 true endings, all 24 slots.
 const ENDINGS7 = [
-  ["masc gen sg","υ","λόγο-υ → λόγου (really ο contracting to ου, §7.8 n. 7)"],["masc dat sg","ι","λόγῳ: ο lengthens to ω, ι subscripts (rules 4–5)"],
-  ["masc gen pl","ων","λόγ-ων: ω absorbs the stem vowel (§7.3 n. 2)"],["masc dat pl","ις","λόγο-ις"],
-  ["fem gen sg","ς","γραφή-ς, ὥρα-ς"],["fem dat sg","ι","γραφῇ, ὥρᾳ: ι subscripts"],
-  ["fem gen pl","ων","γραφ-ῶν: every gender has ων (hint d)"],["fem dat pl","ις","γραφα-ῖς"],
-  ["neut gen sg","υ","ἔργου: same as masc (rule 6)"],["neut dat sg","ι","ἔργῳ: same as masc (rule 6)"],
-  ["neut gen pl","ων","ἔργων"],["neut dat pl","ις","ἔργοις: same as masc (rule 6)"]
+  ["masc nom sg","ς","λόγο-ς"],["masc gen sg","υ","λόγο-υ → λόγου (really ο contracting to ου, §7.8 n.)"],
+  ["masc dat sg","ι","λόγῳ: ο lengthens to ω, ι subscripts (rules 4–5)"],["masc acc sg","ν","λόγο-ν"],
+  ["masc nom pl","ι","λόγο-ι"],["masc gen pl","ων","λόγ-ων: ω absorbs the stem vowel"],
+  ["masc dat pl","ις","λόγο-ις"],["masc acc pl","υς","λόγο-υς → λόγους"],
+  ["fem nom sg","none","γραφή, ὥρα: the stem stands alone"],["fem gen sg","ς","γραφῆ-ς, ὥρα-ς"],
+  ["fem dat sg","ι","γραφῇ, ὥρᾳ: ι subscripts"],["fem acc sg","ν","γραφή-ν, ὥρα-ν"],
+  ["fem nom pl","ι","γραφα-ί"],["fem gen pl","ων","γραφ-ῶν: every gender has ων (hint d)"],
+  ["fem dat pl","ις","γραφα-ῖς"],["fem acc pl","ς","γραφά-ς"],
+  ["neut nom sg","ν","ἔργο-ν"],["neut gen sg","υ","ἔργου: same as masc (rule 6)"],
+  ["neut dat sg","ι","ἔργῳ: same as masc (rule 6)"],["neut acc sg","ν","ἔργο-ν: nom = acc (rule 2)"],
+  ["neut nom pl","α","ἔργ-α (rule 3)"],["neut gen pl","ων","ἔργων"],
+  ["neut dat pl","ις","ἔργοις: same as masc (rule 6)"],["neut acc pl","α","ἔργ-α: nom = acc (rule 2)"]
 ];
-// §7.10 the article: gen and dat forms (nom/acc reviewed from ch. 6).
+// §7.10 the article: every distinct form.
 const ART7 = [
-  ["τοῦ","gen sg","masc or neut (rule 6)"],["τῆς","gen sg","fem"],["τῷ","dat sg","masc or neut; ι subscript = dat sg (§7.15)"],
-  ["τῇ","dat sg","fem; ι subscript"],["τῶν","gen pl","all three genders"],["τοῖς","dat pl","masc or neut"],
-  ["ταῖς","dat pl","fem"],["τὸν","acc sg","masc (ch. 6)"],["τὰς","acc pl","fem (ch. 6)"],["οἱ","nom pl","masc (ch. 6)"],
-  ["τά","nom/acc pl","neut (ch. 6)"],["τὴν","acc sg","fem (ch. 6)"]
+  ["ὁ","nom sg","masc"],["ἡ","nom sg","fem"],["τό","nom/acc sg","neut: nom = acc (rule 2)"],
+  ["τοῦ","gen sg","masc or neut (rule 6)"],["τῆς","gen sg","fem"],
+  ["τῷ","dat sg","masc or neut; ι subscript = dat sg"],["τῇ","dat sg","fem; ι subscript = dat sg"],
+  ["τόν","acc sg","masc"],["τήν","acc sg","fem"],
+  ["οἱ","nom pl","masc"],["αἱ","nom pl","fem"],["τά","nom/acc pl","neut (rules 2–3)"],
+  ["τῶν","gen pl","all three genders"],["τοῖς","dat pl","masc or neut"],["ταῖς","dat pl","fem"],
+  ["τούς","acc pl","masc"],["τάς","acc pl","fem"]
 ];
-// §7.11 paradigm and §7.15 detective work: parse case and number.
+const GENDERS = ["masc", "fem", "neut", "masc or neut", "all three"];
+const ARTG7 = [
+  ["ὁ","masc","nom sg masc"],["ἡ","fem","nom sg fem"],["τό","neut","nom/acc sg neut"],
+  ["τοῦ","masc or neut","gen sg: masc and neut are identical (rule 6)"],["τῆς","fem","gen sg fem"],
+  ["τῷ","masc or neut","dat sg (rule 6)"],["τῇ","fem","dat sg fem"],["τόν","masc","acc sg masc"],["τήν","fem","acc sg fem"],
+  ["οἱ","masc","nom pl masc"],["αἱ","fem","nom pl fem"],["τά","neut","nom/acc pl neut"],
+  ["τῶν","all three","gen pl is τῶν in every gender"],["τοῖς","masc or neut","dat pl (rule 6)"],["ταῖς","fem","dat pl fem"],
+  ["τούς","masc","acc pl masc"],["τάς","fem","acc pl fem"]
+];
+// §7.10 the article typed from its slot. Typing key: ου = ou, ῳ = w, η = h.
+const ARTCHART7 = [
+  ["masc nom sg","ho","ὁ"],["masc gen sg","toU","τοῦ"],["masc dat sg","tw","τῷ"],["masc acc sg","ton","τόν"],
+  ["masc nom pl","hoi","οἱ"],["masc gen pl","twn","τῶν"],["masc dat pl","tois","τοῖς"],["masc acc pl","toUs","τούς"],
+  ["fem nom sg","hH","ἡ"],["fem gen sg","tHs","τῆς"],["fem dat sg","tH","τῇ"],["fem acc sg","tHn","τήν"],
+  ["fem nom pl","hai","αἱ"],["fem gen pl","twn","τῶν"],["fem dat pl","tais","ταῖς"],["fem acc pl","tas","τάς"],
+  ["neut nom sg","to","τό"],["neut gen sg","toU","τοῦ (= masc, rule 6)"],["neut dat sg","tw","τῷ (= masc, rule 6)"],["neut acc sg","to","τό (nom = acc)"],
+  ["neut nom pl","ta","τά"],["neut gen pl","twn","τῶν"],["neut dat pl","tois","τοῖς (= masc, rule 6)"],["neut acc pl","ta","τά (nom = acc)"]
+];
+// §7.11 paradigm and §7.15 detective work: parse case and number, all slots.
 const PARSE7 = [
-  ["λόγου","gen sg","ου on an ο stem: gen sg."],["λόγῳ","dat sg","Subscript ι = dat sg; nothing else (§7.15)."],
-  ["λόγων","gen pl","ων = gen pl in every gender."],["λόγοις","dat pl","ις, two letters: plural (hint c)."],
-  ["γραφῆς","gen sg","ης is fem gen sg."],["γραφῇ","dat sg","Subscript ι."],["γραφαῖς","dat pl","αις = fem dat pl."],
-  ["ἔργου","gen sg","Neuter gen = masc gen (rule 6)."],["ἔργοις","dat pl","Neuter dat = masc dat (rule 6)."],
+  ["λόγος","nom sg","ς: masc nom sg."],["λόγου","gen sg","ου on an ο stem: gen sg."],
+  ["λόγῳ","dat sg","Subscript ι = dat sg; nothing else has it (§7.15)."],["λόγον","acc sg","ν: acc sg."],
+  ["λόγοι","nom pl","οι: masc nom pl."],["λόγων","gen pl","ων = gen pl in every gender."],
+  ["λόγοις","dat pl","ις, two letters: plural (hint c)."],["λόγους","acc pl","ους can only be acc pl (§7.15)."],
+  ["γραφῆς","gen sg","ης is fem gen sg."],["γραφῇ","dat sg","Subscript ι."],["γραφῶν","gen pl","ων."],
+  ["γραφαῖς","dat pl","αις = fem dat pl."],["ὥρᾳ","dat sg","Subscript ι."],["ὥραις","dat pl","αις."],
+  ["ἔργου","gen sg","Neuter gen = masc gen (rule 6)."],["ἔργῳ","dat sg","Subscript ι."],
+  ["ἔργοις","dat pl","Neuter dat = masc dat (rule 6)."],["ἔργα","nom/acc pl","Neuter plural: nom or acc (§7.15)."],
+  ["τὸ ἔργον","nom/acc sg","Neuter singular: nom or acc."],
   ["τῆς ὥρας","gen sg","ὥρας alone could be gen sg or acc pl; the article τῆς decides (hint e)."],
   ["τὰς ὥρας","acc pl","Same noun form; τάς makes it acc pl (hint e)."],
   ["τοῦ Ἰησοῦ","gen sg","Ἰησοῦ is gen and dat; the article decides (§7.13)."],
-  ["τῷ Ἰησοῦ","dat sg","τῷ = dat (§7.13)."],["τῶν γραφῶν","gen pl","τῶν + ων."]
+  ["τῷ Ἰησοῦ","dat sg","τῷ = dat (§7.13)."]
+];
+// Ch. 7 vocabulary declined on the §7.11 patterns. Typing key: ου = ou, ῳ = w, ξ = x.
+const DECLINE7 = [
+  ["κύριος → gen sg","kUrioU","τοῦ κυρίου, like λόγου."],["κύριος → dat sg","kUriw","τῷ κυρίῳ: ο → ω, ι subscript."],
+  ["κύριος → gen pl","kUriwn","τῶν κυρίων."],["κύριος → dat pl","kUriois","τοῖς κυρίοις."],
+  ["υἱός → gen sg","hUioU|UioU","τοῦ υἱοῦ."],["υἱός → gen pl","hUiwn|Uiwn","τῶν υἱῶν: ων."],["υἱός → dat pl","hUiois|Uiois","τοῖς υἱοῖς."],
+  ["εὐαγγέλιον → gen sg","euaggelioU|euangelioU","τοῦ εὐαγγελίου: neuter like masc (rule 6)."],
+  ["εὐαγγέλιον → dat sg","euaggeliw|euangeliw","τῷ εὐαγγελίῳ."],
+  ["ἀρχή → gen sg","archHs","τῆς ἀρχῆς, like γραφῆς."],["ἀρχή → dat sg","archH","τῇ ἀρχῇ (ι subscript)."],
+  ["ἀρχή → gen pl","archwn","τῶν ἀρχῶν."],["ἀρχή → dat pl","archais","ταῖς ἀρχαῖς: η shifts to α in the plural."],
+  ["ἐξουσία → gen sg","eXoUsias","τῆς ἐξουσίας: α after ι stays (§7.14)."],
+  ["ἐξουσία → dat sg","eXoUsia","τῇ ἐξουσίᾳ."],["ἐξουσία → dat pl","eXoUsiais","ταῖς ἐξουσίαις."],
+  ["δόξα → gen sg","doXHs","τῆς δόξης: α after ξ shifts to η (§7.14)."],["δόξα → dat sg","doXH","τῇ δόξῃ (§7.14)."],
+  ["οὐρανός → gen sg","oUranoU","τοῦ οὐρανοῦ."],["οὐρανός → dat pl","oUranois","τοῖς οὐρανοῖς."]
+];
+// §7.16: keep the genitive with its head noun; key words in translation.
+const READ7 = [
+  ["ὁ λόγος τοῦ θεοῦ","the word of God","Genitive follows its head noun; key word of (§7.16)."],
+  ["ἡ δόξα ἀνθρώπου","the glory of mankind","§7.4."],
+  ["ἡ βασιλεία τοῦ οὐρανοῦ","the kingdom of heaven","τοῦ οὐρανοῦ: gen sg, of."],
+  ["τῷ κυρίῳ","to the Lord","Dative: key word to."],
+  ["ὁ υἱὸς τοῦ ἀνθρώπου","the son of man","Genitive after its head noun."],
+  ["τὸ εὐαγγέλιον τοῦ Ἰησοῦ","the gospel of Jesus","τοῦ decides gen (§7.13)."],
+  ["τοῖς ἀποστόλοις","to the apostles","Dative plural: ις."],
+  ["ἡ ἀρχὴ τοῦ εὐαγγελίου","the beginning of the gospel","Gen sg neut: ου."],
+  ["τῶν ἀποστόλων","of the apostles","ων = gen pl."],
+  ["ταῖς γραφαῖς","to the writings","αις = fem dat pl; key word to."],
+  ["ἡ ἐξουσία τοῦ υἱοῦ","the authority of the son","Gen sg after its head noun."],
+  ["τοῖς υἱοῖς τοῦ θεοῦ","to the sons of God","Dative plural, then a genitive that belongs to it."]
 ];
 // §7.4–7.6 key words; §7.12 rules 4–6; §7.14 alpha-to-eta shift.
 const NRULES7 = [
@@ -435,76 +547,64 @@ const NRULES7 = [
   ["ἁμαρτία: gen sg?","ἁμαρτίας","α after ι stays: lexical form ἁμαρτία, -ας."],
   ["Lexical listing gives the nom and the…","genitive","§7 vocabulary: always learn the genitive with the nominative."]
 ];
-// Ch. 7 vocabulary declined on the §7.11 patterns. Typing key: ου = ou, ῳ = w.
-const DECLINE7 = [
-  ["κύριος → gen sg","kUrioU","τοῦ κυρίου, like λόγου."],["κύριος → dat sg","kUriw","τῷ κυρίῳ: ο → ω, ι subscript."],
-  ["υἱός → gen pl","Uiwn|hUiwn","τῶν υἱῶν: ων."],["υἱός → dat pl","Uiois|hUiois","τοῖς υἱοῖς."],
-  ["εὐαγγέλιον → gen sg","euaggelioU|euangelioU","τοῦ εὐαγγελίου: neuter like masc (rule 6)."],
-  ["εὐαγγέλιον → dat sg","euaggeliw|euangeliw","τῷ εὐαγγελίῳ."],
-  ["ἀρχή → gen sg","archHs","τῆς ἀρχῆς, like γραφῆς."],["ἀρχή → dat sg","archH","τῇ ἀρχῇ (ι subscript)."],
-  ["ἐξουσία → gen sg","eXoUsias","τῆς ἐξουσίας: α after ι stays (§7.14)."],
-  ["ἐξουσία → dat pl","eXoUsiais","ταῖς ἐξουσίαις."],
-  ["δόξα → gen sg","doXHs","τῆς δόξης: α after ξ shifts to η (§7.14)."],
-  ["οὐρανός → gen sg","oUranoU","τοῦ οὐρανοῦ."]
-];
-// §7.16: keep the genitive with its head noun; key words in translation.
-const READ7 = [
-  ["ὁ λόγος τοῦ θεοῦ","the word of God","Genitive follows its head noun; key word of (§7.16)."],
-  ["ἡ δόξα ἀνθρώπου","the glory of mankind","§7.4."],
-  ["ἡ βασιλεία τοῦ οὐρανοῦ","the kingdom of heaven","τοῦ οὐρανοῦ: gen sg, of."],
-  ["τῷ κυρίῳ","to the Lord","Dative: key word to."],
-  ["ὁ υἱὸς τοῦ ἀνθρώπου","the son of man","Genitive after its head noun."],
-  ["τὸ εὐαγγέλιον τοῦ Ἰησοῦ","the gospel of Jesus","τοῦ decides gen (§7.13)."],
-  ["τοῖς ἀποστόλοις","to the apostles","Dative plural: ις."],
-  ["ἡ ἀρχὴ τοῦ εὐαγγελίου","the beginning of the gospel","Gen sg neut: ου."]
-];
 
 const DECKS = {
   lookalike: { label: "Look-alikes", ask: "Type its name, then its English letter", kind: "both",
     items: () => ["η","ν","ρ","χ","ω","π"].map(l => LETTERS.find(x => x[0] === l)) },
   names: { label: "Letter names", ask: "Type the letter's name", kind: "name", items: () => LETTERS },
-  english: { label: "Letter → English", ask: "Type it in English letters (see the key above)", kind: "translit", items: () => LETTERS },
-  words: { label: "Transliterate words", ask: "Spell the word in English letters (see the key above)", kind: "word", items: () => WORDS },
-  sigma: { label: "σ or ς", ask: "Which sigma fills the gap?", kind: "choice", options: ["σ", "ς"], items: () => SIGMA },
-  breathing: { label: "Breathing marks", ask: "Rough (h sound) or smooth (no sound)?", kind: "choice",
-    options: ["rough", "smooth"], text: true, items: () => BREATHING },
-  sound: { label: "Say it", ask: "Type how it sounds (see the key above)", kind: "word", items: () => SOUNDS },
+  english: { label: "Letter → English", ask: "Type it in English letters (typing key)", kind: "translit", items: () => LETTERS },
+  words: { label: "Transliterate words", ask: "Spell the word in English letters (typing key)", kind: "word", items: () => WORDS },
+  sigma: { label: "σ or ς", ask: "Which sigma fills the gap?", kind: "choice", greek: true, options: ["σ", "ς"], items: () => SIGMA },
+  breathing: { label: "Breathing marks", ask: "Rough (h sound) or smooth (no sound)?", kind: "choice", options: ["rough", "smooth"], items: () => BREATHING },
+  sound: { label: "Say it", ask: "Type how it sounds (typing key)", kind: "word", items: () => SOUNDS },
   diph: { label: "Diphthongs", ask: "Which English word has this sound?", kind: "choice",
-    options: ["aisle", "eight", "oil", "sauerkraut", "soup", "suite", "feud"], text: true, items: () => DIPH },
-  marks: { label: "Ch 4: Marks", ask: "What is this mark in Greek?", kind: "choice", text: true,
+    options: ["aisle", "eight", "oil", "sauerkraut", "soup", "suite", "feud"], items: () => DIPH },
+  marks: { label: "Ch 4: Marks", ask: "What is this mark in Greek?", kind: "choice",
     options: ["comma", "period", "semicolon", "question mark", "acute", "grave", "circumflex", "elision"], items: () => MARKS },
-  count: { label: "Ch 4: Count syllables", ask: "How many syllables? (one per vowel or diphthong)", kind: "choice",
-    options: ["2", "3", "4", "5", "6"], text: true, items: () => COUNT },
-  syll: { label: "Ch 4: Split it", ask: "Split the GREEK letters, then type them in English with spaces (like gra phh). θ φ χ ψ are one letter each.", kind: "word", items: () => SYLL },
-  rules: { label: "Ch 4: Which rule?", ask: "Which rule makes the split at | ?", kind: "choice", text: true,
+  count: { label: "Ch 4: Count syllables", ask: "How many syllables? One per vowel or diphthong.", kind: "choice",
+    options: ["2", "3", "4", "5", "6"], items: () => COUNT },
+  syll: { label: "Ch 4: Split it", ask: "Split the Greek, then type it in English with spaces (like gra phh). θ φ χ ψ are one letter each.", kind: "word", items: () => SYLL },
+  rules: { label: "Ch 4: Which rule?", ask: "Which rule makes the split at | ?", kind: "choice",
     options: ["single consonant", "vowels split", "can't say together", "can say together", "double", "compound"], items: () => RULES },
-  endings: { label: "Ch 6: Endings alone", ask: "Which ending goes in this slot?", kind: "choice", text: true,
+  endings: { label: "Ch 6: Endings alone", ask: "Which ending goes in this slot?", kind: "choice", greek: true, labelPrompt: true,
     options: ["ς", "ν", "ι", "υς", "α", "none"], items: () => ENDINGS },
-  decline: { label: "Ch 6: Decline it", ask: "Type the form in our typing key (like logous)", kind: "word", items: () => DECLINE },
-  phrase: { label: "Ch 6: Read the article", ask: "Case and number? Use the article.", kind: "choice", text: true,
+  decline: { label: "Ch 6: Decline it", ask: "Type the form in the typing key (like logous)", kind: "word", items: () => DECLINE },
+  phrase: { label: "Ch 6: Read the article", ask: "Case and number? Use the article.", kind: "choice",
     options: ["nom sg", "acc sg", "nom pl", "acc pl", "nom/acc sg", "nom/acc pl"], items: () => PHRASE },
-  article: { label: "Ch 6: Add the article", ask: "Type the article that goes with this noun (ὁ = ho, ἡ = hh, τόν = ton)", kind: "word", items: () => ARTICLE },
-  parse: { label: "Ch 6: Parse it", ask: "Case and number?", kind: "choice", text: true,
+  article: { label: "Ch 6: Add the article", ask: "Type the article for this noun (ὁ = ho, ἡ = hh, τόν = ton)", kind: "word", items: () => ARTICLE },
+  parse: { label: "Ch 6: Parse it", ask: "Case and number?", kind: "choice",
     options: ["nom sg", "acc sg", "nom pl", "acc pl", "nom/acc sg", "nom/acc pl"], items: () => PARSE },
-  nrules: { label: "Ch 6: Noun rules", ask: "Pick the answer", kind: "choice", text: true,
+  nrules: { label: "Ch 6: Noun rules", ask: "Pick the answer", kind: "choice",
     options: ["1st declension", "2nd declension", "3rd declension", "nom and acc", "α", "case, number, gender", "ὁ", "there is none"], items: () => NRULES },
-  end7: { label: "Ch 7: Endings alone", ask: "Which ending goes in this slot?", kind: "choice", text: true,
-    options: ["υ", "ς", "ι", "ων", "ις"], items: () => ENDINGS7 },
-  art7: { label: "Ch 7: Read the article", ask: "Case and number of this article?", kind: "choice", text: true,
-    options: ["nom pl", "acc sg", "acc pl", "nom/acc pl", "gen sg", "dat sg", "gen pl", "dat pl"], items: () => ART7 },
-  parse7: { label: "Ch 7: Parse it", ask: "Case and number?", kind: "choice", text: true,
-    options: ["gen sg", "dat sg", "gen pl", "dat pl", "acc pl"], items: () => PARSE7 },
-  decl7: { label: "Ch 7: Decline it", ask: "Type the form (ου = ou, ῳ = w, η = h)", kind: "word", items: () => DECLINE7 },
-  rules7: { label: "Ch 7: Rules and key words", ask: "Pick the answer", kind: "choice", text: true, items: () => NRULES7,
-    optionsFor: it => it[0].includes("Gen sg?") ? (it[1].startsWith("δ") ? ["δόξας", "δόξης"] : it[1].startsWith("ὥ") ? ["ὥρας", "ὥρης"] : ["ἁμαρτίας", "ἁμαρτίης"])
-      : ["of", "to", "dative", "genitive", "iota subscripts", "vowels change length", "masc = neut in gen and dat", "ων"] },
-  read7: { label: "Ch 7: Translate", ask: "Pick the translation", kind: "choice", text: true, items: () => READ7,
-    optionsFor: it => shuffle([it[1], ...shuffle(READ7.filter(x => x !== it).map(x => x[1])).slice(0, 3)]) },
-  subj: { label: "Ch 6: Subject or object", ask: "Pick the word", kind: "choice", text: true, items: () => SUBJ,
+  subj: { label: "Ch 6: Subject or object", ask: "Pick the word", kind: "choice", greek: true, items: () => SUBJ,
     optionsFor: it => it[0].split(" — ")[0].replace(".", "").split(" ").reduce((a, w, i, ws) => {
       const ART = ["ὁ", "τὸν", "τὴν", "τοὺς", "τὰς", "οἱ", "αἱ"];
-      if (ART.includes(w)) return a; const prev = ws[i - 1]; a.push(ART.includes(prev) ? prev + " " + w : w); return a; }, []) }
+      if (ART.includes(w)) return a; const prev = ws[i - 1]; a.push(ART.includes(prev) ? prev + " " + w : w); return a; }, []) },
+  end7: { label: "Ch 7: Endings alone", ask: "Which true ending goes in this slot? (§7.8)", kind: "choice", greek: true, labelPrompt: true,
+    options: ["ς", "ν", "ι", "υ", "υς", "α", "ων", "ις", "none"], items: () => ENDINGS7 },
+  artchart7: { label: "Ch 7: Article chart", ask: "Type the article for this slot (τοῦ = tou, τῷ = tw, τῆς = ths)", kind: "word", labelPrompt: true, items: () => ARTCHART7 },
+  art7: { label: "Ch 7: Read the article", ask: "Case and number of this article?", kind: "choice", options: CASES, items: () => ART7 },
+  artg7: { label: "Ch 7: Article gender", ask: "Which gender can this article be?", kind: "choice", options: GENDERS, items: () => ARTG7 },
+  parse7: { label: "Ch 7: Parse it", ask: "Case and number?", kind: "choice", options: CASES, items: () => PARSE7 },
+  decl7: { label: "Ch 7: Decline it", ask: "Type the form (ου = ou, ῳ = w, η = h)", kind: "word", items: () => DECLINE7 },
+  rules7: { label: "Ch 7: Rules and key words", ask: "Pick the answer", kind: "choice", items: () => NRULES7,
+    optionsFor: it => it[0].includes("Gen sg?") ? (it[1].startsWith("δ") ? ["δόξας", "δόξης"] : it[1].startsWith("ὥ") ? ["ὥρας", "ὥρης"] : ["ἁμαρτίας", "ἁμαρτίης"])
+      : ["of", "to", "in", "nominative", "genitive", "dative", "accusative", "iota subscripts", "vowels change length", "masc = neut in gen and dat", "ων", "ις"] },
+  read7: { label: "Ch 7: Translate", ask: "Pick the translation", kind: "choice", items: () => READ7,
+    optionsFor: it => shuffle([it[1], ...shuffle(READ7.filter(x => x !== it).map(x => x[1])).slice(0, 3)]) },
+  mix7: { label: "Ch 7: Mixed review", ask: "", kind: "mixed", items: () =>
+    ["end7", "art7", "parse7", "decl7", "read7"].flatMap(k => shuffle(DECKS[k].items()).slice(0, 4).map(it => ({ it, src: k }))) }
 };
+
+// Deck list grouped by chapter. Sheets open a study page instead of a round.
+const GROUPS = [
+  { title: "Start here", entries: [{ sheet: "key", label: "Typing key and how to use" }] },
+  { title: "Ch 3 · Alphabet", entries: ["lookalike", "names", "english", "words", "sigma", "breathing", "sound", "diph"] },
+  { title: "Ch 4 · Marks and syllables", entries: ["marks", "count", "syll", "rules"] },
+  { title: "Ch 6 · Nominative and accusative", entries: [{ sheet: "6", label: "Study sheet" }, "endings", "decline", "phrase", "article", "parse", "nrules", "subj"] },
+  { title: "Ch 7 · Genitive and dative", entries: [{ sheet: "7", label: "Study sheet" }, "end7", "artchart7", "art7", "artg7", "parse7", "decl7", "rules7", "read7", "mix7"] }
+];
+const SHEETS = { key: "Typing key and how to use", "6": "Ch 6 study sheet", "7": "Ch 7 study sheet" };
 
 function clean(s) {
   return s.toLowerCase().replace(/ō/g, "w").replace(/ē/g, "ey").normalize("NFD")
@@ -519,114 +619,200 @@ function variants(ans) {
   }
   return out;
 }
-// How we show an answer: our main spelling.
 function show(ans) { return ans.replace(/H/g, "h").replace(/U/g, "u").replace(/X/g, "x"); }
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 function load(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[c])); }
+function shortLabel(l) { return l.replace(/^Ch \d: /, ""); }
+const isGreek = s => /[Ͱ-Ͽἀ-῿]/.test(s);
+const narrow = () => matchMedia("(max-width: 760px)").matches;
 
 const card = document.getElementById("card");
-const tabs = document.getElementById("tabs");
+const nav = document.getElementById("nav");
 const logEl = document.getElementById("log");
 let state = null;
 let history = load("gd-history", []);
+let lastScores = load("gd-last", {});
 
-function renderLog() { const today = new Date().toISOString().slice(0, 10), shown = history.filter(l => l.startsWith(today)); logEl.textContent = shown.length ? shown.join("\n") : history.length ? history.slice(-8).join("\n") : "No rounds finished yet."; }
+function renderLog() {
+  const today = new Date().toISOString().slice(0, 10), shown = history.filter(l => l.startsWith(today));
+  logEl.textContent = shown.length ? shown.join("\n") : history.length ? history.slice(-8).join("\n") : "No rounds finished yet.";
+}
+
+function renderNav(active) {
+  nav.querySelectorAll(".group").forEach(g => g.remove());
+  for (const g of GROUPS) {
+    const sec = document.createElement("div");
+    sec.className = "group";
+    sec.innerHTML = `<h2>${esc(g.title)}</h2>`;
+    for (const e of g.entries) {
+      const b = document.createElement("button");
+      b.type = "button";
+      if (typeof e === "string") {
+        const d = DECKS[e], s = lastScores[e];
+        b.className = "deck"; b.dataset.key = e;
+        b.innerHTML = `<span>${esc(shortLabel(d.label))}</span>${s ? `<span class="score${s[0] === s[1] ? " full" : ""}">${s[0]}/${s[1]}</span>` : ""}`;
+        b.addEventListener("click", () => { start(e); collapseNav(); });
+      } else {
+        b.className = "deck sheet"; b.dataset.key = "sheet:" + e.sheet;
+        b.innerHTML = `<span>${esc(e.label)}</span>`;
+        b.addEventListener("click", () => { openSheet(e.sheet); collapseNav(); });
+      }
+      b.setAttribute("aria-current", b.dataset.key === active);
+      sec.appendChild(b);
+    }
+    nav.appendChild(sec);
+  }
+  const cur = active && (active.startsWith("sheet:") ? SHEETS[active.slice(6)] : DECKS[active]?.label);
+  document.getElementById("navnow").textContent = cur ? "Deck: " + cur : "Decks";
+}
+function collapseNav() { if (narrow()) { nav.classList.add("closed"); document.getElementById("navtoggle").setAttribute("aria-expanded", "false"); } }
+document.getElementById("navtoggle").addEventListener("click", () => {
+  const closed = nav.classList.toggle("closed");
+  document.getElementById("navtoggle").setAttribute("aria-expanded", String(!closed));
+});
+
+function openSheet(id) {
+  state = null;
+  store("gd-deck", "sheet:" + id);
+  renderNav("sheet:" + id);
+  const next = id === "6" ? "endings" : id === "7" ? "end7" : "lookalike";
+  card.innerHTML = `<div class="meta"><span class="deckname">${esc(SHEETS[id])}</span></div>
+    ${document.getElementById("sheet-" + id).innerHTML}
+    <div class="actions"><button class="btn" id="go" type="button">Start ${esc(DECKS[next].label)}</button></div>`;
+  document.getElementById("go").addEventListener("click", () => start(next));
+}
 
 function start(deckKey) {
   store("gd-deck", deckKey);
-  [...tabs.children].forEach(b => b.setAttribute("aria-pressed", b.dataset.deck === deckKey));
+  renderNav(deckKey);
   const d = DECKS[deckKey];
-  const items = shuffle(d.items());
-  state = { deckKey, d, queue: items.map((it, i) => ({ it, id: i })), total: items.length,
-    firstTry: new Set(), missed: new Map(), stage: 0, answered: 0 };
-  next();
+  const raw = d.kind === "mixed" ? d.items() : shuffle(d.items()).map(it => ({ it, src: deckKey }));
+  state = { deckKey, d, queue: raw.map((q, i) => ({ ...q, id: i })), total: raw.length,
+    firstTry: new Set(), missed: new Map(), stage: 0, phase: "ask", prev: "" };
+  render();
 }
 
-function current() { return state.queue[0]; }
+// The deck that defines how the current item is asked (differs from the round in a mixed deck).
+function srcDeck(q) { return DECKS[q.src]; }
+function kindOf(q) { const d = srcDeck(q); return d.kind === "both" ? (state.stage === 0 ? "name" : "translit") : d.kind; }
+function optionsOf(q) { const d = srcDeck(q); return d.optionsFor ? d.optionsFor(q.it) : d.options; }
+function answerOf(q, kind) {
+  if (kind === "name") return NAME_ALT[q.it[1]] || [q.it[1]];
+  if (kind === "translit") return [q.it[2]];
+  if (kind === "word") return q.it[1].split("|");
+  return [q.it[1]];
+}
 
-function next(feedbackHtml) {
+function render() {
   if (!state.queue.length) return finish();
-  const q = current(), d = state.d, it = q.it;
-  const kind = d.kind === "both" ? (state.stage === 0 ? "name" : "translit") : d.kind;
-  const greek = it[0];
-  const isWord = kind === "word" || kind === "choice";
-  const pct = Math.round(100 * state.firstTry.size / state.total);
+  const q = state.queue[0], d = srcDeck(q), it = q.it, kind = kindOf(q);
+  const done = state.firstTry.size, missedN = state.missed.size;
   const askText = d.kind === "both" ? (kind === "name" ? "Step 1 of 2: type the letter's name (like alpha)" : "Step 2 of 2: type it in English letters (like a)") : d.ask;
+  const promptCls = d.labelPrompt ? " label" : it[0].length > 14 ? " long" : "";
+  const opts = kind === "choice" ? (state.opts ||= optionsOf(q)) : null;
+  const greekOpts = opts && opts.some(isGreek) && opts.every(o => o.length < 12);
   card.innerHTML = `
-    <div class="meta"><span>${d.label}</span><span>${state.firstTry.size} / ${state.total} right first time · ${state.queue.length} left</span></div>
-    <div class="bar"><i style="width:${pct}%"></i></div>
-    <p class="prompt-label">${askText}</p>
-    <div class="prompt${isWord ? " word" : ""}" lang="el">${greek}</div>
+    <div class="meta"><span class="deckname">${esc(state.d.label)}${state.d.kind === "mixed" ? ` <span class="tip">· ${esc(shortLabel(d.label))}</span>` : ""}</span>
+      <span class="count">${done} right first try · ${missedN} missed · ${state.queue.length} left of ${state.total}</span></div>
+    <div class="bar" aria-hidden="true"><i class="ok" style="width:${100 * done / state.total}%"></i><i class="miss" style="width:${100 * missedN / state.total}%"></i></div>
+    ${state.prev}
+    <p class="ask">${esc(askText)}</p>
+    <div class="prompt${promptCls}" lang="${d.labelPrompt ? "en" : "el"}">${esc(it[0])}</div>
     ${kind === "choice"
-      ? `<div class="choices${d.text ? " txt" : ""}">${(d.optionsFor ? d.optionsFor(it) : d.options).map(o => `<button class="btn" type="button" data-c="${o}">${o}</button>`).join("")}</div>`
-      : `<form id="f" autocomplete="off"><input id="answer" type="text" inputmode="latin" autocapitalize="off" spellcheck="false" placeholder="Type here, then press Enter" aria-label="Your answer"><button class="btn" type="submit">Check</button></form>`}
-    ${feedbackHtml || ""}`;
+      ? `<div class="choices${greekOpts ? " greek" : ""}" role="group" aria-label="Choices">${opts.map((o, i) =>
+          `<button class="choice" type="button" data-i="${i}"${state.phase !== "ask" ? " disabled" : ""}>${i < 9 ? `<kbd>${i + 1}</kbd>` : ""}${esc(o)}</button>`).join("")}</div>`
+      : `<form class="typed" id="f" autocomplete="off"><input id="answer" type="text" autocapitalize="off" spellcheck="false" placeholder="Type, then press Enter" aria-label="Your answer"${state.phase !== "ask" ? " disabled" : ""}><button class="btn" type="submit"${state.phase !== "ask" ? " disabled" : ""}>Check</button></form>`}
+    ${state.phase === "wrong" ? state.fb : ""}
+    <div class="actions">
+      ${state.phase === "wrong"
+        ? `<button class="btn" id="next" type="button">Next</button><span class="tip"><kbd>Enter</kbd></span>`
+        : `<span class="tip">${kind === "choice" ? "Keys <kbd>1</kbd>–<kbd>9</kbd> pick a choice." : "Accents and capitals don't matter."}</span><span class="spacer"></span><button class="btn ghost small" id="idk" type="button">Show answer</button>`}
+    </div>`;
+  if (state.phase === "wrong") {
+    const marks = state.marks;
+    if (marks) card.querySelectorAll(".choice").forEach(b => { const o = opts[+b.dataset.i];
+      if (o === marks.right) b.classList.add("right"); else if (o === marks.picked) b.classList.add("wrong"); });
+    document.getElementById("next").addEventListener("click", advance);
+    document.getElementById("next").focus();
+    if (kind !== "choice") document.getElementById("answer").value = state.typed || "";
+    return;
+  }
+  document.getElementById("idk").addEventListener("click", () => check(null));
   if (kind === "choice") {
-    card.querySelectorAll("[data-c]").forEach(b => b.addEventListener("click", () => check(b.dataset.c, kind)));
+    card.querySelectorAll(".choice").forEach(b => b.addEventListener("click", () => check(opts[+b.dataset.i])));
   } else {
     const f = document.getElementById("f"), inp = document.getElementById("answer");
-    f.addEventListener("submit", e => { e.preventDefault(); if (inp.value.trim()) check(inp.value, kind); });
-    inp.focus();
+    f.addEventListener("submit", e => { e.preventDefault(); if (inp.value.trim()) check(inp.value); });
+    inp.focus({ preventScroll: true });
   }
 }
 
-function expected(it, kind) {
-  if (kind === "name") return NAME_ALT[it[1]] || [it[1]];
-  if (kind === "translit") return [it[2]];
-  if (kind === "word") return it[1].split("|");
-  return [it[1]];
-}
-
-function check(raw, kind) {
-  const q = current(), it = q.it;
-  const exp = expected(it, kind);
-  const ok = kind === "choice" ? raw === it[1] : exp.some(e => variants(e).includes(clean(raw)));
-  const shown = kind === "choice" ? it[1] : show(kind === "translit" ? it[2] : it[1].split("|")[0]);
-  const note = it[2] && kind !== "translit" && kind !== "name" ? it[2] : LOOKALIKE_NOTE[it[0]];
-  let fb;
+function check(raw) {
+  const q = state.queue[0], it = q.it, d = srcDeck(q), kind = kindOf(q);
+  const exp = answerOf(q, kind);
+  const ok = raw !== null && (kind === "choice" ? raw === it[1] : exp.some(e => variants(e).includes(clean(raw))));
+  const shown = kind === "choice" ? it[1] : show(exp[0]);
+  const why = kind === "name" || kind === "translit" ? LOOKALIKE_NOTE[it[0]] : it[2];
+  const gk = s => isGreek(s) ? `<span class="gk" lang="el">${esc(s)}</span>` : esc(s);
+  state.opts = kind === "choice" ? state.opts : null;
   if (ok) {
-    fb = `<div class="feedback good">Correct: <b>${shown}</b>${it[2] && kind === "word" ? " " + it[2] : ""}</div>`;
-    if (state.d.kind === "both" && state.stage === 0) { state.stage = 1; return next(fb); }
+    state.prev = `<p class="prev">✓ ${gk(it[0])} → <b>${gk(shown)}</b>${why && kind !== "name" && kind !== "translit" ? ` · ${gk(why)}` : ""}</p>`;
+    if (d.kind === "both" && state.stage === 0) { state.stage = 1; state.opts = null; return render(); }
     state.stage = 0;
     if (!state.missed.has(q.id)) state.firstTry.add(q.id);
-    state.queue.shift();
-  } else {
-    const key = it[0] + (state.d.kind === "both" ? (kind === "name" ? " (name)" : " (letter)") : "");
-    const list = state.missed.get(q.id) || [];
-    list.push(`${key}: typed "${raw.trim()}"`);
-    state.missed.set(q.id, list);
-    fb = `<div class="feedback bad">Not quite. You typed <b>${escapeHtml(raw.trim())}</b>, answer <b>${shown}</b>.${note ? " " + note : ""} It will come back.</div>`;
-    state.stage = 0;
-    const item = state.queue.shift();
-    state.queue.splice(Math.min(3, state.queue.length), 0, item);
+    state.queue.shift(); state.opts = null;
+    return render();
   }
-  next(fb);
+  const key = it[0] + (d.kind === "both" ? (kind === "name" ? " (name)" : " (letter)") : "");
+  const list = state.missed.get(q.id) || [];
+  list.push(`${key}: ${raw === null ? "showed answer" : `typed "${raw.trim()}"`}`);
+  state.missed.set(q.id, list);
+  state.phase = "wrong"; state.typed = raw || "";
+  state.marks = kind === "choice" ? { right: it[1], picked: raw } : null;
+  state.fb = `<div class="fb bad"><span class="head">${raw === null ? "Answer" : "Not quite"}: <span class="${isGreek(shown) ? "gk" : "ans"}">${esc(shown)}</span>${raw !== null && kind !== "choice" ? ` · you typed <span class="ans">${esc(raw.trim())}</span>` : ""}</span>
+    ${why ? `<span class="why">${gk(why)}</span>` : ""}<span class="tip">It will come back in a few questions.</span></div>`;
+  render();
 }
 
-function escapeHtml(s) { return s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[c])); }
+function advance() {
+  const item = state.queue.shift();
+  state.queue.splice(Math.min(3, state.queue.length), 0, item);
+  state.phase = "ask"; state.stage = 0; state.prev = ""; state.opts = null; state.marks = null;
+  render();
+}
 
 function finish() {
   const right = state.firstTry.size, total = state.total;
   const misses = [...state.missed.values()].flat();
   const date = new Date().toISOString().slice(0, 10);
   const line = `${date} ${state.d.label}: ${right}/${total} first try` + (misses.length ? `; missed ${misses.join(", ")}` : "; no misses");
-  history.push(line); store("gd-history", history.slice(-50)); renderLog();
+  history.push(line); store("gd-history", history.slice(-80)); renderLog();
+  lastScores[state.deckKey] = [right, total]; store("gd-last", lastScores); renderNav(state.deckKey);
+  const g = GROUPS.find(g => g.entries.includes(state.deckKey)), decks = g.entries.filter(e => typeof e === "string");
+  const nextKey = decks[decks.indexOf(state.deckKey) + 1];
   card.innerHTML = `
     <div class="done">
-      <p class="prompt-label">${state.d.label} finished</p>
-      <p class="score">${right} / ${total}</p>
-      <p class="hint">${misses.length ? "Right first time. Every missed item was repeated until you got it." : "Every item right first time."}</p>
-      <div class="row"><button class="btn" id="again" type="button">Go again</button></div>
+      <p class="ask">${esc(state.d.label)} finished</p>
+      <p class="big">${right} / ${total}</p>
+      <p class="tip">${misses.length ? "First tries only. Every missed item came back until you got it." : "Every item right first time."}</p>
+      ${misses.length ? `<ul>${misses.map(m => `<li>${esc(m)}</li>`).join("")}</ul>` : ""}
+      <div class="actions"><button class="btn${nextKey ? " ghost" : ""}" id="again" type="button">Go again</button>
+        ${nextKey ? `<button class="btn" id="nextdeck" type="button">Next: ${esc(shortLabel(DECKS[nextKey].label))}</button>` : ""}</div>
     </div>`;
-  document.getElementById("again").addEventListener("click", () => start(state.deckKey));
+  const key = state.deckKey;
+  document.getElementById("again").addEventListener("click", () => start(key));
+  if (nextKey) { document.getElementById("nextdeck").addEventListener("click", () => start(nextKey)); document.getElementById("nextdeck").focus(); }
+  state = null;
 }
 
-Object.entries(DECKS).forEach(([k, d]) => {
-  const b = document.createElement("button");
-  b.className = "tab"; b.type = "button"; b.dataset.deck = k; b.textContent = d.label;
-  b.addEventListener("click", () => start(k));
-  tabs.appendChild(b);
+document.addEventListener("keydown", e => {
+  if (!state || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (state.phase === "wrong" && e.key === "Enter") { e.preventDefault(); return advance(); }
+  if (state.phase === "ask" && /^[1-9]$/.test(e.key) && document.activeElement?.id !== "answer") {
+    const b = card.querySelector(`.choice[data-i="${+e.key - 1}"]`); if (b) { e.preventDefault(); b.click(); }
+  }
 });
 
 document.getElementById("copy").addEventListener("click", () => {
@@ -636,6 +822,7 @@ document.getElementById("copy").addEventListener("click", () => {
 });
 
 renderLog();
-const saved = load("gd-deck", "lookalike");
-start(DECKS[saved] ? saved : "lookalike");
+const saved = load("gd-deck", "sheet:key");
+if (saved.startsWith("sheet:") && SHEETS[saved.slice(6)]) openSheet(saved.slice(6));
+else start(DECKS[saved] ? saved : "lookalike");
 </script>
