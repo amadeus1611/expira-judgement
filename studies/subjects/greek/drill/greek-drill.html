@@ -535,17 +535,24 @@ const READ7 = [
   ["τοῖς υἱοῖς τοῦ θεοῦ","to the sons of God","Dative plural, then a genitive that belongs to it."]
 ];
 // §7.4–7.6 key words; §7.12 rules 4–6; §7.14 alpha-to-eta shift.
+// Each item: [question, answer, why, choices]. Every question carries its own choices.
+const KW = ["of", "to", "by", "with"];
+const CASE4 = ["nominative", "genitive", "dative", "accusative"];
 const NRULES7 = [
-  ["Key word for the genitive","of","§7.4."],["Primary key word for the dative","to","§7.5: to, in, with; to is primary."],
-  ["The indirect object goes in the…","dative","§7.6."],
-  ["Rule 4","iota subscripts","In the dative singular, the iota subscripts if possible."],
-  ["Rule 5","vowels change length","Ablaut: λογο + ι → λόγῳ."],
-  ["Rule 6","masc = neut in gen and dat","In the genitive and dative, the masculine and neuter are always identical."],
-  ["All genders, gen pl ending","ων","Hint d."],
-  ["ὥρα: stem α after ρ. Gen sg?","ὥρας","After ε, ι, ρ the α stays (§7.14)."],
-  ["δόξα: stem α after ξ. Gen sg?","δόξης","Not after ε, ι, ρ, so α shifts to η (§7.14)."],
-  ["ἁμαρτία: gen sg?","ἁμαρτίας","α after ι stays: lexical form ἁμαρτία, -ας."],
-  ["Lexical listing gives the nom and the…","genitive","§7 vocabulary: always learn the genitive with the nominative."]
+  ["τοῦ θεοῦ is genitive. Which English word do you add when you translate it?","of","§7.4: the genitive's key word is of: the word of God.",KW],
+  ["τῷ κυρίῳ is dative. Which English word do you add when you translate it?","to","§7.5: the dative's main key word is to (also in, with): to the Lord.",KW],
+  ["\"He gave the book to the man.\" Which case does Greek use for \"the man\"?","dative","§7.6: the indirect object goes in the dative.",CASE4],
+  ["\"the son of man\": which case is \"of man\"?","genitive","§7.4: of = genitive.",CASE4],
+  ["Why does λογο + ι become λόγῳ and not λόγοι?","the ι subscripts and ο lengthens to ω","§7.12 rules 4–5: in the dat sg the ι subscripts, and the stem vowel lengthens.",
+    ["the ι subscripts and ο lengthens to ω","it is plural","it is neuter","there is no reason"]],
+  ["ἔργου and λόγου have the same ending. Why?","masc and neut are identical in gen and dat","§7.12 rule 6.",
+    ["masc and neut are identical in gen and dat","both are nominative","both are feminine","it is a typo"]],
+  ["Which ending is genitive plural in all three genders?","ων","§7.8 hint d: λόγων, γραφῶν, ἔργων.",["ων","ις","ου","ας"]],
+  ["ὥρα: the α comes after ρ. Its gen sg is…","ὥρας","§7.14: after ε, ι, ρ the α stays α.",["ὥρας","ὥρης"]],
+  ["δόξα: the α comes after ξ. Its gen sg is…","δόξης","§7.14: not after ε, ι, ρ, so the α shifts to η in gen and dat sg.",["δόξας","δόξης"]],
+  ["ἁμαρτία: the α comes after ι. Its gen sg is…","ἁμαρτίας","§7.14: after ι the α stays α (ἁμαρτία, -ας).",["ἁμαρτίας","ἁμαρτίης"]],
+  ["A dictionary lists a noun as ἀρχή, -ῆς, ἡ. What is -ῆς?","its genitive singular","Ch. 7 vocabulary: the lexical form gives the nom, then the gen ending, then the article.",
+    ["its genitive singular","its plural","its accusative","its dative"]]
 ];
 
 const DECKS = {
@@ -588,8 +595,7 @@ const DECKS = {
   parse7: { label: "Ch 7: Parse it", ask: "Case and number?", kind: "choice", options: CASES, items: () => PARSE7 },
   decl7: { label: "Ch 7: Decline it", ask: "Type the form (ου = ou, ῳ = w, η = h)", kind: "word", items: () => DECLINE7 },
   rules7: { label: "Ch 7: Rules and key words", ask: "Pick the answer", kind: "choice", items: () => NRULES7,
-    optionsFor: it => it[0].includes("Gen sg?") ? (it[1].startsWith("δ") ? ["δόξας", "δόξης"] : it[1].startsWith("ὥ") ? ["ὥρας", "ὥρης"] : ["ἁμαρτίας", "ἁμαρτίης"])
-      : ["of", "to", "in", "nominative", "genitive", "dative", "accusative", "iota subscripts", "vowels change length", "masc = neut in gen and dat", "ων", "ις"] },
+    optionsFor: it => shuffle([...it[3]]) },
   read7: { label: "Ch 7: Translate", ask: "Pick the translation", kind: "choice", items: () => READ7,
     optionsFor: it => shuffle([it[1], ...shuffle(READ7.filter(x => x !== it).map(x => x[1])).slice(0, 3)]) },
   mix7: { label: "Ch 7: Mixed review", ask: "", kind: "mixed", items: () =>
