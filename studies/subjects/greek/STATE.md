@@ -59,3 +59,4 @@ Next: rest of block A (§3.4–3.5 pronunciation, breathing marks, diphthongs; c
   deck, then block C (ch. 7 genitive and dative).
 
 - 2026-10-19: review blocks A and B drilled (pass 2 cold). Next session: block C (ch. 7, genitive and dative) on the drill page.
+- 2026-10-19 (later): block C pass 1 done, ch. 7 151/151 first try plus Mixed 20/20; A–B decks re-run clean (one typo, ι as "Iot"). Rules deck rebuilt with per-question choices. Next session: block C pass 2 (cold), then block D (ch. 8 prepositions and εἰμί).

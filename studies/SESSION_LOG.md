@@ -154,3 +154,16 @@ Greek review block A: alphabet and the ρ/ν/ω/η look-alike drill.
 
 ### Next
 Block A pass 2 and block B pass 2 (cold), then block C (ch. 7 genitive and dative).
+
+## 2026-10-19 — Greek review, block C pass 1
+
+### Done
+- Drill page rebuilt (new layout, study sheets, full ch. 7 decks); ch. 7 rules deck fixed (ἁμαρτία had no choices) and rewritten as plain questions with their own choices.
+- Owner ran every deck: A–B clean (one typo, ι typed "Iot", re-run 24/24); block C pass 1 151/151 first try, Mixed 20/20.
+
+### Open
+- Word order in object-first sentences: clean this session (13/13), keep watching.
+
+### Next
+Block C pass 2 (cold, separate session), then block D (ch. 8 prepositions and εἰμί).
+
