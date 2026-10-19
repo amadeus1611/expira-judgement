@@ -113,7 +113,7 @@ pre {
 <div class="wrap">
   <header>
     <h1>Greek <span>Letter Drill</span></h1>
-    <p class="sub">Mounce, BBG · review blocks A–B (ch. 3–6)</p>
+    <p class="sub">Mounce, BBG · review blocks A–C (ch. 3–7)</p>
   </header>
 
   <section class="howto" aria-label="How to use">
@@ -136,6 +136,32 @@ pre {
     </div>
     <p class="hint">Accents and capital letters don't matter.</p>
   </section>
+
+  <details class="howto study">
+    <summary><b>Ch. 7 study sheet</b> (open before the ch. 7 decks)</summary>
+    <p class="kt-title">1. Endings with the stem vowel (§7.8)</p>
+    <table class="para" lang="el"><tr><th></th><th>masc</th><th>fem</th><th>neut</th></tr>
+      <tr><th>gen sg</th><td>ου</td><td>ης · ας</td><td>ου</td></tr>
+      <tr><th>dat sg</th><td>ῳ</td><td>ῃ · ᾳ</td><td>ῳ</td></tr>
+      <tr><th>gen pl</th><td>ων</td><td>ων</td><td>ων</td></tr>
+      <tr><th>dat pl</th><td>οις</td><td>αις</td><td>οις</td></tr></table>
+    <p class="kt-title">2. The article, gen and dat (§7.10)</p>
+    <table class="para" lang="el"><tr><th></th><th>masc</th><th>fem</th><th>neut</th></tr>
+      <tr><th>gen sg</th><td>τοῦ</td><td>τῆς</td><td>τοῦ</td></tr>
+      <tr><th>dat sg</th><td>τῷ</td><td>τῇ</td><td>τῷ</td></tr>
+      <tr><th>gen pl</th><td>τῶν</td><td>τῶν</td><td>τῶν</td></tr>
+      <tr><th>dat pl</th><td>τοῖς</td><td>ταῖς</td><td>τοῖς</td></tr></table>
+    <p class="kt-title">3. Patterns that make it stick (§7.8 hints, §7.12–7.15)</p>
+    <ul>
+      <li><b>Genitive = "of"</b>, and it follows its head noun: ὁ λόγος τοῦ θεοῦ, the word of God.</li>
+      <li><b>Dative = "to"</b> (also in, with). The indirect object is dative.</li>
+      <li><b>Subscript ι = dative singular</b>, always. Nothing else has it (rule 4).</li>
+      <li><b>ων = genitive plural</b> in every gender.</li>
+      <li><b>Masc and neut are identical in gen and dat</b> (rule 6).</li>
+      <li><b>ας can be gen sg or acc pl</b>: let the article decide (τῆς ὥρας / τὰς ὥρας).</li>
+      <li><b>α after ε, ι, ρ stays</b> (ὥρας); otherwise it shifts to η in gen/dat sg (δόξης, δόξῃ).</li>
+    </ul>
+  </details>
 
   <details class="howto study">
     <summary><b>Ch. 6 study sheet</b> (open before the ch. 6 decks)</summary>
@@ -368,6 +394,71 @@ const PHRASE = [
   ["τὴν ὥραν","acc sg","τήν (η in the article) + ὥραν (α in the noun)."]
 ];
 
+// BBG ch. 7: genitive and dative. Each item: [prompt, answer, why].
+// §7.8 true endings for the gen and dat slots.
+const ENDINGS7 = [
+  ["masc gen sg","υ","λόγο-υ → λόγου (really ο contracting to ου, §7.8 n. 7)"],["masc dat sg","ι","λόγῳ: ο lengthens to ω, ι subscripts (rules 4–5)"],
+  ["masc gen pl","ων","λόγ-ων: ω absorbs the stem vowel (§7.3 n. 2)"],["masc dat pl","ις","λόγο-ις"],
+  ["fem gen sg","ς","γραφή-ς, ὥρα-ς"],["fem dat sg","ι","γραφῇ, ὥρᾳ: ι subscripts"],
+  ["fem gen pl","ων","γραφ-ῶν: every gender has ων (hint d)"],["fem dat pl","ις","γραφα-ῖς"],
+  ["neut gen sg","υ","ἔργου: same as masc (rule 6)"],["neut dat sg","ι","ἔργῳ: same as masc (rule 6)"],
+  ["neut gen pl","ων","ἔργων"],["neut dat pl","ις","ἔργοις: same as masc (rule 6)"]
+];
+// §7.10 the article: gen and dat forms (nom/acc reviewed from ch. 6).
+const ART7 = [
+  ["τοῦ","gen sg","masc or neut (rule 6)"],["τῆς","gen sg","fem"],["τῷ","dat sg","masc or neut; ι subscript = dat sg (§7.15)"],
+  ["τῇ","dat sg","fem; ι subscript"],["τῶν","gen pl","all three genders"],["τοῖς","dat pl","masc or neut"],
+  ["ταῖς","dat pl","fem"],["τὸν","acc sg","masc (ch. 6)"],["τὰς","acc pl","fem (ch. 6)"],["οἱ","nom pl","masc (ch. 6)"],
+  ["τά","nom/acc pl","neut (ch. 6)"],["τὴν","acc sg","fem (ch. 6)"]
+];
+// §7.11 paradigm and §7.15 detective work: parse case and number.
+const PARSE7 = [
+  ["λόγου","gen sg","ου on an ο stem: gen sg."],["λόγῳ","dat sg","Subscript ι = dat sg; nothing else (§7.15)."],
+  ["λόγων","gen pl","ων = gen pl in every gender."],["λόγοις","dat pl","ις, two letters: plural (hint c)."],
+  ["γραφῆς","gen sg","ης is fem gen sg."],["γραφῇ","dat sg","Subscript ι."],["γραφαῖς","dat pl","αις = fem dat pl."],
+  ["ἔργου","gen sg","Neuter gen = masc gen (rule 6)."],["ἔργοις","dat pl","Neuter dat = masc dat (rule 6)."],
+  ["τῆς ὥρας","gen sg","ὥρας alone could be gen sg or acc pl; the article τῆς decides (hint e)."],
+  ["τὰς ὥρας","acc pl","Same noun form; τάς makes it acc pl (hint e)."],
+  ["τοῦ Ἰησοῦ","gen sg","Ἰησοῦ is gen and dat; the article decides (§7.13)."],
+  ["τῷ Ἰησοῦ","dat sg","τῷ = dat (§7.13)."],["τῶν γραφῶν","gen pl","τῶν + ων."]
+];
+// §7.4–7.6 key words; §7.12 rules 4–6; §7.14 alpha-to-eta shift.
+const NRULES7 = [
+  ["Key word for the genitive","of","§7.4."],["Primary key word for the dative","to","§7.5: to, in, with; to is primary."],
+  ["The indirect object goes in the…","dative","§7.6."],
+  ["Rule 4","iota subscripts","In the dative singular, the iota subscripts if possible."],
+  ["Rule 5","vowels change length","Ablaut: λογο + ι → λόγῳ."],
+  ["Rule 6","masc = neut in gen and dat","In the genitive and dative, the masculine and neuter are always identical."],
+  ["All genders, gen pl ending","ων","Hint d."],
+  ["ὥρα: stem α after ρ. Gen sg?","ὥρας","After ε, ι, ρ the α stays (§7.14)."],
+  ["δόξα: stem α after ξ. Gen sg?","δόξης","Not after ε, ι, ρ, so α shifts to η (§7.14)."],
+  ["ἁμαρτία: gen sg?","ἁμαρτίας","α after ι stays: lexical form ἁμαρτία, -ας."],
+  ["Lexical listing gives the nom and the…","genitive","§7 vocabulary: always learn the genitive with the nominative."]
+];
+// Ch. 7 vocabulary declined on the §7.11 patterns. Typing key: ου = ou, ῳ = w.
+const DECLINE7 = [
+  ["κύριος → gen sg","kUrioU","τοῦ κυρίου, like λόγου."],["κύριος → dat sg","kUriw","τῷ κυρίῳ: ο → ω, ι subscript."],
+  ["υἱός → gen pl","Uiwn|hUiwn","τῶν υἱῶν: ων."],["υἱός → dat pl","Uiois|hUiois","τοῖς υἱοῖς."],
+  ["εὐαγγέλιον → gen sg","euaggelioU|euangelioU","τοῦ εὐαγγελίου: neuter like masc (rule 6)."],
+  ["εὐαγγέλιον → dat sg","euaggeliw|euangeliw","τῷ εὐαγγελίῳ."],
+  ["ἀρχή → gen sg","archHs","τῆς ἀρχῆς, like γραφῆς."],["ἀρχή → dat sg","archH","τῇ ἀρχῇ (ι subscript)."],
+  ["ἐξουσία → gen sg","eXoUsias","τῆς ἐξουσίας: α after ι stays (§7.14)."],
+  ["ἐξουσία → dat pl","eXoUsiais","ταῖς ἐξουσίαις."],
+  ["δόξα → gen sg","doXHs","τῆς δόξης: α after ξ shifts to η (§7.14)."],
+  ["οὐρανός → gen sg","oUranoU","τοῦ οὐρανοῦ."]
+];
+// §7.16: keep the genitive with its head noun; key words in translation.
+const READ7 = [
+  ["ὁ λόγος τοῦ θεοῦ","the word of God","Genitive follows its head noun; key word of (§7.16)."],
+  ["ἡ δόξα ἀνθρώπου","the glory of mankind","§7.4."],
+  ["ἡ βασιλεία τοῦ οὐρανοῦ","the kingdom of heaven","τοῦ οὐρανοῦ: gen sg, of."],
+  ["τῷ κυρίῳ","to the Lord","Dative: key word to."],
+  ["ὁ υἱὸς τοῦ ἀνθρώπου","the son of man","Genitive after its head noun."],
+  ["τὸ εὐαγγέλιον τοῦ Ἰησοῦ","the gospel of Jesus","τοῦ decides gen (§7.13)."],
+  ["τοῖς ἀποστόλοις","to the apostles","Dative plural: ις."],
+  ["ἡ ἀρχὴ τοῦ εὐαγγελίου","the beginning of the gospel","Gen sg neut: ου."]
+];
+
 const DECKS = {
   lookalike: { label: "Look-alikes", ask: "Type its name, then its English letter", kind: "both",
     items: () => ["η","ν","ρ","χ","ω","π"].map(l => LETTERS.find(x => x[0] === l)) },
@@ -397,6 +488,18 @@ const DECKS = {
     options: ["nom sg", "acc sg", "nom pl", "acc pl", "nom/acc sg", "nom/acc pl"], items: () => PARSE },
   nrules: { label: "Ch 6: Noun rules", ask: "Pick the answer", kind: "choice", text: true,
     options: ["1st declension", "2nd declension", "3rd declension", "nom and acc", "α", "case, number, gender", "ὁ", "there is none"], items: () => NRULES },
+  end7: { label: "Ch 7: Endings alone", ask: "Which ending goes in this slot?", kind: "choice", text: true,
+    options: ["υ", "ς", "ι", "ων", "ις"], items: () => ENDINGS7 },
+  art7: { label: "Ch 7: Read the article", ask: "Case and number of this article?", kind: "choice", text: true,
+    options: ["nom pl", "acc sg", "acc pl", "nom/acc pl", "gen sg", "dat sg", "gen pl", "dat pl"], items: () => ART7 },
+  parse7: { label: "Ch 7: Parse it", ask: "Case and number?", kind: "choice", text: true,
+    options: ["gen sg", "dat sg", "gen pl", "dat pl", "acc pl"], items: () => PARSE7 },
+  decl7: { label: "Ch 7: Decline it", ask: "Type the form (ου = ou, ῳ = w, η = h)", kind: "word", items: () => DECLINE7 },
+  rules7: { label: "Ch 7: Rules and key words", ask: "Pick the answer", kind: "choice", text: true, items: () => NRULES7,
+    optionsFor: it => it[0].includes("Gen sg?") ? (it[1].startsWith("δ") ? ["δόξας", "δόξης"] : it[1].startsWith("ὥ") ? ["ὥρας", "ὥρης"] : ["ἁμαρτίας", "ἁμαρτίης"])
+      : ["of", "to", "dative", "genitive", "iota subscripts", "vowels change length", "masc = neut in gen and dat", "ων"] },
+  read7: { label: "Ch 7: Translate", ask: "Pick the translation", kind: "choice", text: true, items: () => READ7,
+    optionsFor: it => shuffle([it[1], ...shuffle(READ7.filter(x => x !== it).map(x => x[1])).slice(0, 3)]) },
   subj: { label: "Ch 6: Subject or object", ask: "Pick the word", kind: "choice", text: true, items: () => SUBJ,
     optionsFor: it => it[0].split(" — ")[0].replace(".", "").split(" ").reduce((a, w, i, ws) => {
       const ART = ["ὁ", "τὸν", "τὴν", "τοὺς", "τὰς", "οἱ", "αἱ"];
