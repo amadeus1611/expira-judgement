@@ -428,7 +428,7 @@ const logEl = document.getElementById("log");
 let state = null;
 let history = load("gd-history", []);
 
-function renderLog() { logEl.textContent = history.length ? history.slice(-8).join("\n") : "No rounds finished yet."; }
+function renderLog() { const today = new Date().toISOString().slice(0, 10), shown = history.filter(l => l.startsWith(today)); logEl.textContent = shown.length ? shown.join("\n") : history.length ? history.slice(-8).join("\n") : "No rounds finished yet."; }
 
 function start(deckKey) {
   store("gd-deck", deckKey);
