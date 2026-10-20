@@ -45,16 +45,21 @@ mod processes {
     use super::*;
     use std::os::unix::fs::PermissionsExt;
     use std::path::PathBuf;
-    use std::process::Command;
-    use std::sync::RwLock;
+    use std::process::{Command, Output};
+    use std::sync::{PoisonError, RwLock, RwLockReadGuard};
 
-    /// Writing a fake engine while another test thread forks lets the child inherit
-    /// the open write handle, so running the engine fails with "Text file busy".
-    /// Writers take this lock exclusively; every process start holds it shared.
-    static FORK_LOCK: RwLock<()> = RwLock::new(());
+    /// Writing a fake engine while another test thread forks can leak the open
+    /// write handle into that child, and executing the script then fails with
+    /// "Text file busy" (ETXTBSY). Writers take the lock exclusively; every
+    /// process start shares it.
+    static SPAWN: RwLock<()> = RwLock::new(());
 
-    fn run(command: &mut Command) -> std::process::Output {
-        let _shared = FORK_LOCK.read().unwrap();
+    fn spawning() -> RwLockReadGuard<'static, ()> {
+        SPAWN.read().unwrap_or_else(PoisonError::into_inner)
+    }
+
+    fn run(command: &mut Command) -> Output {
+        let _spawning = spawning();
         command.output().unwrap()
     }
 
@@ -78,7 +83,7 @@ mod processes {
                 stdout = serde_json::to_string(stdout).unwrap(),
             );
             {
-                let _exclusive = FORK_LOCK.write().unwrap();
+                let _writing = SPAWN.write().unwrap_or_else(PoisonError::into_inner);
                 std::fs::write(&program, script).unwrap();
                 std::fs::set_permissions(&program, std::fs::Permissions::from_mode(0o700)).unwrap();
             }
@@ -104,11 +109,11 @@ mod processes {
         }
 
         fn check(&self, text: &str) -> Result<StudyReport, String> {
-            let _shared = FORK_LOCK.read().unwrap();
+            let _spawning = spawning();
             check_study(text, &self.source, Segmentation::Sentences, &self.engine)
         }
 
-        fn cli(&self, extra: &[&str]) -> std::process::Output {
+        fn cli(&self, extra: &[&str]) -> Output {
             let notes = self.dir.path().join("notes.txt");
             let source = self.dir.path().join("source.txt");
             std::fs::write(&notes, "One.").unwrap();
