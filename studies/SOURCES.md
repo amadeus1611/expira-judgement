@@ -77,3 +77,27 @@ Record a stable ID, title/author, original URL, version/section, actual access d
 inspection status, licence/reuse status and local excerpt/snapshot path when saved.
 Record EXPIRA report paths and verdicts separately. Preserve uncertainty and conflicting
 sources; resolve them before using affected questions in scored practice.
+
+## SRC-PHYS-UPV1-01
+
+- Subject tag: `PHYS`; prerequisite for `EE`.
+- Resource: OpenStax, University Physics Volume 1 (mechanics; waves and acoustics).
+- URL: https://openstax.org/details/books/university-physics-volume-1
+- Inspected 2026-10-20: OpenStax CMS record (state `live`) and archive table of
+  contents, book `d50f6e32-0fda-46ef-a362-9bd36ca7c97d`, version `d0ed34a`,
+  revised 2026-06-11. 17 chapters; sections listed in [PHYS tracker](subjects/phys/TRACKER.md).
+- Licence (archive metadata): CC BY-NC-SA 4.0.
+- Status: contents only. Section text, excerpts and claim checks still pending; the
+  owner will supply the PDF or sections. Recheck the version when using it.
+
+## SRC-PHYS-UPV2-01
+
+- Subject tag: `PHYS`; prerequisite for `EE`.
+- Resource: OpenStax, University Physics Volume 2 (thermodynamics; electricity and magnetism).
+- URL: https://openstax.org/details/books/university-physics-volume-2
+- Inspected 2026-10-20: archive table of contents, book
+  `7a0f9770-1c44-4acd-9920-1cd9a99f2a1e`, version `d0ed34a`, revised 2026-06-11.
+  Unit 1 Thermodynamics is ch. 1–4; Unit 2 Electricity and Magnetism is ch. 5–16.
+- Licence (CMS record): CC BY-NC-SA.
+- Status: contents only. Ch. 1 (Temperature and Heat) is in the pre-exam scope.
+
