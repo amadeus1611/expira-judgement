@@ -252,6 +252,38 @@ pre { margin: 0; white-space: pre-wrap; font-family: var(--mono); font-size: 12.
     </ul>
   </div>
 </template>
+<template id="sheet-8">
+  <div class="sheet-body">
+    <h3>The prepositions (ch. 8 vocabulary; εἰς and ἐν from earlier)</h3>
+    <p>Learn each one with its case: "διά with the genitive means through" (§8.7). The case of the object picks the meaning (§8.3).</p>
+    <div class="tablewrap"><table class="para"><tr><th></th><th>genitive</th><th>dative</th><th>accusative</th></tr>
+      <tr><th lang="el">ἀπό</th><td>(away) from</td><td></td><td></td></tr>
+      <tr><th lang="el">ἐκ, ἐξ</th><td>from, out of</td><td></td><td></td></tr>
+      <tr><th lang="el">διά</th><td>through</td><td></td><td>on account of</td></tr>
+      <tr><th lang="el">μετά</th><td>with</td><td></td><td>after</td></tr>
+      <tr><th lang="el">ὑπό</th><td>by</td><td></td><td>under</td></tr>
+      <tr><th lang="el">παρά</th><td>from</td><td>beside, in the presence of</td><td>alongside of</td></tr>
+      <tr><th lang="el">πρός</th><td></td><td></td><td>to, towards, with</td></tr>
+      <tr><th lang="el">ἐν</th><td></td><td>in, on, among</td><td></td></tr>
+      <tr><th lang="el">εἰς</th><td></td><td></td><td>into, in, among</td></tr></table></div>
+    <h3>εἰμί, present (§8.12) and ἦν (§8.14)</h3>
+    <div class="tablewrap"><table class="para"><tr><th></th><th>sg</th><th>pl</th></tr>
+      <tr><th>1st</th><td><span lang="el">εἰμί</span> I am</td><td><span lang="el">ἐσμέν</span> we are</td></tr>
+      <tr><th>2nd</th><td><span lang="el">εἶ</span> you are</td><td><span lang="el">ἐστέ</span> you are</td></tr>
+      <tr><th>3rd</th><td><span lang="el">ἐστί(ν)</span> he/she/it is</td><td><span lang="el">εἰσίν</span> they are</td></tr></table></div>
+    <p><span lang="el">ἦν</span> = he/she/it was. The ν in parentheses is a movable nu (§8.13).</p>
+    <h3>Rules (§8.5–8.17)</h3>
+    <ul>
+      <li><b>No key word after a preposition</b>: <span lang="el">ὁ λόγος ἀπὸ θεοῦ</span> = the word from God, not "from of God" (§8.5).</li>
+      <li><b>Prepositions don't inflect</b>; before a vowel the last vowel elides: <span lang="el">μετ’ αὐτόν</span>; before rough breathing the consonant changes too: <span lang="el">μεθ’ ἡμῶν</span> (§8.6). Also <span lang="el">ἀπ’/ἀφ’, ὑπ’/ὑφ’, δι’, παρ’</span>; <span lang="el">ἐκ</span> becomes <span lang="el">ἐξ</span> before a vowel.</li>
+      <li><b>The object is never nominative</b> (except rarely) (§8.3).</li>
+      <li><b>Why that case?</b> "αὐτῷ is in the dative because it is the object of the preposition ἐν that takes the dative" (§8.8).</li>
+      <li><b>Dependent clause</b> (ἵνα, ὅτι): never holds the main subject and verb (§8.9).</li>
+      <li><b>εἰμί takes a predicate nominative</b>: <span lang="el">θεός ἐστιν κύριος</span>, both nominative (§8.15).</li>
+      <li><b>The article is often dropped</b> in a prepositional phrase; put it back if it fits (§8.17).</li>
+    </ul>
+  </div>
+</template>
 
 <script>
 // Letters from BBG §3.2 chart. Answers use our typing key: w = ω; H = η (h or ey);
@@ -555,6 +587,84 @@ const NRULES7 = [
     ["its genitive singular","its plural","its accusative","its dative"]]
 ];
 
+// BBG ch. 8 vocabulary: preposition with a case gives a meaning (§8.3, §8.7).
+const PREP8 = [
+  ["ἀπό + genitive","(away) from","ἀπό with the genitive means (away) from."],
+  ["ἐκ + genitive","from, out of","ἐκ with the genitive means from, out of."],
+  ["διά + genitive","through","διά with the genitive means through."],
+  ["διά + accusative","on account of","διά with the accusative means on account of (§8.3)."],
+  ["μετά + genitive","with","μετά with the genitive means with (usually a person)."],
+  ["μετά + accusative","after","μετά with the accusative means after."],
+  ["ὑπό + genitive","by","ὑπό with the genitive means by (usually a person)."],
+  ["ὑπό + accusative","under","ὑπό with the accusative means under."],
+  ["παρά + genitive","from","παρά with the genitive means from."],
+  ["παρά + dative","beside, in the presence of","παρά with the dative means beside, in the presence of."],
+  ["παρά + accusative","alongside of","παρά with the accusative means alongside of."],
+  ["πρός + accusative","to, towards, with","πρός with the accusative means to, towards, with."],
+  ["ἐν + dative","in, on, among","ἐν with the dative means in, on, among."],
+  ["εἰς + accusative","into, in, among","εἰς with the accusative means into, in, among."]
+];
+const PREPCASES = ["genitive", "dative", "accusative", "gen or acc", "gen, dat or acc"];
+const CASE8 = [
+  ["ἀπό","genitive","Genitive only: (away) from."],["ἐκ","genitive","Genitive only: from, out of."],
+  ["ἐν","dative","Dative only: in (§8.3)."],["εἰς","accusative","Accusative only: into."],
+  ["πρός","accusative","Accusative (in this chapter): to, towards, with."],
+  ["διά","gen or acc","gen: through; acc: on account of."],["μετά","gen or acc","gen: with; acc: after."],
+  ["ὑπό","gen or acc","gen: by; acc: under."],["παρά","gen, dat or acc","gen: from; dat: beside; acc: alongside of."]
+];
+// Phrases: each item [Greek, answer, why, choices]. §8.5: no key word after a preposition.
+const PHRASE8 = [
+  ["ὁ λόγος ἀπὸ θεοῦ","the word from God","§8.5: θεοῦ is genitive because of ἀπό, so no \"of\".",["the word from God","the word from of God","the word of God","the word to God"]],
+  ["ὁ λόγος τοῦ θεοῦ","the word of God","No preposition: the genitive takes its key word of (§8.5).",["the word of God","the word from God","the word through God","the word by God"]],
+  ["ἐκ τοῦ οὐρανοῦ","out of heaven","ἐκ + gen.",["out of heaven","into heaven","of heaven","under heaven"]],
+  ["διὰ τοῦ λόγου","through the word","διά + gen = through.",["through the word","on account of the word","of the word","after the word"]],
+  ["διὰ τὸν λόγον","on account of the word","διά + acc = on account of.",["on account of the word","through the word","of the word","with the word"]],
+  ["μετὰ τοῦ Ἰησοῦ","with Jesus","μετά + gen = with.",["with Jesus","after Jesus","of Jesus","by Jesus"]],
+  ["μετὰ τὰς ἡμέρας","after the days","μετά + acc = after (τάς is acc pl).",["after the days","with the days","of the days","through the days"]],
+  ["ὑπὸ τοῦ κυρίου","by the Lord","ὑπό + gen = by.",["by the Lord","under the Lord","of the Lord","from the Lord"]],
+  ["ὑπὸ τὸν οἶκον","under the house","ὑπό + acc = under.",["under the house","by the house","of the house","into the house"]],
+  ["παρὰ τὴν θάλασσαν","alongside the sea","παρά + acc = alongside of.",["alongside the sea","from the sea","in the presence of the sea","of the sea"]],
+  ["πρὸς τὸν Ἰωάννην","to John","πρός + acc = to, towards.",["to John","from John","of John","by John"]],
+  ["ἐν τῇ οἰκίᾳ","in the house","ἐν + dat = in; no \"to\" (§8.5).",["in the house","to in the house","into the house","from the house"]],
+  ["εἰς κόσμον","into the world","§8.17: the article is often dropped; put it back if it fits.",["into the world","in a world of","out of the world","to of the world"]],
+  ["ἀπὸ τοῦ ὄχλου","from the crowd","ἀπό + gen; no \"of\".",["from the crowd","from of the crowd","of the crowd","under the crowd"]]
+];
+// §8.6 and the vocabulary notes: elided and altered forms.
+const ELIDE8 = [
+  ["μετά + αὐτόν","μετ’ αὐτόν","Vowel follows: the α drops (§8.6).",["μετ’ αὐτόν","μεθ’ αὐτόν","μετὰ αὐτόν"]],
+  ["μετά + ἡμῶν","μεθ’ ἡμῶν","Rough breathing follows: τ becomes θ too (§8.6).",["μεθ’ ἡμῶν","μετ’ ἡμῶν","μετὰ ἡμῶν"]],
+  ["ἀπό + αὐτοῦ","ἀπ’ αὐτοῦ","Vowel follows: the ο drops.",["ἀπ’ αὐτοῦ","ἀφ’ αὐτοῦ","ἀπὸ αὐτοῦ"]],
+  ["ἀπό + ἡμῶν","ἀφ’ ἡμῶν","Rough breathing: π becomes φ.",["ἀφ’ ἡμῶν","ἀπ’ ἡμῶν","ἀπὸ ἡμῶν"]],
+  ["ὑπό + αὐτοῦ","ὑπ’ αὐτοῦ","Vowel follows: the ο drops.",["ὑπ’ αὐτοῦ","ὑφ’ αὐτοῦ","ὑπὸ αὐτοῦ"]],
+  ["ὑπό + ἡμῶν","ὑφ’ ἡμῶν","Rough breathing: π becomes φ.",["ὑφ’ ἡμῶν","ὑπ’ ἡμῶν","ὑπὸ ἡμῶν"]],
+  ["διά + αὐτοῦ","δι’ αὐτοῦ","Vowel follows: the α drops.",["δι’ αὐτοῦ","διὰ αὐτοῦ","διθ’ αὐτοῦ"]],
+  ["ἐκ + αὐτοῦ","ἐξ αὐτοῦ","Before a vowel ἐκ is written ἐξ.",["ἐξ αὐτοῦ","ἐκ αὐτοῦ","ἐκ’ αὐτοῦ"]],
+  ["ἀλλά + Ἰησοῦς","ἀλλ’ Ἰησοῦς","Vowel follows: the final α elides.",["ἀλλ’ Ἰησοῦς","ἀλλὰ Ἰησοῦς","ἀλλθ’ Ἰησοῦς"]]
+];
+// §8.12 and §8.14.
+const EIMIS = ["I am", "you (sg) are", "he/she/it is", "we are", "you (pl) are", "they are", "he/she/it was"];
+const EIMI8 = [
+  ["εἰμί","I am","1st sg."],["εἶ","you (sg) are","2nd sg."],["ἐστί(ν)","he/she/it is","3rd sg; movable ν (§8.13)."],
+  ["ἐστίν","he/she/it is","3rd sg with movable ν."],["ἐσμέν","we are","1st pl."],["ἐστέ","you (pl) are","2nd pl."],
+  ["εἰσίν","they are","3rd pl; the ν is always there in our texts (§8.13)."],["ἦν","he/she/it was","Past of ἐστί(ν) (§8.14)."]
+];
+const EIMIT8 = [
+  ["I am","eimi","εἰμί"],["you (sg) are","ei","εἶ"],["he/she/it is","esti|estin","ἐστί(ν)"],
+  ["we are","esmen","ἐσμέν"],["you (pl) are","este","ἐστέ"],["they are","eisin","εἰσίν"],["he/she/it was","Hn","ἦν"]
+];
+const NRULES8 = [
+  ["In ὁ λόγος ἀπὸ θεοῦ, do you add \"of\" for θεοῦ?","no: it is genitive because of ἀπό","§8.5.",["no: it is genitive because of ἀπό","yes: every genitive gets \"of\""]],
+  ["What decides a preposition's meaning?","the case of its object","§8.3.",["the case of its object","its ending","the verb","word order"]],
+  ["Which case is the object of a preposition never in (except rarely)?","nominative","§8.3.",["nominative","genitive","dative","accusative"]],
+  ["Does παρά change its ending for gen, dat and acc?","no: prepositions are not inflected","§8.6; only elision changes it.",["no: prepositions are not inflected","yes: like a noun"]],
+  ["Why is αὐτῷ dative in ἐν αὐτῷ?","it is the object of ἐν, which takes the dative","§8.8 formula.",["it is the object of ἐν, which takes the dative","it is the indirect object","it shows possession","it is the subject"]],
+  ["Can the main subject and verb be inside a ἵνα clause?","no: a dependent clause never holds them","§8.9.",["no: a dependent clause never holds them","yes, often"]],
+  ["ἵνα means…","in order that, that","Ch. 8 vocabulary.",["in order that, that","but, yet","because","with"]],
+  ["θεός ἐστιν κύριος: what case is κύριος?","nominative (predicate nominative)","§8.15: εἰμί is followed by a predicate nominative.",["nominative (predicate nominative)","accusative (direct object)","genitive","dative"]],
+  ["Why the ν in εἰσὶν αὐτοί?","movable nu: avoids two vowels in a row","§8.13.",["movable nu: avoids two vowels in a row","it makes it plural","it marks the accusative"]],
+  ["εἰς κόσμον has no article. In English you…","may supply \"the\" if it fits","§8.17.",["may supply \"the\" if it fits","must leave it out","must add \"a\""]]
+];
+
 const DECKS = {
   lookalike: { label: "Look-alikes", ask: "Type its name, then its English letter", kind: "both",
     items: () => ["η","ν","ρ","χ","ω","π"].map(l => LETTERS.find(x => x[0] === l)) },
@@ -599,7 +709,18 @@ const DECKS = {
   read7: { label: "Ch 7: Translate", ask: "Pick the translation", kind: "choice", items: () => READ7,
     optionsFor: it => shuffle([it[1], ...shuffle(READ7.filter(x => x !== it).map(x => x[1])).slice(0, 3)]) },
   mix7: { label: "Ch 7: Mixed review", ask: "", kind: "mixed", items: () =>
-    ["end7", "art7", "parse7", "decl7", "read7"].flatMap(k => shuffle(DECKS[k].items()).slice(0, 4).map(it => ({ it, src: k }))) }
+    ["end7", "art7", "parse7", "decl7", "read7"].flatMap(k => shuffle(DECKS[k].items()).slice(0, 4).map(it => ({ it, src: k }))) },
+  prep8: { label: "Ch 8: Preposition meanings", ask: "What does it mean with this case?", kind: "choice", items: () => PREP8,
+    optionsFor: it => { const fam = s => s.includes("from") ? "from" : s;
+      return shuffle([it[1], ...shuffle(PREP8.filter(x => fam(x[1]) !== fam(it[1])).map(x => x[1])).slice(0, 4)]); } },
+  case8: { label: "Ch 8: Which case?", ask: "Which case(s) does it take?", kind: "choice", options: PREPCASES, items: () => CASE8 },
+  phrase8: { label: "Ch 8: Translate the phrase", ask: "Pick the translation", kind: "choice", items: () => PHRASE8, optionsFor: it => shuffle([...it[3]]) },
+  elide8: { label: "Ch 8: Elision", ask: "How is it written?", kind: "choice", items: () => ELIDE8, optionsFor: it => shuffle([...it[3]]) },
+  eimi8: { label: "Ch 8: Read εἰμί", ask: "What does it mean?", kind: "choice", options: EIMIS, items: () => EIMI8 },
+  eimit8: { label: "Ch 8: Type εἰμί", ask: "Type the Greek (typing key; ἦν = Hn)", kind: "word", labelPrompt: true, items: () => EIMIT8 },
+  rules8: { label: "Ch 8: Rules", ask: "Pick the answer", kind: "choice", items: () => NRULES8, optionsFor: it => shuffle([...it[3]]) },
+  mix8: { label: "Ch 8: Mixed review", ask: "", kind: "mixed", items: () =>
+    ["prep8", "case8", "phrase8", "elide8", "eimi8"].flatMap(k => shuffle(DECKS[k].items()).slice(0, 4).map(it => ({ it, src: k }))) }
 };
 
 // Deck list grouped by chapter. Sheets open a study page instead of a round.
@@ -608,9 +729,10 @@ const GROUPS = [
   { title: "Ch 3 · Alphabet", entries: ["lookalike", "names", "english", "words", "sigma", "breathing", "sound", "diph"] },
   { title: "Ch 4 · Marks and syllables", entries: ["marks", "count", "syll", "rules"] },
   { title: "Ch 6 · Nominative and accusative", entries: [{ sheet: "6", label: "Study sheet" }, "endings", "decline", "phrase", "article", "parse", "nrules", "subj"] },
-  { title: "Ch 7 · Genitive and dative", entries: [{ sheet: "7", label: "Study sheet" }, "end7", "artchart7", "art7", "artg7", "parse7", "decl7", "rules7", "read7", "mix7"] }
+  { title: "Ch 7 · Genitive and dative", entries: [{ sheet: "7", label: "Study sheet" }, "end7", "artchart7", "art7", "artg7", "parse7", "decl7", "rules7", "read7", "mix7"] },
+  { title: "Ch 8 · Prepositions and εἰμί", entries: [{ sheet: "8", label: "Study sheet" }, "prep8", "case8", "phrase8", "elide8", "eimi8", "eimit8", "rules8", "mix8"] }
 ];
-const SHEETS = { key: "Typing key and how to use", "6": "Ch 6 study sheet", "7": "Ch 7 study sheet" };
+const SHEETS = { key: "Typing key and how to use", "6": "Ch 6 study sheet", "7": "Ch 7 study sheet", "8": "Ch 8 study sheet" };
 
 function clean(s) {
   return s.toLowerCase().replace(/ō/g, "w").replace(/ē/g, "ey").normalize("NFD")
