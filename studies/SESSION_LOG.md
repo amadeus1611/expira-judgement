@@ -101,6 +101,39 @@ Review the four-bit response before advancing or assigning further counting prac
 ### Next
 Fill the tracker from the book, then write, check and run the placement diagnostic.
 
+## 2026-10-20 — CALC subject opened
+
+### Recorded
+- Opened `CALC` (README, STATE, ROADMAP, TRACKER) from the owner's setup prompt; source is
+  OpenStax *Calculus Volume 1*. Ch. 1-3 before the exams, ch. 4-6 and Volume 2 after.
+- No book text received yet, so no lesson, diagnostic or result. Tracker sections await the
+  book's table of contents. The `ENTRANCE` subject was read from its unmerged branch.
+
+### Next
+Owner provides the PDF or ch. 1-3 sections; record the source, fill the tracker, build the
+ch. 1 placement diagnostic.
+
+## 2026-10-20 — PHYS subject opened
+
+### Recorded
+- Opened `PHYS` on the owner's request: README (goal, source, method), STATE,
+  ROADMAP (proposed pre-exam and post-exam scope) and TRACKER (Vol. 1 ch. 1–17 and
+  Vol. 2 ch. 1–4 by section, all `not started`). Registered it in `SUBJECTS.md`
+  and linked it from `EE` without copying progress.
+- Inspected the OpenStax tables of contents for University Physics Vol. 1 and Vol. 2
+  (version `d0ed34a`) and added `SRC-PHYS-UPV1-01` and `SRC-PHYS-UPV2-01`. No section
+  text inspected, no claims checked, no lesson or diagnostic given.
+- Finding: Vol. 1 ends at ch. 17 (Sound); heat is Vol. 2 ch. 1, now in the pre-exam scope.
+- `studies/subjects/entrance/` did not exist, so it was not read. `CALC` opened in parallel;
+  PHYS links to it, with no calculus coverage recorded yet.
+
+### Open
+- Vol. 1 PDF or sections from the owner; calculus coverage (none recorded).
+
+### Next
+Write and check the placement diagnostic from the supplied sections, present it as an
+interactive artifact, and record the pasted log in the PHYS tracker and state.
+
 ## 2026-10-20 — BIO subject opened
 
 ### Recorded

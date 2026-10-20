@@ -640,3 +640,11 @@ calibration data, and do not propose decision-block changes.
 ### Next
 - Review the actual transfer response; resolve remaining counting gaps before the
   next concept. Continue saving tested study updates under standing merge authorization.
+
+## 2026-10-20 — Study records: PHYS subject opened
+
+- Done: `studies/subjects/phys/` (README, STATE, ROADMAP, TRACKER) from the inspected
+  OpenStax University Physics tables of contents; registry, EE link, sources, hub state,
+  study handoff and session log updated. No code, tests, lints or CI changed.
+- Open: no lesson or diagnostic yet; waits for the owner's Vol. 1 PDF or sections.
+- Next: PHYS placement diagnostic, per `studies/subjects/phys/STATE.md`.
