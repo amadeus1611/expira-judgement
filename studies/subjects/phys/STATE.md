@@ -8,7 +8,7 @@ Last updated: 2026-10-20 (Asia/Manila).
   inspected or checked. The owner will supply the PDF or the sections.
 - Finding: Vol. 1 ends with Chapter 17 (Sound). Heat is in Vol. 2 Unit 1
   (ch. 1, Temperature and Heat), so the pre-exam scope needs Vol. 2 ch. 1 as well.
-- Calculus coverage: none recorded (no calculus subject opened yet). Use algebra forms.
+- Calculus coverage: none recorded in [CALC](../calc/STATE.md). Use algebra forms.
 - Placement diagnostic: not yet written or taken.
 - Timing: the owner's plan places the main PHYS block after the trigonometry and
   chemistry blocks. The real pace is set by placement results.

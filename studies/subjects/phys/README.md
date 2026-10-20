@@ -8,8 +8,7 @@ covers physics, then carry the subject into first-year electrical engineering.
   in [SOURCES.md](../../SOURCES.md). Teach only from the book, cite chapter and section,
   and check each lesson's factual claims with `ej-study`; check calculations by
   derivation, units and an independent computation ([procedures](../../PROCEDURES.md)).
-- Mathematics: use calculus only where the owner has covered it in a calculus subject
-  (not yet opened); otherwise use the algebra form the book also gives.
+- Mathematics: use calculus only where the owner has covered it in [CALC](../calc/README.md); otherwise use the algebra form the book also gives.
 - EE link: this subject is a prerequisite record for [EE](../electrical-engineering/README.md).
   EE links here; progress is kept only in this folder.
 
