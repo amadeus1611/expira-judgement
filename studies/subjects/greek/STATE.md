@@ -1,0 +1,62 @@
+# GREEK — Current state
+
+Last updated: 2026-10-18.
+
+- Text: Mounce BBG 2nd ed. (`SRC-GREEK-MOUNCE-BBG2`), following Track One since 2026-10-18 (was Track Two); see
+  [ROADMAP.md](ROADMAP.md).
+- Chapters 1–9 and 15: done in Codex; the owner asked (2026-10-16) that completed
+  Codex lessons be assumed done. Not re-tested here. Chapters 10–14 come next after
+  the review (Track One).
+- Ch. 16 Present Active Indicative: `in progress`. Owner recalled the endings
+  `-ομεν`, `-ετε`. Taught 2026-10-16: endings ω, εις, ει, ομεν, ετε, ουσι(ν); real
+  endings; connecting vowel rule; agreement. Checked: 8 claims backed, 1 dropped
+  test claim, 1 paraphrase unsure (restated in the book's wording).
+  See `reports/GREEK-016-*`. Lesson test 2026-10-16 (observed answers): full λύω
+  paradigm correct; parsed βλέπομεν, γράφουσιν, λέγετε, ἀκούεις correctly; produced
+  πιστεύουσι(ν). Missed Q10: could not state the connecting-vowel rule (ο before μ/ν,
+  else ε). Wrote ν as "v" in transliteration (should be "n"). Status: `demonstrated`
+  for endings; connecting-vowel rule `needs review` (restated it correctly right after the correction; recheck from cold next session).
+- `GREEK-032A` present active infinitive `-ειν`: `in progress`. Owner said this is
+  the next lesson ("the ein"). Taught 2026-10-16; 10 claims backed, 1 deliberate
+  false test claim left unsure and dropped. See `reports/GREEK-032A-*`. Observed:
+  produced γράφειν and ἀκούειν, told γράφει from γράφειν, recognised ἔχειν as an
+  infinitive (glossed "to keep"; book gloss is "I have", so "to have"). `demonstrated`.
+- Test score 2026-10-16: 9 of 10 (Q10 missed).
+- Checker setup: no local judge model or policy installed; paraphrases come back
+  `unsure`, and a false claim also came back `unsure` rather than `mismatch`.
+
+- 2026-10-18: connecting-vowel rule recalled cold (ε before τε; reason given as "from
+  ετε", then stated in full by the teacher) → `demonstrated`.
+- Ch. 17 Contract Verbs: taught 2026-10-18 (§17.1–17.8, Big Five, rules 6–8, paradigm,
+  elimination method). Checked 11 claims with ej-study `--lines`: 1 backed, 10 `unsure`
+  ("no judge available"; the OCR source splits words, e.g. "w hose", so word-for-word
+  matching misses). All 11 were checked by hand against the book text. See
+  `reports/GREEK-017-*`. Observed: named α/ε/ο; rebuilt ποιεῖτε, ἀγαπᾶτε, ἀγαπῶμεν,
+  πληροῦτε, ποιοῦσι, ποιεῖς, ἀγαπᾷ, πληροῖ correctly; parsed ποιοῦσι (pres act ind
+  3 pl); listed the three ου forms of πληρόω; used the elimination method on πληροῦτε
+  after the worked example. Needed the answer for the εο/οο ambiguity and for the first
+  elimination question; rule numbers often left out. Status: `demonstrated`.
+- Transliteration slips: ρ written as "p" (3×), π read as ν once; "ei" called a long e.
+  Typing convention: `w` = ω, `h` = η.
+- Owner chose a review plateau (2026-10-18): drill ch. 1–17 as studied until solid,
+  before ch. 18. Plan and progress: [REVIEW.md](REVIEW.md).
+
+- Switched to Track One 2026-10-18 (owner had followed it in their own study; the
+  verbs-first order was confusing). After the review: ch. 10–14, then 18 onward.
+
+- Block A pass 1, alphabet part (2026-10-18, interactive drill): 87/87 first try across
+  look-alikes, names, letter → English, word transliteration and σ/ς. Pass 2 is due in
+  a later session.
+
+Next: rest of block A (§3.4–3.5 pronunciation, breathing marks, diphthongs; ch. 4). Was: review block A (alphabet; ρ/ν/ω/η drill) per [REVIEW.md](REVIEW.md). See [TRACKER.md](TRACKER.md).
+- 2026-10-18 review session (drill page, results pasted by the owner): block A pass 1
+  done, ch. 3–4 146/146 first try. Block B pass 1 done: ch. 6 forms 66/66 first try
+  (endings, declining ch. 6 nouns, article, parsing, noun rules 1–3). Weak spot: word
+  order. Twice took position over ending (ψυχὰς σώσει θεός; τὸν λόγον σώσει θεός),
+  fixed on re-run. Subject/object deck widened to 13 items. From now on quizzes run on
+  the drill artifact, not in chat (owner request).
+- Next session: block A pass 2 (cold), block B pass 2 with the 13-item subject/object
+  deck, then block C (ch. 7 genitive and dative).
+
+- 2026-10-19: review blocks A and B drilled (pass 2 cold). Next session: block C (ch. 7, genitive and dative) on the drill page.
+- 2026-10-19 (later): block C pass 1 done, ch. 7 151/151 first try plus Mixed 20/20; A–B decks re-run clean (one typo, ι as "Iot"). Rules deck rebuilt with per-question choices. Next session: block C pass 2 (cold), then block D (ch. 8 prepositions and εἰμί).

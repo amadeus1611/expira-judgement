@@ -46,6 +46,17 @@ mod processes {
     use std::os::unix::fs::PermissionsExt;
     use std::path::PathBuf;
     use std::process::Command;
+    use std::sync::RwLock;
+
+    /// Writing a fake engine while another test thread forks can leak the write
+    /// handle into that child, so running the engine fails with "Text file busy"
+    /// (ETXTBSY). Writes hold this lock exclusively; process spawns share it.
+    static SPAWN: RwLock<()> = RwLock::new(());
+
+    fn run(command: &mut Command) -> std::process::Output {
+        let _guard = SPAWN.read().unwrap();
+        command.output().unwrap()
+    }
 
     struct Fixture {
         dir: tempfile::TempDir,
@@ -66,7 +77,9 @@ mod processes {
                  sys.stdout.write({stdout})\nsys.exit({status})\n",
                 stdout = serde_json::to_string(stdout).unwrap(),
             );
+            let guard = SPAWN.write().unwrap();
             std::fs::write(&program, script).unwrap();
+            drop(guard);
             std::fs::set_permissions(&program, std::fs::Permissions::from_mode(0o700)).unwrap();
             Self {
                 engine: Engine {
@@ -90,6 +103,7 @@ mod processes {
         }
 
         fn check(&self, text: &str) -> Result<StudyReport, String> {
+            let _guard = SPAWN.read().unwrap();
             check_study(text, &self.source, Segmentation::Sentences, &self.engine)
         }
 
@@ -98,16 +112,14 @@ mod processes {
             let source = self.dir.path().join("source.txt");
             std::fs::write(&notes, "One.").unwrap();
             std::fs::write(&source, &self.source.quote).unwrap();
-            Command::new(env!("CARGO_BIN_EXE_ej-study"))
+            run(Command::new(env!("CARGO_BIN_EXE_ej-study"))
                 .args(["--text", notes.to_str().unwrap()])
                 .args(["--source", source.to_str().unwrap()])
                 .args(["--source-date", &self.source.date])
                 .args(["--today", &self.engine.today])
                 .arg("--ej")
                 .arg(&self.engine.program)
-                .args(extra)
-                .output()
-                .unwrap()
+                .args(extra))
         }
     }
 
@@ -298,14 +310,9 @@ mod processes {
         let output = fixture.cli(&[]); // Incomplete engine results.
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
-        let output = Command::new(env!("CARGO_BIN_EXE_ej-study"))
-            .output()
-            .unwrap();
+        let output = run(&mut Command::new(env!("CARGO_BIN_EXE_ej-study")));
         assert_eq!(output.status.code(), Some(2));
-        let output = Command::new(env!("CARGO_BIN_EXE_ej-study"))
-            .arg("--help")
-            .output()
-            .unwrap();
+        let output = run(Command::new(env!("CARGO_BIN_EXE_ej-study")).arg("--help"));
         assert!(output.status.success());
         assert!(String::from_utf8(output.stdout)
             .unwrap()
@@ -346,12 +353,10 @@ mod processes {
         std::fs::remove_file(fixture.engine.program.with_extension("request")).unwrap();
         // Deleting the source tests a CLI IO failure before the engine is called.
         let missing = fixture.dir.path().join("missing.txt");
-        let output = Command::new(env!("CARGO_BIN_EXE_ej-study"))
+        let output = run(Command::new(env!("CARGO_BIN_EXE_ej-study"))
             .args(["--text", missing.to_str().unwrap()])
             .args(["--source", missing.to_str().unwrap()])
-            .args(["--source-date", "2026-10-14", "--today", "2026-10-14"])
-            .output()
-            .unwrap();
+            .args(["--source-date", "2026-10-14", "--today", "2026-10-14"]));
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
         assert!(!fixture.engine.program.with_extension("request").exists());

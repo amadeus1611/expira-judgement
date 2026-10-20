@@ -1,0 +1,87 @@
+# GREEK — Review plateau (ch. 1–17)
+
+Started 2026-10-18 at the owner's request: drill everything studied so far until it
+is solid, before going on to ch. 10. This covers the chapters studied up to now:
+ch. 1–9, 15, 16, `-ειν` (ch. 32 part) and 17. Ch. 10–14 have not been studied yet;
+they come next, after this review (Track One, chosen 2026-10-18).
+
+Order: blocks A–E (ch. 1–9) first, then F–H (the verbs).
+
+Each topic is taught again from Mounce BBG 2nd ed. and checked with ej-study before
+quizzing, just like a new lesson. No content is written here from memory.
+
+## How a review session runs
+
+1. Warm-up (2 min): the look-alike letters, cold (see the drill below).
+2. One block from the table: short re-teach from the book, then a quiz.
+3. Mixed recall: 3 questions from blocks already passed.
+4. Record the observed answers here and in STATE.
+
+## When a block is done
+
+A block is `drilled` after **two cold passes in separate sessions**, with no hints:
+every quiz answer correct, or the only slip fixed by the owner without being told.
+
+## Blocks
+
+| Block | Chapters | Topic | Pass 1 | Pass 2 | Status |
+|---|---|---|---|---|---|
+| A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | 2026-10-18 ch. 3–4: 146/146 first try | | drilled: pass 2 2026-10-19 cold (Which rule? 11/11 seen; owner reports the ch. 3 decks and Marks, Count, Syllables done, scores not pasted because the log was cut off) |
+| B | 5–6 | English nouns; nominative and accusative; the article 2026-10-18 ch. 6: 36/37 first try; one slip (picked first word ψυχὰς as subject), then a clean 5/5 re-run | | drilled: pass 2 2026-10-19 cold, 79/79 first try (Endings 12/12, Decline 12/12, Read article 10/10, Add article 14/14, Parse 10/10, Noun rules 8/8, Subject or object 13/13) |
+| C | 7 | Genitive and dative | 2026-10-19 ch. 7: 151/151 first try (Endings 24/24, Article chart 24/24, Read article 17/17, Article gender 17/17, Parse 23/23, Decline 20/20, Rules and key words 11/11, Translate 12/12), Mixed 20/20 | | pass 1 done; pass 2 cold next session |
+| D | 8 | Prepositions and εἰμί | | | not started |
+| E | 9 | Adjectives | | | not started |
+| F | 15–16 | Introduction to verbs; present active indicative; connecting vowel | | | not started |
+| G | 32A | Present active infinitive `-ειν` | | | not started |
+| H | 17 | Contract verbs: the Big Five, rules 6–8, paradigm, elimination | | | not started |
+
+Ch. 1–2 (the Greek language; learning Greek) are background, with no forms to drill.
+
+## Interactive drill
+
+Typing drill page for block A: `drill/greek-drill.html`, published as a private artifact
+(https://claude.ai/artifact/92qbzE9svJcCcEbK98b2JU). Decks: look-alikes, letter names, letter → English,
+word transliteration, σ/ς, breathing marks, say it, diphthongs; ch. 4 marks, count syllables, split it, which rule. From 2026-10-18 all quizzes run in artifacts, not chat (owner request). Each round ends with a results line the owner pastes back
+for the record.
+
+## Standing drill: look-alike letters
+
+Typing convention agreed 2026-10-18: `w` = ω and `h` = η (owner: η's capital is Η; `ey` also accepted) when typing (a keyboard
+shortcut, not the printed transliteration ō / ē).
+
+| Letter | Name | Is | Not |
+|---|---|---|---|
+| ρ | rho | r | p |
+| ν | nu | n | v |
+| ω | omega | ō (`w`) | w (the English letter) |
+| η | eta | ē (`h`) | n |
+
+Slips seen (block B): took the first word as subject in ψυχὰς σώσει θεός (2026-10-18); watch word order in pass 2.
+
+Slips seen: ν as "v" (2026-10-16); ρ as "p" three times, π read as ν once (2026-10-18).
+
+## Drill results (pasted by the owner)
+
+- 2026-10-18 Look-alikes: 6/6 first try; no misses
+- 2026-10-18 Letter names: 24/24 first try; no misses
+- 2026-10-18 Letter → English: 24/24 first try; no misses
+- 2026-10-18 Transliterate words: 23/23 first try; no misses
+- 2026-10-18 σ or ς: 10/10 first try; no misses
+- 2026-10-18 Breathing marks: 8/8 first try; no misses
+- 2026-10-18 Say it: 5/5 first try; no misses
+- 2026-10-18 Diphthongs: 8/8 first try; no misses
+- 2026-10-18 Ch 4: Marks: 8/8 first try; no misses
+- 2026-10-18 Ch 4: Count syllables: 6/6 first try; no misses
+- 2026-10-18 Ch 4: Split it: 13/13 first try; no misses
+- 2026-10-18 Ch 4: Which rule?: 11/11 first try; no misses
+- 2026-10-18 Ch 6: Add the article: 14/14 first try; no misses
+- 2026-10-18 Ch 6: Parse it: 10/10 first try; no misses
+- 2026-10-18 Ch 6: Noun rules: 8/8 first try; no misses
+- 2026-10-18 Ch 6: Subject or object: 4/5 first try; missed ψυχὰς σώσει θεός. — subject?: typed "ψυχὰς"
+- 2026-10-18 Ch 6: Subject or object: 5/5 first try; no misses (re-run)
+- 2026-10-18 Ch 6: Endings alone: 12/12 first try; no misses
+- 2026-10-18 Ch 6: Decline it: 12/12 first try; no misses
+- 2026-10-18 Ch 6: Read the article: 10/10 first try; no misses
+- 2026-10-18 Ch 6 (round 2): Add the article 14/14, Parse it 10/10, Noun rules 8/8
+- 2026-10-18 Ch 6: Subject or object: 4/5 first try; missed τὸν λόγον σώσει θεός. — direct object?: typed "θεός" (second word-order slip); re-run 5/5. Deck widened to 13 items.
+- 2026-10-19 full run, A–C: ch. 3–6 decks all clean except Letter names 23/24 (typed "Iot" for ι; re-run 24/24). Ch. 7 (block C pass 1): Endings 24/24, Article chart 24/24, Read the article 17/17, Article gender 17/17, Parse it 23/23, Decline it 20/20, Rules and key words 11/11, Translate 12/12, Mixed review 20/20.

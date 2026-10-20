@@ -1,0 +1,187 @@
+{
+  "source": {
+    "source": "Mounce BBG 2nd ed. ch.32 overview, 32.1-32.8",
+    "date": "2026-10-16",
+    "quote": "The Greek infinitive is a verbal noun. It is not declined.\nAll infinitive morphemes, except for the present active and second aorist active, end in αι.\nThe infinitive has no time significance, only aspect: continuous; undefined; perfected.\nThe infinitive does not have a subject, but there will often be a word in the accusative functioning as if it were the subject.\nAn infinitive is most easily recognized as a verb preceded by the word \"to.\"\nIt is always indeclinable (which means it has no case), but is viewed as singular neuter.\nWhen it is preceded by a definite article, the article is always neuter singular and its case is determined by the function of the infinitive.\nThe infinitive has no person and no number!\nInfinitives can occur in three tenses: present, aorist, perfect.\nThe present active infinitive ending is ειν. The present active infinitive of λύω is λύειν.\nThe present (\"continuous\") infinitive is built on the present tense stem.\nThe infinitive built on the present stem indicates a continuous action.\nYou may at first want to use \"continue\" in your translation of the present infinitive. βλέπειν means \"to continue to see.\"\nThis is because ειν is actually a contraction of εεν.\n"
+  },
+  "today": "2026-10-16",
+  "segmentation": "lines",
+  "claims": [
+    {
+      "candidate": {
+        "id": "claim-1",
+        "start": 0,
+        "end": 38,
+        "text": "The Greek infinitive is a verbal noun."
+      },
+      "finding": {
+        "claim_id": "claim-1",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-2",
+        "start": 39,
+        "end": 82,
+        "text": "The infinitive has no person and no number!"
+      },
+      "finding": {
+        "claim_id": "claim-2",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-3",
+        "start": 83,
+        "end": 130,
+        "text": "The present active infinitive ending is ειν."
+      },
+      "finding": {
+        "claim_id": "claim-3",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-4",
+        "start": 131,
+        "end": 185,
+        "text": "The present active infinitive of λύω is λύειν."
+      },
+      "finding": {
+        "claim_id": "claim-4",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-5",
+        "start": 186,
+        "end": 259,
+        "text": "The present (\"continuous\") infinitive is built on the present tense stem."
+      },
+      "finding": {
+        "claim_id": "claim-5",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-6",
+        "start": 260,
+        "end": 331,
+        "text": "The infinitive built on the present stem indicates a continuous action."
+      },
+      "finding": {
+        "claim_id": "claim-6",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-7",
+        "start": 332,
+        "end": 419,
+        "text": "The infinitive has no time significance, only aspect: continuous; undefined; perfected."
+      },
+      "finding": {
+        "claim_id": "claim-7",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-8",
+        "start": 420,
+        "end": 463,
+        "text": "ειν is actually a contraction of εεν."
+      },
+      "finding": {
+        "claim_id": "claim-8",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-9",
+        "start": 464,
+        "end": 506,
+        "text": "βλέπειν means \"to continue to see.\""
+      },
+      "finding": {
+        "claim_id": "claim-9",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-10",
+        "start": 507,
+        "end": 583,
+        "text": "An infinitive is most easily recognized as a verb preceded by the word \"to.\""
+      },
+      "finding": {
+        "claim_id": "claim-10",
+        "verdict": "backed",
+        "layer": "deterministic",
+        "confidence": 1.0,
+        "reason": "claim appears word for word in a quote"
+      },
+      "flagged": false
+    },
+    {
+      "candidate": {
+        "id": "claim-11",
+        "start": 584,
+        "end": 633,
+        "text": "The infinitive tells you who is doing the action."
+      },
+      "finding": {
+        "claim_id": "claim-11",
+        "verdict": "unsure",
+        "layer": "deterministic",
+        "confidence": 0.0,
+        "reason": "no judge available"
+      },
+      "flagged": true
+    }
+  ]
+}
