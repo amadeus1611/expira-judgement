@@ -8,6 +8,7 @@ from each track that uses them.
 |---|---|---|---|
 | `FOUND` | Computing foundations | [Computing foundations](subjects/computing-foundations/README.md) | `FOUND-001` in progress; first diagnostic reviewed, transfer response pending |
 | `SECPLUS` | CompTIA Security+ preparation | [Security+](subjects/security-plus/README.md) | Primary near-term goal; prerequisites first, exam version unconfirmed |
+| `CHEM` | General chemistry (OpenStax) | [Chemistry](subjects/chem/README.md) | Opened 2026-10-20; book choice and placement diagnostic pending |
 | `EE` | Electrical engineering | [Electrical engineering](subjects/electrical-engineering/README.md) | Intended future degree; specific courses not selected |
 
 Manufacturing, semiconductors and industrial/embedded security are recorded interests,
