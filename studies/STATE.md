@@ -15,6 +15,8 @@ Last updated: 2026-10-20 (Asia/Manila).
   record correct byte conversion/program roles and an acknowledged counting correction.
 - Exam track: [SECPLUS state](subjects/security-plus/STATE.md); version/objectives
   and date unconfirmed, no scored practice or readiness assessment.
+- `CHEM` opened 2026-10-20: [CHEM state](subjects/chem/STATE.md); waiting for the
+  book PDF, then a placement diagnostic.
 - Physics: [PHYS state](subjects/phys/STATE.md); opened 2026-10-20, records only,
   no lesson or diagnostic yet. Waits for the owner's Vol. 1 PDF or sections.
 - Future degree: [EE state](subjects/electrical-engineering/STATE.md); specific

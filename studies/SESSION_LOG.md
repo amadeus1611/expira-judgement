@@ -87,6 +87,20 @@ the lesson. Save subsequent substantive exchanges through `PROCEDURES.md`.
 ### Next
 Review the four-bit response before advancing or assigning further counting practice.
 
+## 2026-10-20 — CHEM subject opened
+
+### Recorded
+- Opened `CHEM` (general chemistry, OpenStax) at the owner's request: README, STATE,
+  ROADMAP and TRACKER under `subjects/chem/`, and a row in `SUBJECTS.md`.
+- No teaching, diagnostic or results yet. The book (*Chemistry 2e* or *Atoms First 2e*)
+  is not chosen and no PDF has been supplied.
+
+### Open
+- Book choice and PDF; the tracker's section rows come from its table of contents.
+
+### Next
+Fill the tracker from the book, then write, check and run the placement diagnostic.
+
 ## 2026-10-20 — PHYS subject opened
 
 ### Recorded
@@ -106,4 +120,3 @@ Review the four-bit response before advancing or assigning further counting prac
 ### Next
 Write and check the placement diagnostic from the supplied sections, present it as an
 interactive artifact, and record the pasted log in the PHYS tracker and state.
-
