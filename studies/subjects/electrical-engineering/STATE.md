@@ -5,6 +5,7 @@ Last updated: 2026-10-14 (Asia/Manila).
 - Phase: future goal; no EE lesson, assessment or enrollment recorded.
 - Specific courses, syllabus, prerequisites and schedule: not selected.
 - Interests: manufacturing, semiconductors and related industrial/embedded security.
+- Physics prerequisite: [PHYS state](../phys/STATE.md) (opened 2026-10-20).
 - Shared computing evidence: [FOUND state](../computing-foundations/STATE.md).
 - Later reference candidate: `SRC-OT-NIST-01` in [SOURCES.md](../../SOURCES.md),
   rather than an assumed degree syllabus or current Security+ objective.

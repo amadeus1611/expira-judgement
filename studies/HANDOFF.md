@@ -1,6 +1,6 @@
 # Quick handoff for the next teacher (Claude or Codex/GPT)
 
-Last updated: 2026-10-14 (Asia/Manila).
+Last updated: 2026-10-20 (Asia/Manila).
 
 The owner is starting from scratch and can study full time. Teach code explicitly,
 explain from first principles, and build repeatable sandbox labs when their concepts
@@ -32,6 +32,10 @@ instructions still apply. Use the current session's user direction over older pl
 - The initial integration/memory PR #12 is merged. Save substantive exchanges promptly
   under the owner's merge preference in `PROCEDURES.md`; server auto-merge remains
   disabled and the connection cannot enable it. Do not assume `--auto` queues a merge.
+
+- `PHYS` opened 2026-10-20 (records only): resume from [its STATE](subjects/phys/STATE.md).
+  Vol. 1 has no heat chapter; heat is Vol. 2 ch. 1. `subjects/entrance/` did not exist
+  when PHYS was opened, so no entrance record was read.
 
 ## Maintain continuity
 
