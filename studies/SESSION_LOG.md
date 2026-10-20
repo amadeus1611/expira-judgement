@@ -86,3 +86,16 @@ the lesson. Save subsequent substantive exchanges through `PROCEDURES.md`.
 
 ### Next
 Review the four-bit response before advancing or assigning further counting practice.
+
+## 2026-10-20 — REASON subject opened
+
+### Recorded
+- Opened `REASON` (abstract and verbal reasoning practice) with README, STATE and TRACKER;
+  registered it in SUBJECTS.md. Test sections are unpublished; the pattern types are a
+  labelled assumption.
+- Issued drill `REASON-001` v1: 10 practice items written by Claude (not official items),
+  each with one answer and its rule, timer and pasteable per-item log.
+- `studies/subjects/entrance/` does not exist yet, so it could not be read.
+
+### Next
+Record the learner's `REASON-001` log by pattern type and build `REASON-002`.
