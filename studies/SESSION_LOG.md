@@ -86,3 +86,15 @@ the lesson. Save subsequent substantive exchanges through `PROCEDURES.md`.
 
 ### Next
 Review the four-bit response before advancing or assigning further counting practice.
+
+## 2026-10-20 — CALC subject opened
+
+### Recorded
+- Opened `CALC` (README, STATE, ROADMAP, TRACKER) from the owner's setup prompt; source is
+  OpenStax *Calculus Volume 1*. Ch. 1-3 before the exams, ch. 4-6 and Volume 2 after.
+- No book text received yet, so no lesson, diagnostic or result. Tracker sections await the
+  book's table of contents. The `ENTRANCE` subject was read from its unmerged branch.
+
+### Next
+Owner provides the PDF or ch. 1-3 sections; record the source, fill the tracker, build the
+ch. 1 placement diagnostic.
