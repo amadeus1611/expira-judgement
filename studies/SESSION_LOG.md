@@ -86,3 +86,17 @@ the lesson. Save subsequent substantive exchanges through `PROCEDURES.md`.
 
 ### Next
 Review the four-bit response before advancing or assigning further counting practice.
+
+## 2026-10-20 — BIO subject opened
+
+### Recorded
+- Opened `BIO` (light, optional general-biology review) with README, STATE and TRACKER,
+  and registered it in `SUBJECTS.md`. Source: OpenStax *Concepts of Biology*.
+- No lesson content written: the owner's copy is not provided yet, and content is taught
+  only from the book. `subjects/entrance/` referenced by the setup does not exist yet.
+
+### Open
+- Book PDF/sections; whether the aptitude test has a science part.
+
+### Next
+Map planned topics to book sections, then the first summary and HTML quiz.
