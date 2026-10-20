@@ -1,0 +1,89 @@
+<title>Pattern Types Drill</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* Layout: one narrow column, one item card at a time, log panel below */
+:root{--bg:#eef1f4;--panel:#ffffff;--ink:#1b2430;--muted:#5d6a7a;--accent:#2f5bd3;--good:#1f7a4d;--bad:#b3261e;--line:#cdd5df;
+--display:"Fraunces",Georgia,serif;--body:"Atkinson Hyperlegible",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121821;--panel:#1b2330;--ink:#e6ebf2;--muted:#98a5b6;--accent:#7f9ff5;--good:#5cc58e;--bad:#f08a80;--line:#334152;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121821;--panel:#1b2330;--ink:#e6ebf2;--muted:#98a5b6;--accent:#7f9ff5;--good:#5cc58e;--bad:#f08a80;--line:#334152;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
+.wrap{max-width:640px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+h1{font:600 1.7rem/1.2 var(--display);margin:0;text-wrap:balance}
+.note{color:var(--muted);font-size:.9rem;margin:0}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:.85rem;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:14px}
+.type{font:700 .72rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.q{margin:0;font-size:1.05rem}
+.stem{display:flex;flex-wrap:wrap;gap:8px;align-items:center;overflow-x:auto}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;cursor:pointer;display:flex;gap:8px;align-items:center;justify-content:center}
+button:hover{border-color:var(--accent)}button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.ok{border-color:var(--good);color:var(--good)}button.no{border-color:var(--bad);color:var(--bad)}
+.primary{background:var(--accent);color:var(--panel);border-color:var(--accent)}
+.why{border-top:1px solid var(--line);padding-top:12px;margin:0}
+svg{flex:none}svg .s{stroke:var(--ink);fill:none;stroke-width:2.5}svg .f{fill:var(--ink);stroke:var(--ink);stroke-width:2.5}svg .box{fill:none;stroke:var(--line)}svg text{fill:var(--muted);font:20px var(--mono)}
+textarea{width:100%;box-sizing:border-box;min-height:160px;font:12px/1.4 var(--mono);background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px}
+label{display:flex;gap:6px;align-items:center}
+</style>
+<div class="wrap">
+  <header style="display:grid;gap:6px">
+    <h1>REASON-001 · Pattern types</h1>
+    <p class="note">Practice items written for you. They are not official or past exam items. Untimed by default: get each type right first.</p>
+  </header>
+  <div class="bar"><span id="pos"></span><label><input type="checkbox" id="timed"> timed mode (60 s target per item)</label><span id="clock">0 s</span></div>
+  <section class="card" id="card"></section>
+  <section class="card" id="logbox" hidden>
+    <div class="type">Results log: copy and paste it back into the chat</div>
+    <textarea id="log" readonly></textarea>
+    <button class="primary" id="copy">Copy log</button>
+  </section>
+</div>
+<script>
+const NS="http://www.w3.org/2000/svg";
+function svg(inner,w=72,h=72){return `<svg width="${w}" height="${h}" viewBox="0 0 72 72"><rect class="box" x="1" y="1" width="70" height="70" rx="6"/>${inner}</svg>`}
+const arrow=a=>svg(`<g transform="rotate(${a} 36 36)"><line class="s" x1="36" y1="56" x2="36" y2="16"/><path class="f" d="M36 12 L28 24 L44 24 Z"/></g>`);
+function poly(n,fill){const p=[];for(let i=0;i<n;i++){const t=-Math.PI/2+2*Math.PI*i/n;p.push((36+24*Math.cos(t)).toFixed(1)+","+(36+24*Math.sin(t)).toFixed(1))}return `<polygon class="${fill?'f':'s'}" points="${p.join(" ")}"/>`}
+const shape=(k,fill)=>svg(k==="c"?`<circle class="${fill?'f':'s'}" cx="36" cy="36" r="22"/>`:k==="q"?`<rect class="${fill?'f':'s'}" x="15" y="15" width="42" height="42"/>`:poly(3,fill));
+const ell=(rot,mir)=>svg(`<g transform="rotate(${rot} 36 36) ${mir?'translate(72 0) scale(-1 1)':''}"><path class="s" d="M26 14 V56 H48"/><circle class="f" cx="48" cy="14" r="4"/></g>`);
+const q=svg(`<text x="29" y="44">?</text>`);
+const items=[
+{type:"Figure series",q:"The arrow changes by the same rule each step. Which comes next?",stem:[0,45,90,135].map(arrow).concat(q),opts:[[arrow(180),1],[arrow(225),0],[arrow(90),0],[arrow(0),0]],why:"Each step turns the arrow 45° clockwise: 0°, 45°, 90°, 135°, so next is 180° (pointing down)."},
+{type:"Figure series",q:"Which figure comes next?",stem:[3,4,5,6].map(n=>svg(poly(n))).concat(q),opts:[[svg(poly(8)),0],[svg(poly(7)),1],[svg(poly(5)),0],[svg(poly(6)),0]],why:"The number of sides goes up by one each step: 3, 4, 5, 6, so next has 7 sides."},
+{type:"Matrix",q:"Each shape appears once in every row and every column, and every row has exactly one filled shape. Which fills the empty cell?",matrix:[["c",0],["q",1],["t",0],["q",0],["t",0],["c",1],["t",1],["c",0],null],opts:[[shape("q",0),1],[shape("q",1),0],[shape("c",0),0],[shape("t",1),0]],why:"Row 3 already has a triangle and a circle, so the cell is a square (column 3 also lacks one). Each row has one filled shape; row 3's filled shape is the triangle, so the square is hollow."},
+{type:"Odd one out",q:"Three figures are the same figure turned. Which one cannot be made by turning?",opts:[[ell(0,0),0],[ell(90,0),0],[ell(0,1),1],[ell(180,0),0]],why:"The third figure is a mirror image (dot on the other side of the corner). Rotation never turns a figure into its mirror image."},
+{type:"Figure analogy",q:"Hollow circle is to filled circle as hollow triangle is to:",stem:[shape("c",0),svg('<text x="22" y="44">→</text>'),shape("c",1),svg('<text x="20" y="44">::</text>'),shape("t",0),svg('<text x="22" y="44">→</text>'),q],opts:[[shape("t",0),0],[shape("q",1),0],[shape("t",1),1],[shape("c",1),0]],why:"The change is hollow to filled with the shape kept the same, so the answer is a filled triangle."},
+{type:"Number series",q:"2, 6, 12, 20, 30, ?",opts:[["40",0],["42",1],["44",0],["36",0]],why:"The differences are 4, 6, 8, 10, so the next difference is 12: 30 + 12 = 42. (Also n×(n+1): 1×2, 2×3, … 6×7.)"},
+{type:"Number series",q:"81, 27, 9, 3, ?",opts:[["0",0],["1",1],["2",0],["−3",0]],why:"Each term is divided by 3: 3 ÷ 3 = 1."},
+{type:"Number series",q:"5, 7, 11, 17, 25, ?",opts:[["33",0],["35",1],["37",0],["31",0]],why:"The differences are 2, 4, 6, 8, so the next is 10: 25 + 10 = 35."},
+{type:"Verbal analogy",q:"Thermometer is to temperature as barometer is to:",opts:[["humidity",0],["wind speed",0],["air pressure",1],["altitude",0]],why:"A thermometer measures temperature; a barometer measures air (atmospheric) pressure."},
+{type:"Verbal odd one out",q:"Which word does not belong: copper, aluminium, silver, rubber?",opts:[["copper",0],["aluminium",0],["silver",0],["rubber",1]],why:"Copper, aluminium and silver are metals and conduct electricity well; rubber is not a metal and is an insulator."}
+];
+let i=0,t0=0,tick,log=[],done=false;
+const $=id=>document.getElementById(id);
+function render(){
+  const it=items[i];done=false;$("pos").textContent=`Item ${i+1} of ${items.length}`;
+  let stem="";
+  if(it.matrix){stem=`<div style="display:grid;grid-template-columns:repeat(3,72px);gap:6px">${it.matrix.map(c=>c?shape(c[0],c[1]):q).join("")}</div>`}
+  else if(it.stem){stem=it.stem.join("")}
+  $("card").innerHTML=`<div class="type">${it.type}</div><p class="q">${it.q}</p>${stem?`<div class="stem">${stem}</div>`:""}<div class="opts">${it.opts.map((o,k)=>`<button id="o${k}" data-k="${k}"><b>${"ABCD"[k]}</b>${o[0]}</button>`).join("")}</div><p class="why" id="why" hidden></p><button class="primary" id="next" hidden>${i+1<items.length?"Next item":"Finish"}</button>`;
+  $("card").querySelectorAll(".opts button").forEach(b=>b.onclick=()=>pick(+b.dataset.k));
+  $("next").onclick=()=>{i++;i<items.length?render():finish()};
+  t0=performance.now();clearInterval(tick);tick=setInterval(()=>{const s=Math.round((performance.now()-t0)/1000);$("clock").textContent=s+" s"+($("timed").checked&&s>60?" (over target)":"")},250);
+}
+function pick(k){
+  if(done)return;done=true;clearInterval(tick);
+  const it=items[i],sec=((performance.now()-t0)/1000).toFixed(1),ok=it.opts[k][1]===1;
+  it.opts.forEach((o,j)=>{if(o[1])$("o"+j).classList.add("ok")});if(!ok)$("o"+k).classList.add("no");
+  $("why").hidden=false;$("why").innerHTML=(ok?"<b>Correct.</b> ":"<b>Not quite.</b> ")+it.why;$("next").hidden=false;$("next").focus();
+  log.push(`${i+1}\t${it.type}\t${"ABCD"[k]}\t${ok?"correct":"wrong"}\t${sec}s`);
+}
+function finish(){
+  $("card").innerHTML=`<div class="type">Done</div><p class="q">${log.filter(l=>l.includes("correct")).length} of ${items.length} correct.</p>`;
+  $("pos").textContent="Finished";
+  $("log").value=`REASON-001 v1 | ${new Date().toISOString().slice(0,16)} | mode: ${$("timed").checked?"timed":"untimed"}\nitem\ttype\tanswer\tresult\tseconds\n`+log.join("\n");
+  $("logbox").hidden=false;
+}
+$("copy").onclick=()=>{navigator.clipboard.writeText($("log").value).then(()=>$("copy").textContent="Copied",()=>{$("log").select();$("copy").textContent="Select and copy the text above"})};
+render();
+</script>
