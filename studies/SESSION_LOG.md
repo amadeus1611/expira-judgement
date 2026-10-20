@@ -87,6 +87,21 @@ the lesson. Save subsequent substantive exchanges through `PROCEDURES.md`.
 ### Next
 Review the four-bit response before advancing or assigning further counting practice.
 
+## 2026-10-20 — ENTRANCE plan widened
+
+### Recorded
+- Brought the `ENTRANCE` subject files onto this branch. Widened the roadmap: SAT on Khan
+  (Claude helps only), and six book subjects for the exams and first year, with one shared
+  study and recovery method. Biology is optional and light.
+- Setup prompts for each book subject were given in chat (they contain personal details,
+  so they are not committed).
+
+### Open
+- The aptitude test's sections are still unconfirmed. Book subjects are opened in their own sessions.
+
+### Next
+Timed diagnostic for `ENTRANCE`; open `TRIG` first.
+
 ## 2026-10-20 — CHEM subject opened
 
 ### Recorded
