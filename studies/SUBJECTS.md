@@ -9,6 +9,7 @@ from each track that uses them.
 | `FOUND` | Computing foundations | [Computing foundations](subjects/computing-foundations/README.md) | `FOUND-001` in progress; first diagnostic reviewed, transfer response pending |
 | `SECPLUS` | CompTIA Security+ preparation | [Security+](subjects/security-plus/README.md) | Primary near-term goal; prerequisites first, exam version unconfirmed |
 | `EE` | Electrical engineering | [Electrical engineering](subjects/electrical-engineering/README.md) | Intended future degree; specific courses not selected |
+| `ENTR` | Entrance-exam preparation | [Entrance](subjects/entrance/README.md) | SAT-style Reading & Writing helper (Khan Academy is the teacher); no logs yet |
 
 Manufacturing, semiconductors and industrial/embedded security are recorded interests,
 not assumed enrollments or completed courses. Add other subjects when requested;
