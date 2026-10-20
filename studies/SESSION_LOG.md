@@ -86,3 +86,14 @@ the lesson. Save subsequent substantive exchanges through `PROCEDURES.md`.
 
 ### Next
 Review the four-bit response before advancing or assigning further counting practice.
+
+## 2026-10-20 — ENTR opened (SAT-style Reading & Writing helper)
+
+### Recorded
+- Opened subject `ENTR` with a Reading & Writing track in helper mode: Khan Academy
+  teaches; Claude answers questions, explains mistakes and records timed logs.
+- Pacing target about 70 s per question; a unit is done after two clean timed passes
+  in separate sessions. No results recorded yet.
+
+### Next
+Record the first Khan diagnostic or unit result in `subjects/entrance/STATE.md`.
