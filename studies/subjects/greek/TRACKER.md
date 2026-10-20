@@ -75,3 +75,4 @@ Tick a set only after it is produced correctly from memory in a session.
 - 2026-10-18 review: block A (ch. 3–4) pass 1 done, 146/146. Block B (ch. 5–6) pass 1 done,
   ch. 6 forms 66/66; word-order slips ×2 (fixed on re-run). Pass 2 for both is due next session.
 - 2026-10-19 review: block C (ch. 7) pass 1 done, 151/151 first try plus Mixed 20/20. Next: block C pass 2 cold, then block D (ch. 8).
+- 2026-10-20 review: block C (ch. 7) drilled (pass 2 cold 168/168). Next: block D (ch. 8).
