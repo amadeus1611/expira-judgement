@@ -12,6 +12,7 @@ from each track that uses them.
 | `PHYS` | Calculus-based physics | [Physics](subjects/phys/README.md) | Opened 2026-10-20; entrance-exam prep, then first-year EE; no lesson yet |
 | `EE` | Electrical engineering | [Electrical engineering](subjects/electrical-engineering/README.md) | Intended future degree; specific courses not selected |
 | `CALC` | Calculus | [Calculus](subjects/calc/README.md) | Opened 2026-10-20; waiting for book sections before the placement diagnostic |
+| `BIO` | Light general-biology review (optional) | [Biology](subjects/bio/README.md) | Opened 2026-10-20; awaiting book sections; close if no science part is confirmed |
 
 Manufacturing, semiconductors and industrial/embedded security are recorded interests,
 not assumed enrollments or completed courses. Add other subjects when requested;

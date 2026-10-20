@@ -133,3 +133,17 @@ ch. 1 placement diagnostic.
 ### Next
 Write and check the placement diagnostic from the supplied sections, present it as an
 interactive artifact, and record the pasted log in the PHYS tracker and state.
+
+## 2026-10-20 — BIO subject opened
+
+### Recorded
+- Opened `BIO` (light, optional general-biology review) with README, STATE and TRACKER,
+  and registered it in `SUBJECTS.md`. Source: OpenStax *Concepts of Biology*.
+- No lesson content written: the owner's copy is not provided yet, and content is taught
+  only from the book. `subjects/entrance/` referenced by the setup does not exist yet.
+
+### Open
+- Book PDF/sections; whether the aptitude test has a science part.
+
+### Next
+Map planned topics to book sections, then the first summary and HTML quiz.
