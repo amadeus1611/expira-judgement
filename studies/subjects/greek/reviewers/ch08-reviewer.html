@@ -1,0 +1,264 @@
+<title>Prepositions and εἰμί</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; ten steps in learning order, each ending in a recall check you open after answering in your head. */
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --fg:#1d2430; --muted:#5b6575; --line:#d9dee6;
+  --accent:#2f5d8a; --accent-soft:#e6eef7; --good:#2e7d4f;
+  --greek:"Gentium Book Plus","Gentium Plus",Georgia,serif;
+  --body:"Literata",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --panel:#1a2029; --fg:#e4e8ee; --muted:#9aa4b3; --line:#2c3440;
+  --accent:#86b2dc; --accent-soft:#1f2c3b; --good:#7cc79a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --panel:#1a2029; --fg:#e4e8ee; --muted:#9aa4b3; --line:#2c3440;
+  --accent:#86b2dc; --accent-soft:#1f2c3b; --good:#7cc79a; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.65 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+main{max-width:44rem;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2{text-wrap:balance;line-height:1.25;margin:0}
+h1{font:600 2rem/1.2 var(--body)}
+h2{font:600 1.35rem/1.3 var(--body)}
+.g{font-family:var(--greek);font-size:1.12em}
+.eyebrow{font:500 .75rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.lede{color:var(--muted);margin:8px 0 0}
+section{display:flex;flex-direction:column;gap:12px}
+p{margin:0}
+.src{font:.75rem var(--mono);color:var(--muted)}
+.map{display:flex;flex-wrap:wrap;gap:6px;font:.8rem var(--mono)}
+.map a{color:var(--accent);text-decoration:none;border:1px solid var(--line);padding:2px 8px;border-radius:4px}
+.map a:hover,.map a:focus-visible{background:var(--accent-soft)}
+.bridge{font-style:italic;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px}
+.key{background:var(--accent-soft);padding:12px 14px;border-radius:6px}
+.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{font:500 .72rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.num{font-variant-numeric:tabular-nums;color:var(--muted)}
+ul,ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:4px}
+details{background:var(--panel);border:1px solid var(--line);border-radius:6px}
+summary{cursor:pointer;padding:10px 14px;font:500 .85rem var(--mono);color:var(--accent)}
+summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+details ol{padding:0 14px 12px 2.2em}
+.ans{color:var(--good)}
+.note{font-size:.88rem;color:var(--muted)}
+</style>
+
+<main>
+<header>
+  <div class="eyebrow">BBG ch. 8 · Block D</div>
+  <h1>Prepositions and <span class="g">εἰμί</span></h1>
+  <p class="lede">Ten steps in order. Each step uses the one before it. Read a step, then answer its check in your head before you open the answers. Section numbers (§) point to Mounce, <i>Basics of Biblical Greek</i>, 2nd ed., chapter 8.</p>
+</header>
+
+<nav class="map" aria-label="Steps">
+  <a href="#s1">1 What it is</a><a href="#s2">2 Case → meaning</a><a href="#s3">3 The nine</a><a href="#s4">4 Translating</a><a href="#s5">5 Elision</a><a href="#s6">6 Movable ν</a><a href="#s7">7 Persons</a><a href="#s8">8 εἰμί</a><a href="#s9">9 Pred. nom.</a><a href="#s10">10 Clauses</a><a href="#s11">Final check</a>
+</nav>
+
+<section id="s1">
+  <div class="eyebrow">Step 1 · §8.1</div>
+  <h2>A preposition links two words</h2>
+  <p>"The book is <b>under</b> the table." <i>Under</i> states how <i>book</i> relates to <i>table</i>. The word after the preposition is its <b>object</b>. The preposition, its object and any modifiers make up a <b>prepositional phrase</b>.</p>
+  <p>Even in English the object takes a special form: "under <i>him</i>", never "under <i>he</i>". Greek takes the same idea further.</p>
+  <details><summary>Check</summary><ol>
+    <li>In "John came with his disciples", what is the object? <span class="ans">disciples (the phrase is "with his disciples")</span></li>
+    <li>Why is "under he" wrong? <span class="ans">The object takes the objective case (him), not the subjective (he).</span></li>
+  </ol></details>
+  <p class="bridge">If English puts the object in a special form, what does Greek do with that form? Step 2.</p>
+</section>
+
+<section id="s2">
+  <div class="eyebrow">Step 2 · §8.3, 8.4, 8.7, 8.8</div>
+  <h2>In Greek the case of the object picks the meaning</h2>
+  <p>A Greek preposition's object is in the genitive, dative or accusative, and that case decides what the preposition means. <span class="g">διά</span> + genitive means "through". <span class="g">διά</span> + accusative means "on account of".</p>
+  <ul>
+    <li>The object almost always comes right after the preposition.</li>
+    <li>The object is never nominative, except in rare cases.</li>
+    <li>Strictly, the preposition governs the case of its object. When translating, though, you read the case first and get the meaning from it (§8.3, footnote 1).</li>
+  </ul>
+  <div class="key"><b>Learn each meaning as a pair (§8.7):</b> "<span class="g">ἐν</span> with the dative means <i>in</i>."<br>
+  <b>To explain a case (§8.8):</b> "<span class="g">αὐτῷ</span> is in the dative because it is the object of the preposition <span class="g">ἐν</span>, which takes the dative."</div>
+  <p class="note">So make one flashcard for each preposition-and-case pair (§8.4), not one per preposition.</p>
+  <details><summary>Check</summary><ol>
+    <li>What decides the meaning of <span class="g">διά</span>? <span class="ans">The case of its object.</span></li>
+    <li>Which case never follows a preposition? <span class="ans">The nominative (apart from rare exceptions).</span></li>
+    <li>How many cards does <span class="g">διά</span> need? <span class="ans">Two: one for the genitive, one for the accusative.</span></li>
+  </ol></details>
+  <p class="bridge">With that rule, nine prepositions sort themselves by how many cases each takes. Step 3.</p>
+</section>
+
+<section id="s3">
+  <div class="eyebrow">Step 3 · Vocabulary, §8.3</div>
+  <h2>The nine prepositions, grouped by number of cases</h2>
+  <p>Learn the one-case words first, as opposite pairs. Then the two-case words. Then <span class="g">παρά</span>, the only one here that takes three cases. BBG suggests learning them in pairs such as <span class="g">πρός</span> and <span class="g">ἀπό</span>.</p>
+  <div class="wrap"><table>
+    <thead><tr><th>Preposition</th><th>Gen</th><th>Dat</th><th>Acc</th><th>NT uses</th></tr></thead>
+    <tbody>
+      <tr><td colspan="5"><b>One case: two opposite pairs</b></td></tr>
+      <tr><td class="g">εἰς</td><td></td><td></td><td>into, in, among</td><td class="num">(ch. 7)</td></tr>
+      <tr><td class="g">ἐκ, ἐξ</td><td>from, out of</td><td></td><td></td><td class="num">914</td></tr>
+      <tr><td class="g">πρός</td><td></td><td></td><td>to, towards, with</td><td class="num">700</td></tr>
+      <tr><td class="g">ἀπό</td><td>(away) from</td><td></td><td></td><td class="num">646</td></tr>
+      <tr><td class="g">ἐν</td><td></td><td>in, on, among</td><td></td><td class="num">(ch. 7)</td></tr>
+      <tr><td colspan="5"><b>Two cases</b></td></tr>
+      <tr><td class="g">διά</td><td>through</td><td></td><td>on account of</td><td class="num">667</td></tr>
+      <tr><td class="g">μετά</td><td>with</td><td></td><td>after</td><td class="num">469</td></tr>
+      <tr><td class="g">ὑπό</td><td>by</td><td></td><td>under</td><td class="num">220</td></tr>
+      <tr><td colspan="5"><b>Three cases</b></td></tr>
+      <tr><td class="g">παρά</td><td>from</td><td>beside, in the presence of</td><td>alongside of</td><td class="num">194</td></tr>
+    </tbody>
+  </table></div>
+  <div class="key"><b>Pattern to notice (my summary of the table):</b> every genitive meaning that answers "from where?" (<span class="g">ἐκ, ἀπό, παρά</span>) is a genitive. Motion toward a place is accusative (<span class="g">εἰς, πρός</span>). Being at rest in a place is dative (<span class="g">ἐν</span>, <span class="g">παρά</span>+dat). Not every meaning fits: <span class="g">διά</span>+gen and <span class="g">μετά</span>+gen don't. BBG makes a related point: the accusative meanings are the ones that "can normally be graphed" in space.</div>
+  <p class="note">BBG notes two things about objects. The object of <span class="g">μετά</span>+gen is usually a person; <span class="g">σύν</span> is used for impersonal objects. The object of <span class="g">ὑπό</span> is usually a person too (footnotes 16 and 22).</p>
+  <details><summary>Check (say the full formula aloud)</summary><ol>
+    <li><span class="g">ὑπό</span> + accusative <span class="ans">under</span></li>
+    <li><span class="g">ὑπό</span> + genitive <span class="ans">by</span></li>
+    <li><span class="g">μετά</span> + accusative <span class="ans">after</span></li>
+    <li><span class="g">παρά</span> + dative <span class="ans">beside, in the presence of</span></li>
+    <li>Name the "from" opposite of <span class="g">εἰς</span>, and of <span class="g">πρός</span>. <span class="ans">ἐκ; ἀπό</span></li>
+    <li>Which case does <span class="g">ἐν</span> take? <span class="ans">Dative only.</span></li>
+  </ol></details>
+  <p class="bridge">Now that you know the meanings, put them into English. Step 3 also changes how you handle the genitive and dative key words. Step 4.</p>
+</section>
+
+<section id="s4">
+  <div class="eyebrow">Step 4 · §8.5, 8.16, 8.17</div>
+  <h2>Translating a phrase</h2>
+  <ol>
+    <li><b>No key word (§8.5).</b> A genitive or dative that is the object of a preposition does not take "of" or "to". The preposition supplies the meaning.<br>
+      <span class="g">ὁ λόγος τοῦ θεοῦ</span> = the word <i>of</i> God (genitive of possession, so the key word is used).<br>
+      <span class="g">ὁ λόγος ἀπὸ θεοῦ</span> = the word <i>from</i> God. Not "from of God".</li>
+    <li><b>Treat the phrase as one unit (§8.16).</b> When you split a sentence into parts, keep the phrase together and find the word it modifies, usually the verb: <span class="g">ὁ λόγος / ἔρχεται / εἰς τὸν κόσμον</span>.</li>
+    <li><b>Add the article back if needed (§8.17).</b> Greek often drops the article in a phrase: <span class="g">εἰς κόσμον</span> can be "into <i>the</i> world".</li>
+  </ol>
+  <details><summary>Check</summary><ol>
+    <li><span class="g">ἐκ τοῦ οἴκου</span> <span class="ans">out of (from) the house. No "of".</span></li>
+    <li><span class="g">ἐν τῇ θαλάσσῃ</span> <span class="ans">in the sea. No "to".</span></li>
+    <li><span class="g">μετὰ τοῦ ὄχλου</span> <span class="ans">with the crowd</span></li>
+    <li><span class="g">μετὰ τὰς ἡμέρας</span> <span class="ans">after the days</span></li>
+    <li><span class="g">ὑπὸ τοῦ θεοῦ</span> <span class="ans">by God</span></li>
+  </ol></details>
+  <p class="bridge">Prepositions never inflect, so the only time a preposition's form changes is because of the sound of the word after it. Step 5.</p>
+</section>
+
+<section id="s5">
+  <div class="eyebrow">Step 5 · §8.6, vocab footnotes</div>
+  <h2>Elision: prepositions don't inflect, but they shorten</h2>
+  <p><span class="g">παρά</span> is <span class="g">παρά</span> with any case. The only change has to do with sound. When the preposition ends in a vowel and the next word starts with one, the final vowel drops and an apostrophe takes its place (elision, cf. §4.2). If the next word also has rough breathing, the consonant before the apostrophe changes too, because the combination is easier to pronounce.</p>
+  <div class="wrap"><table>
+    <thead><tr><th>Full form</th><th>Before a vowel</th><th>Before rough breathing</th></tr></thead>
+    <tbody>
+      <tr><td class="g">μετά</td><td class="g">μετ’</td><td class="g">μεθ’</td></tr>
+      <tr><td class="g">ἀπό</td><td class="g">ἀπ’</td><td class="g">ἀφ’</td></tr>
+      <tr><td class="g">ὑπό</td><td class="g">ὑπ’</td><td class="g">ὑφ’</td></tr>
+      <tr><td class="g">διά</td><td class="g">δι’</td><td></td></tr>
+      <tr><td class="g">παρά</td><td class="g">παρ’</td><td></td></tr>
+      <tr><td class="g">ἀλλά</td><td class="g">ἀλλ’</td><td></td></tr>
+    </tbody>
+  </table></div>
+  <p>The rule: before rough breathing, π becomes φ and τ becomes θ. ἀλλά (but) is a conjunction, not a preposition, but it elides the same way.</p>
+  <p><span class="g">ἐκ / ἐξ</span> works differently: there is no apostrophe. It is <span class="g">ἐξ</span> before a vowel and <span class="g">ἐκ</span> before a consonant. BBG explains that the real form is ἐξ (ξ = "ks" + s), and the s drops between consonants.</p>
+  <details><summary>Check</summary><ol>
+    <li><span class="g">μετὰ ἡμῶν</span> becomes <span class="ans">μεθ’ ἡμῶν</span></li>
+    <li><span class="g">ἀπὸ αὐτοῦ</span> becomes <span class="ans">ἀπ’ αὐτοῦ (smooth breathing, so π stays)</span></li>
+    <li>You see <span class="g">ὑφ’</span>. What is the full form? <span class="ans">ὑπό</span></li>
+    <li><span class="g">ἐκ</span> + <span class="g">οἴκου</span> <span class="ans">ἐξ οἴκου</span></li>
+  </ol></details>
+  <p class="bridge">Elision fixes two vowels meeting by removing one. Greek has a second fix for the same problem: adding a consonant. That fix leads to εἰμί. Step 6.</p>
+</section>
+
+<section id="s6">
+  <div class="eyebrow">Step 6 · §8.13</div>
+  <h2>Movable ν: the other fix for two vowels meeting</h2>
+  <p>A word ending in a vowel can add a ν when the next word starts with a vowel: <span class="g">εἰσιν αὐτοί</span>. The ν separates the two vowel sounds, much as English "a" becomes "an". In Koine it sometimes appears before consonants too, especially on dative plurals. You only need to recognize it, not decide when to use it.</p>
+  <div class="key">Elision removes a vowel: <span class="g">μετ’ αὐτόν</span>. Movable ν adds a consonant: <span class="g">ἐστιν ἐν</span>.</div>
+  <details><summary>Check</summary><ol>
+    <li>Why does <span class="g">ἐστί(ν)</span> have the ν in parentheses? <span class="ans">It is a movable ν: it may or may not appear.</span></li>
+    <li>Do you ever see <span class="g">εἰσί</span> without the ν? <span class="ans">No. In our texts the ν is always there.</span></li>
+  </ol></details>
+  <p class="bridge">To read <span class="g">ἐστί(ν)</span> and <span class="g">εἰσίν</span> you need verb endings and person. Step 7.</p>
+</section>
+
+<section id="s7">
+  <div class="eyebrow">Step 7 · §8.10, 8.11</div>
+  <h2>Just enough verb grammar: stem, ending, person</h2>
+  <p>A verb is made of a <b>stem</b>, which carries its meaning, plus a <b>personal ending</b>, which shows person and number. There are three persons, the same ones you met in the pronouns: <span class="g">ἐγώ</span> (1st, I), <span class="g">σύ</span> (2nd, you), <span class="g">αὐτός</span> (3rd, he, she, it). Each has a singular and a plural. <span class="g">γράφεις</span> = you write; <span class="g">γράφει</span> = he writes. A verb agrees with its subject in person and number.</p>
+  <p class="note">Verbs are covered properly from ch. 15 (§8.10). Chapter 8 teaches only <span class="g">εἰμί</span>, because it is the most common verb.</p>
+  <details><summary>Check</summary><ol>
+    <li>What two things does a personal ending tell you? <span class="ans">Person and number.</span></li>
+    <li>What does "agreement" mean here? <span class="ans">The verb's ending has the same person and number as its subject.</span></li>
+  </ol></details>
+  <p class="bridge">Use those six slots (three persons, singular and plural) to learn <span class="g">εἰμί</span>. Step 8.</p>
+</section>
+
+<section id="s8">
+  <div class="eyebrow">Step 8 · §8.12, 8.14</div>
+  <h2><span class="g">εἰμί</span>, present tense, plus <span class="g">ἦν</span></h2>
+  <div class="wrap"><table>
+    <thead><tr><th></th><th>Singular</th><th></th><th>Plural</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>1st</td><td class="g">εἰμί</td><td>I am</td><td class="g">ἐσμέν</td><td>we are</td></tr>
+      <tr><td>2nd</td><td class="g">εἶ</td><td>you are</td><td class="g">ἐστέ</td><td>you (pl) are</td></tr>
+      <tr><td>3rd</td><td class="g">ἐστί(ν)</td><td>he/she/it is</td><td class="g">εἰσίν</td><td>they are</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>Past:</b> <span class="g">ἦν</span> = he/she/it <i>was</i>. It is common, so learn it now. Lexical meanings: I am, exist, live, am present.</p>
+  <div class="key"><b>Memory aid (mine, not in BBG):</b> the plural forms all start with <span class="g">ἐσ-/εἰσ-</span>. The ending vowel tells you the person: -μεν = we, -τε = you all, -σιν = they. Don't mix up <span class="g">ἐστί</span> (is, 3rd sg) with <span class="g">ἐστέ</span> (you all are, 2nd pl).</div>
+  <details><summary>Check (then type them in the drill)</summary><ol>
+    <li>we are <span class="ans">ἐσμέν</span></li>
+    <li><span class="g">εἶ</span> <span class="ans">you (sg) are</span></li>
+    <li>they are <span class="ans">εἰσίν</span></li>
+    <li><span class="g">ἐστέ</span> <span class="ans">you (pl) are</span></li>
+    <li>he was <span class="ans">ἦν</span></li>
+  </ol></details>
+  <p class="bridge"><span class="g">εἰμί</span> doesn't act on anything, so the noun after it can't be a direct object. Step 9 covers what it is.</p>
+</section>
+
+<section id="s9">
+  <div class="eyebrow">Step 9 · §8.2, 8.15</div>
+  <h2>Predicate nominative</h2>
+  <p>A noun after "to be" receives no action. It tells you something about the subject, so it is in the subject's case, the nominative. English works the same way: strictly, "the teacher is I", not "me" (§8.2). This is the second use of the nominative, after the subject.</p>
+  <p><span class="g">θεὸς ἐστὶν κύριος</span>: both nouns are nominative. Context shows which one is the subject.</p>
+  <details><summary>Check</summary><ol>
+    <li>Translate <span class="g">ὁ θάνατος ἐστιν ὁ ἐχθρός</span>. <span class="ans">Death is the enemy. ἐχθρός (enemy) isn't in ch. 8 vocab; I added it as a practice word. Both nouns are nominative.</span></li>
+    <li>Why is <span class="g">κύριος</span> nominative in the BBG example? <span class="ans">It is a predicate nominative after εἰμί: it describes the subject and receives no action.</span></li>
+  </ol></details>
+  <p class="bridge">Now a full sentence can have a subject, εἰμί and a predicate nominative. Step 10 shows how to find that main core when clauses get in the way.</p>
+</section>
+
+<section id="s10">
+  <div class="eyebrow">Step 10 · §8.9</div>
+  <h2>Dependent clauses</h2>
+  <p><span class="g">ἵνα</span> (in order that, that) and <span class="g">ὅτι</span> (ch. 6) always begin a <b>dependent clause</b>. A dependent clause cannot stand on its own: "if I go home" needs "I will eat dinner". It has its own subject and verb, but <b>the main subject and verb of the sentence are never inside a dependent clause.</b> When you divide a sentence, set aside the dependent clauses and the prepositional phrases first (§8.16). What's left is the main clause.</p>
+  <p class="note">The chapter's Exegetical Insight on 1 Cor 5:5 shows why this matters. Paul introduces the result with <span class="g">εἰς</span> and the purpose with <span class="g">ἵνα</span>, which suggests the purpose of the discipline is restoration.</p>
+  <details><summary>Check</summary><ol>
+    <li>Which words in this chapter open dependent clauses? <span class="ans">ἵνα (ch. 8) and ὅτι (ch. 6).</span></li>
+    <li>Where will you never find the main verb? <span class="ans">Inside a dependent clause, and never inside a prepositional phrase as its object.</span></li>
+  </ol></details>
+</section>
+
+<section id="s11">
+  <div class="eyebrow">Final check · all steps, mixed order</div>
+  <h2>Cold recall</h2>
+  <p>Answer every question before you open the answers. Each one names the step it tests, so you know what to reread if you miss it.</p>
+  <details><summary>Twelve questions</summary><ol>
+    <li>(3) <span class="g">διά</span> + gen / + acc <span class="ans">through / on account of</span></li>
+    <li>(5) <span class="g">ἀφ’ ἡμῶν</span>: full preposition and why it changed <span class="ans">ἀπό; the vowel elided and π became φ before rough breathing</span></li>
+    <li>(4) <span class="g">ἡ παραβολὴ παρὰ τοῦ Ἰωάννου</span> <span class="ans">the parable from John (no "of")</span></li>
+    <li>(8) <span class="g">ἐσμέν</span> <span class="ans">we are</span></li>
+    <li>(2) Explain the case of <span class="g">οἴκῳ</span> in <span class="g">ἐν οἴκῳ</span> using the §8.8 formula <span class="ans">οἴκῳ is in the dative because it is the object of the preposition ἐν, which takes the dative.</span></li>
+    <li>(3) <span class="g">παρά</span> + acc <span class="ans">alongside of</span></li>
+    <li>(9) In <span class="g">Ἰωάννης ἦν προφήτης</span>, what case is <span class="g">προφήτης</span> and why? <span class="ans">Nominative, predicate nominative after ἦν: "John was a prophet."</span></li>
+    <li>(6) Elision vs movable ν, one line each <span class="ans">Elision drops the preposition's final vowel. Movable ν adds a ν to separate two vowels.</span></li>
+    <li>(4) <span class="g">ὁ λόγος ἔρχεται εἰς κόσμον</span> <span class="ans">The word goes into the world (the article added back).</span></li>
+    <li>(10) What can never contain the main subject and verb? <span class="ans">A dependent clause (opened by ἵνα or ὅτι, for example).</span></li>
+    <li>(3) <span class="g">ὑπὸ τὴν οἰκίαν</span> <span class="ans">under the house</span></li>
+    <li>(5) <span class="g">ἐκ</span> before <span class="g">αὐτῶν</span> <span class="ans">ἐξ αὐτῶν</span></li>
+  </ol></details>
+  <div class="key"><b>Next:</b> run the Ch 8 decks in the drill in step order: Preposition meanings, Which case?, Translate the phrase, Elision, Read εἰμί, Type εἰμί, Rules, Mixed review. Then paste the log so it can be recorded as block D pass 1. Come back to this page cold one day later; your second cold pass needs to be in a separate session.</div>
+  <p class="src">Source: Mounce, BBG 2nd ed., ch. 8 (§8.1–8.17, Summary, Vocabulary and footnotes). Notes marked "mine" are not from BBG.</p>
+</section>
+</main>
