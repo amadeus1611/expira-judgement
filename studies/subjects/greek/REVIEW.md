@@ -29,7 +29,7 @@ every quiz answer correct, or the only slip fixed by the owner without being tol
 | A | 3–4 | Alphabet, pronunciation, transliteration; punctuation and syllabification | 2026-10-18 ch. 3–4: 146/146 first try | | drilled: pass 2 2026-10-19 cold (Which rule? 11/11 seen; owner reports the ch. 3 decks and Marks, Count, Syllables done, scores not pasted because the log was cut off) |
 | B | 5–6 | English nouns; nominative and accusative; the article 2026-10-18 ch. 6: 36/37 first try; one slip (picked first word ψυχὰς as subject), then a clean 5/5 re-run | | drilled: pass 2 2026-10-19 cold, 79/79 first try (Endings 12/12, Decline 12/12, Read article 10/10, Add article 14/14, Parse 10/10, Noun rules 8/8, Subject or object 13/13) |
 | C | 7 | Genitive and dative | 2026-10-19 ch. 7: 151/151 first try (Endings 24/24, Article chart 24/24, Read article 17/17, Article gender 17/17, Parse 23/23, Decline 20/20, Rules and key words 11/11, Translate 12/12), Mixed 20/20 | 2026-10-20 cold: 168/168 first try (all nine ch. 7 decks clean) | drilled |
-| D | 8 | Prepositions and εἰμί | | | not started |
+| D | 8 | Prepositions and εἰμί | 2026-10-22 ch. 8: 91/91 first try (Preposition meanings 14/14, Which case 9/9, Translate the phrase 14/14, Elision 9/9, Read εἰμί 8/8, Type εἰμί 7/7, Rules 10/10, Mixed 20/20) | | pass 1 done |
 | E | 9 | Adjectives | | | not started |
 | F | 15–16 | Introduction to verbs; present active indicative; connecting vowel | | | not started |
 | G | 32A | Present active infinitive `-ειν` | | | not started |
@@ -86,3 +86,4 @@ Slips seen: ν as "v" (2026-10-16); ρ as "p" three times, π read as ν once (2
 - 2026-10-18 Ch 6: Subject or object: 4/5 first try; missed τὸν λόγον σώσει θεός. — direct object?: typed "θεός" (second word-order slip); re-run 5/5. Deck widened to 13 items.
 - 2026-10-19 full run, A–C: ch. 3–6 decks all clean except Letter names 23/24 (typed "Iot" for ι; re-run 24/24). Ch. 7 (block C pass 1): Endings 24/24, Article chart 24/24, Read the article 17/17, Article gender 17/17, Parse it 23/23, Decline it 20/20, Rules and key words 11/11, Translate 12/12, Mixed review 20/20.
 - 2026-10-20 block C pass 2 (cold): Endings 24/24, Article chart 24/24, Read the article 17/17, Article gender 17/17, Parse it 23/23, Decline it 20/20, Rules and key words 11/11, Translate 12/12, Mixed review 20/20.
+- 2026-10-22 block D pass 1 (after the ch. 8 reviewer): Preposition meanings 14/14, Which case? 9/9, Translate the phrase 14/14, Elision 9/9, Read εἰμί 8/8, Type εἰμί 7/7, Rules 10/10, Mixed review 20/20.

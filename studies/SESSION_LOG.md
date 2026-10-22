@@ -167,3 +167,24 @@ Block A pass 2 and block B pass 2 (cold), then block C (ch. 7 genitive and dativ
 ### Next
 Block C pass 2 (cold, separate session), then block D (ch. 8 prepositions and εἰμί).
 
+
+## 2026-10-20 — Greek review, block C pass 2
+
+### Done
+- Block C pass 2 (cold) 168/168, so block C (ch. 7) is drilled.
+- Built ch. 8 study sheet and decks in the drill page.
+
+### Next
+Block D (ch. 8) pass 1.
+
+## 2026-10-22 — Greek review, block D pass 1
+
+### Done
+- Added a step-by-step ch. 8 reviewer (subjects/greek/reviewers/ch08-reviewer.html): ten steps in learning order with recall checks.
+- Block D pass 1: 91/91 first try across all eight ch. 8 decks.
+
+### Open
+- None from this block.
+
+### Next
+Block D pass 2 (cold, separate session), then block E.
